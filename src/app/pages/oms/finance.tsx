@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, useLocation } from "react-router";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { OmsModal, OmsField, OmsTextarea, OmsButtonRow, OmsBtn, OmsConfirmContent, showOmsToast } from "../../components/oms/oms-modal";
 import { useTenantConfig } from "../../components/oms/oms-tenant-config";
@@ -29,6 +30,7 @@ export default function OmsFinance() {
   const { hasPermission, canSeeField } = useTenantConfig();
   const { admin } = useOmsAuth();
   const { t } = useI18n();
+  const location = useLocation();
   const role = admin?.role || "merchant_ops";
   // Tenant-config-aware helpers
   const canViewAssets = hasPermission("view_assets", role);
@@ -69,6 +71,54 @@ export default function OmsFinance() {
 
   return (
     <div className="space-y-4" style={pp}>
+      {/* Finance Sub-Navigation */}
+      <div className="flex gap-2 border-b border-[#1f2937] pb-3">
+        <Link 
+          to="/oms/finance" 
+          className={`text-[12px] px-4 py-2 rounded-lg transition-colors ${
+            location.pathname === "/oms/finance" 
+              ? "bg-[#ff5222] text-white" 
+              : "text-[#6b7280] hover:text-white hover:bg-[#1f2937]"
+          }`}
+          style={{ fontWeight: 600 }}
+        >
+          Transactions
+        </Link>
+        <Link 
+          to="/oms/finance/fiat-transactions" 
+          className={`text-[12px] px-4 py-2 rounded-lg transition-colors ${
+            location.pathname === "/oms/finance/fiat-transactions" 
+              ? "bg-[#ff5222] text-white" 
+              : "text-[#6b7280] hover:text-white hover:bg-[#1f2937]"
+          }`}
+          style={{ fontWeight: 600 }}
+        >
+          Fiat Gateway
+        </Link>
+        <Link 
+          to="/oms/finance/fiat-gateway-config" 
+          className={`text-[12px] px-4 py-2 rounded-lg transition-colors ${
+            location.pathname === "/oms/finance/fiat-gateway-config" 
+              ? "bg-[#ff5222] text-white" 
+              : "text-[#6b7280] hover:text-white hover:bg-[#1f2937]"
+          }`}
+          style={{ fontWeight: 600 }}
+        >
+          Gateway Config
+        </Link>
+        <Link 
+          to="/oms/finance/cvpay-config" 
+          className={`text-[12px] px-4 py-2 rounded-lg transition-colors ${
+            location.pathname === "/oms/finance/cvpay-config" 
+              ? "bg-[#ff5222] text-white" 
+              : "text-[#6b7280] hover:text-white hover:bg-[#1f2937]"
+          }`}
+          style={{ fontWeight: 600 }}
+        >
+          CVPay Config
+        </Link>
+      </div>
+
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[

@@ -46,6 +46,7 @@ export const router = createBrowserRouter([
       { path: "/faq", lazy: lazy(() => import("./pages/faq")) },
       { path: "/about", lazy: lazy(() => import("./pages/about")) },
       { path: "/transactions", lazy: lazy(() => import("./pages/transaction-history")) },
+      { path: "/wallet", lazy: lazy(() => import("./pages/wallet")) },
       // Dynamic Category Route — resolves :slug to the correct category page
       { path: "/category/:slug", lazy: lazy(() => import("./pages/category-dynamic")) },
       // OMS Routes — Multi-Tenant SaaS Platform
@@ -85,6 +86,10 @@ export const router = createBrowserRouter([
           { path: "payment-providers", lazy: lazy(() => import("./pages/oms/payment-providers")) },
           { path: "admin-users", lazy: lazy(() => import("./pages/oms/oms-admin-users")) },
           { path: "kyb", lazy: lazy(() => import("./pages/oms/kyb")) },
+          // Finance sub-routes (CVPay Fiat Gateway)
+          { path: "finance/fiat-transactions", lazy: lazy(() => import("./pages/oms/fiat-transactions")) },
+          { path: "finance/fiat-gateway-config", lazy: lazy(() => import("./pages/oms/fiat-gateway-config")) },
+          { path: "finance/cvpay-config", lazy: lazy(() => import("./pages/oms/cvpay-config")) },
         ],
       },
       // Merchant-facing KYB application form (standalone, no OMS layout required)

@@ -54,6 +54,13 @@ const ACTION_PERMISSIONS: Record<string, number> = {
   manage_settings: 4,
   export_data: 3,
 
+  // Fiat gateway actions
+  "fiat:approve": 3,
+  "fiat:reject": 3,
+  "fiat:export": 3,
+  "fiat:config:read": 2,
+  "fiat:config:write": 4,
+
   // Ops / finance actions
   approve_txn: 3,
   reject_txn: 3,
@@ -80,9 +87,9 @@ export function hasActionPermission(role: string, action: string): boolean {
 }
 
 /**
- * useRBAC hook — returns helper to check if current admin can perform actions.
+ * useRbac hook — returns helper to check if current admin can perform actions.
  */
-export function useRBAC() {
+export function useRbac() {
   const { admin } = useOmsAuth();
   const { hasPermission } = useTenantConfig();
   const role = admin?.role || "merchant_support";
@@ -92,6 +99,13 @@ export function useRBAC() {
     can: (action: string) => hasActionPermission(role, action),
     /** Check tenant-config-level permission */
     hasTenantPerm: (perm: string) => hasPermission(perm, role),
+    /** Check permission (alias for broader compatibility) */
+    hasPermission: (perm: string) => {
+      // Try action first
+      if (hasActionPermission(role, perm)) return true;
+      // Then try tenant permission
+      return hasPermission(perm, role);
+    },
     /** Current role */
     role,
     /** Whether this is a platform-level user */
@@ -103,11 +117,31 @@ export function useRBAC() {
   };
 }
 
+// Backward compatibility
+export const useRBAC = useRbac;
+
 /**
- * RBACGuard component — renders children only if the current user has the specified permission.
+ * RbacGuard component — renders children only if the current user has the specified permission.
  */
-export function RBACGuard({ action, children, fallback }: { action: string; children: ReactNode; fallback?: ReactNode }) {
-  const { can } = useRBAC();
-  if (!can(action)) return fallback ? <>{fallback}</> : null;
+export function RbacGuard({ 
+  action, 
+  permission,
+  children, 
+  fallback 
+}: { 
+  action?: string; 
+  permission?: string;
+  children: ReactNode; 
+  fallback?: ReactNode;
+}) {
+  const { can, hasPermission } = useRbac();
+  
+  // Check permission or action
+  const hasAccess = permission ? hasPermission(permission) : (action ? can(action) : false);
+  
+  if (!hasAccess) return fallback ? <>{fallback}</> : null;
   return <>{children}</>;
 }
+
+// Backward compatibility
+export const RBACGuard = RbacGuard;

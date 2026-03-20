@@ -46,7 +46,14 @@ export type AuditAction =
   | "risk_investigate"
   | "risk_resolve"
   | "risk_dismiss"
-  | "risk_hedge";
+  | "risk_hedge"
+  // Fiat gateway actions
+  | "VIEW_TRANSACTION"
+  | "APPROVE_TRANSACTION"
+  | "REJECT_TRANSACTION"
+  | "EXPORT_TRANSACTIONS"
+  | "TEST_GATEWAY_CONNECTION"
+  | "UPDATE_GATEWAY_CONFIG";
 
 export interface AuditEntry {
   id: string;
@@ -111,6 +118,34 @@ export function logAudit(params: {
   entries.unshift(entry);
   saveEntries(entries);
   return entry;
+}
+
+/**
+ * Simplified audit logging for when admin context is available.
+ * Automatically gets admin info from OMS auth context.
+ */
+export function logAuditEvent(params: {
+  action: AuditAction | string;
+  category?: string;
+  details?: Record<string, any>;
+  target?: string;
+}) {
+  // In a real app, get admin from context/hook
+  // For now, use mock admin
+  const mockAdmin = {
+    email: "admin@lucktaya.com",
+    role: "merchant_admin",
+    merchantId: "tenant_1",
+  };
+
+  return logAudit({
+    adminEmail: mockAdmin.email,
+    adminRole: mockAdmin.role,
+    action: params.action as AuditAction,
+    target: params.target,
+    detail: params.category ? `[${params.category}] ${JSON.stringify(params.details || {})}` : JSON.stringify(params.details || {}),
+    merchantId: mockAdmin.merchantId,
+  });
 }
 
 /**
@@ -184,14 +219,52 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
   risk_resolve: "Resolved Risk",
   risk_dismiss: "Dismissed Risk",
   risk_hedge: "Hedged Risk",
+  // Fiat gateway actions
+  VIEW_TRANSACTION: "Viewed Transaction",
+  APPROVE_TRANSACTION: "Approved Transaction",
+  REJECT_TRANSACTION: "Rejected Transaction",
+  EXPORT_TRANSACTIONS: "Exported Transactions",
+  TEST_GATEWAY_CONNECTION: "Tested Gateway Connection",
+  UPDATE_GATEWAY_CONFIG: "Updated Gateway Config",
 };
 
 /**
  * Severity color for audit action categories.
  */
 export function getAuditSeverity(action: AuditAction): "info" | "warning" | "critical" {
-  const critical: AuditAction[] = ["wallet_freeze", "wallet_unfreeze", "bet_void", "creator_suspend", "txn_reject", "kyb_reject", "merchant_suspend", "risk_dismiss"];
-  const warning: AuditAction[] = ["txn_approve", "wallet_credit", "wallet_debit", "creator_approve", "creator_reject", "creator_edit", "config_save", "user_role_change", "export_data", "kyb_approve", "kyb_request_info", "kyb_credential_sent", "merchant_activate", "merchant_edit", "risk_investigate", "risk_resolve", "risk_hedge"];
+  const critical: AuditAction[] = [
+    "wallet_freeze", 
+    "wallet_unfreeze", 
+    "bet_void", 
+    "creator_suspend", 
+    "txn_reject", 
+    "kyb_reject", 
+    "merchant_suspend", 
+    "risk_dismiss",
+    "REJECT_TRANSACTION"
+  ];
+  const warning: AuditAction[] = [
+    "txn_approve", 
+    "wallet_credit", 
+    "wallet_debit", 
+    "creator_approve", 
+    "creator_reject", 
+    "creator_edit", 
+    "config_save", 
+    "user_role_change", 
+    "export_data", 
+    "kyb_approve", 
+    "kyb_request_info", 
+    "kyb_credential_sent", 
+    "merchant_activate", 
+    "merchant_edit", 
+    "risk_investigate", 
+    "risk_resolve", 
+    "risk_hedge",
+    "APPROVE_TRANSACTION",
+    "UPDATE_GATEWAY_CONFIG",
+    "EXPORT_TRANSACTIONS"
+  ];
   if (critical.includes(action)) return "critical";
   if (warning.includes(action)) return "warning";
   return "info";

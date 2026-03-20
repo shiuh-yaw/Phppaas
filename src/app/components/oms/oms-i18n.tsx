@@ -1800,6 +1800,15 @@ export function useI18n() {
 }
 
 /**
+ * Alias for useI18n - provides translation function
+ * Used by CVPay fiat integration pages
+ */
+export function useOmsTranslation() {
+  const { t, locale } = useI18n();
+  return { t, locale };
+}
+
+/**
  * Lookup helper for sidebar nav labels.
  * Maps the English label from NAV_SECTIONS to i18n key.
  */

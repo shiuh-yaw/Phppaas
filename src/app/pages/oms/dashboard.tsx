@@ -131,13 +131,13 @@ export default function OmsDashboard() {
 
   useEffect(() => { const timer = setTimeout(() => setLoading(false), 500); return () => clearTimeout(timer); }, []);
 
-  if (loading) return <div className="space-y-4" style={pp}><OmsTableSkeleton rows={4} cols={4} /></div>;
-
   const data = useMemo(() => getMerchantData(activeMerchant?.id || null, merchants), [activeMerchant?.id, merchants]);
   const userFactor = activeMerchant ? activeMerchant.users / 485230 : 1;
   const hourly = useMemo(() => HOURLY_SEED.map(h => ({ ...h, users: Math.round(h.base * userFactor) })), [userFactor]);
 
-  return (
+  return loading ? (
+    <div className="space-y-4" style={pp}><OmsTableSkeleton rows={4} cols={4} /></div>
+  ) : (
     <div className="space-y-5" style={pp}>
       {/* Top stats — merchant-aware values */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
