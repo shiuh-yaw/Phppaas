@@ -133,7 +133,7 @@ export default function OmsReports() {
               </defs>
             </svg>
             <ResponsiveContainer width="100%" height={280}>
-              <AreaChart data={GGR_MONTHLY}>
+              <AreaChart data={GGR_MONTHLY} id="rpt-ggr-area">
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#6b7280" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "#6b7280" }} axisLine={false} tickLine={false} tickFormatter={v => `₱${(v / 1000000).toFixed(0)}M`} />
                 <Tooltip contentStyle={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 12, fontSize: 11, color: "#070808", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }} formatter={(v: number) => [`₱${(v / 1000000).toFixed(1)}M`, "GGR"]} />
@@ -163,7 +163,7 @@ export default function OmsReports() {
           <div className="bg-[#111827] border border-[#1f2937] rounded-xl p-4">
             <h3 className="text-white text-[14px] mb-4" style={{ fontWeight: 600 }}>User Growth (6 Months)</h3>
             <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={USER_GROWTH}>
+              <LineChart data={USER_GROWTH} id="rpt-user-line">
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#6b7280" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "#6b7280" }} axisLine={false} tickLine={false} tickFormatter={v => `${(v / 1000).toFixed(0)}K`} />
                 <Tooltip contentStyle={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 12, fontSize: 11, color: "#070808", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }} formatter={(v: number) => [v.toLocaleString()]} />
@@ -180,7 +180,7 @@ export default function OmsReports() {
           <div className="bg-[#111827] border border-[#1f2937] rounded-xl p-4">
             <h3 className="text-white text-[14px] mb-4" style={{ fontWeight: 600 }}>Revenue by Category</h3>
             <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={CATEGORY_REVENUE} layout="vertical">
+              <BarChart data={CATEGORY_REVENUE} layout="vertical" id="rpt-cat-bar">
                 <XAxis type="number" tick={{ fontSize: 10, fill: "#6b7280" }} axisLine={false} tickLine={false} tickFormatter={v => `₱${(v / 1000000).toFixed(0)}M`} />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} width={80} />
                 <Tooltip contentStyle={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 12, fontSize: 11, color: "#070808", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }} formatter={(v: number) => [`₱${(v / 1000000).toFixed(1)}M`]} />

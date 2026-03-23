@@ -138,7 +138,7 @@ function AuthCard({ children, title, subtitle }: { children: React.ReactNode; ti
 
 /* ==================== LOGIN SCREEN ==================== */
 export function OmsLogin() {
-  const { login, loginWithCode, requestVerificationCode, resetPassword, pending2FA, verify2FA, cancel2FA } = useOmsAuth();
+  const { login, loginWithCode, requestVerificationCode, resetPassword, pending2FA, demoTwoFACode, verify2FA, cancel2FA } = useOmsAuth();
   type AuthScreen = "login" | "email_code" | "forgot" | "forgot_code" | "forgot_newpw" | "disabled" | "2fa";
   const [screen, setScreen] = useState<AuthScreen>("login");
   const [email, setEmail] = useState("");
@@ -276,9 +276,9 @@ export function OmsLogin() {
               <p className="text-[#84888c] text-[10px]" style={ss04}>Admin &amp; Platform Admin accounts require 2FA</p>
             </div>
           </div>
-          {pending2FA && !demoCode && (
+          {pending2FA && !demoCode && demoTwoFACode && (
             <div className="mb-3 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-[11px]" style={ss04}>
-              A 6-digit code has been sent to <span style={{ fontWeight: 600 }}>{pending2FA.email}</span>. Enter any wrong code once to reveal the demo code.
+              <span style={{ fontWeight: 600 }}>💡 Demo Hint:</span> Use code <span style={{ fontWeight: 700, fontFamily: "monospace", background: "#fef3c7", padding: "1px 6px", borderRadius: 6 }}>{demoTwoFACode}</span> to verify. In production, this would come from your authenticator app.
             </div>
           )}
           {demoCode && (
@@ -876,6 +876,10 @@ function OmsHeader({ collapsed, onMobileToggle, onOpenCommandPalette }: { collap
     "/settings": "nav.settings",
     "/billing": "nav.billing",
     "/paas-config": "nav.paas_config",
+    "/paas-merchant": "nav.merchant_config",
+    "/payment-methods": "nav.payment_methods",
+    "/payment-providers": "nav.payment_providers",
+    "/kyb": "nav.kyb",
     "/admin-users": "nav.admin_users",
   };
 
@@ -889,7 +893,7 @@ function OmsHeader({ collapsed, onMobileToggle, onOpenCommandPalette }: { collap
     return "OMS";
   };
 
-  const platformPaths = ["/oms/merchants", "/oms/billing", "/oms/paas-config"];
+  const platformPaths = ["/oms/merchants", "/oms/billing", "/oms/paas-config", "/oms/payment-methods", "/oms/payment-providers", "/oms/kyb", "/oms/admin-users"];
   const isOnPlatformPage = location.pathname === "/oms" || platformPaths.some(p => location.pathname.startsWith(p));
 
   return (
@@ -1064,7 +1068,7 @@ export function OmsLayout() {
   }, [isAuthenticated, logout]);
 
   const isPlat = admin ? isPlatformUser(admin.role) : false;
-  const platformOnlyPaths = ["/oms/merchants", "/oms/billing", "/oms/paas-config"];
+  const platformOnlyPaths = ["/oms/merchants", "/oms/billing", "/oms/paas-config", "/oms/payment-methods", "/oms/payment-providers", "/oms/kyb", "/oms/admin-users"];
   const isOnPlatformRoute = location.pathname === "/oms" || platformOnlyPaths.some(p => location.pathname.startsWith(p));
 
   // Route guard: redirect merchant-scoped admins away from platform-only routes
@@ -1139,7 +1143,7 @@ export function OmsLayout() {
     .oms-pages [class*="text-purple-400"]:not(svg) { color: #8b5cf6 !important; }
     .oms-pages [class*="bg-cyan-500/15"] { background-color: rgba(236,254,255,1) !important; }
     .oms-pages [class*="text-cyan-400"]:not(svg) { color: #0891b2 !important; }
-    .mos-pages [class*="bg-gray-500/15"] { background-color: rgba(249,250,251,1) !important; }
+    .oms-pages [class*="bg-gray-500/15"] { background-color: rgba(249,250,251,1) !important; }
     .oms-pages [class*="text-gray-400"]:not(svg) { color: #6b7280 !important; }
 
     /* === TOP-LEVEL TEXT (not inside cards) === */

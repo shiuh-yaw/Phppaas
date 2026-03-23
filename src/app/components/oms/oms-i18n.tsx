@@ -64,6 +64,9 @@ const en: Dict = {
   "nav.settings": "Settings",
   "nav.admin_users": "Admin Users",
   "nav.merchant_config": "Merchant Config",
+  "nav.payment_methods": "Payment Methods",
+  "nav.payment_providers": "Payment Providers",
+  "nav.kyb": "Merchant KYB",
 
   // ---- Header ----
   "header.search": "Search pages, users, markets...",
@@ -550,6 +553,9 @@ const zhTW: Dict = {
   "nav.settings": "系統設定",
   "nav.admin_users": "管理員帳號",
   "nav.merchant_config": "商戶配置",
+  "nav.payment_methods": "付款方式",
+  "nav.payment_providers": "付款供應商",
+  "nav.kyb": "商戶KYB",
 
   // ---- Header ----
   "header.search": "搜尋頁面、用戶、市場...",
@@ -965,6 +971,9 @@ const vi: Dict = {
   "nav.settings": "C\u00e0i \u0111\u1eb7t",
   "nav.admin_users": "Qu\u1ea3n l\u00fd Admin",
   "nav.merchant_config": "C\u1ea5u h\u00ecnh Merchant",
+  "nav.payment_methods": "Ph\u01b0\u01a1ng th\u1ee9c thanh to\u00e1n",
+  "nav.payment_providers": "Nh\u00e0 cung c\u1ea5p thanh to\u00e1n",
+  "nav.kyb": "KYB Merchant",
 
   // ---- Header ----
   "header.search": "T\u00ecm ki\u1ebfm trang, ng\u01b0\u1eddi d\u00f9ng, th\u1ecb tr\u01b0\u1eddng...",
@@ -1380,6 +1389,9 @@ const fil: Dict = {
   "nav.settings": "Mga Setting",
   "nav.admin_users": "Mga Admin User",
   "nav.merchant_config": "Merchant Config",
+  "nav.payment_methods": "Mga Paraan ng Bayad",
+  "nav.payment_providers": "Mga Provider ng Bayad",
+  "nav.kyb": "Merchant KYB",
 
   // ---- Header ----
   "header.search": "Maghanap ng pahina, user, market...",
@@ -1839,6 +1851,9 @@ const NAV_LABEL_MAP: Record<string, string> = {
   "Settings": "nav.settings",
   "Admin Users": "nav.admin_users",
   "Merchant Config": "nav.merchant_config",
+  "Payment Methods": "nav.payment_methods",
+  "Payment Providers": "nav.payment_providers",
+  "Merchant KYB": "nav.kyb",
 };
 
 export function tNavLabel(t: (key: string, fallback?: string) => string, englishLabel: string): string {

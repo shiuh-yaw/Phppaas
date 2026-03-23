@@ -392,6 +392,20 @@ export function generateCommandEntries(): CommandEntry[] {
     { id: "pg-paas", label: "PaaS Admin Config", category: "page", description: "Tenant config & permissions", path: "/oms/paas-config", keywords: ["paas", "config", "tenant", "admin"] },
     { id: "pg-payment-methods", label: "Payment Methods", category: "page", description: "Manage payment gateways & merchant assignments", path: "/oms/payment-methods", keywords: ["payment", "methods", "gcash", "maya", "bank", "gateway", "deposit", "withdraw"] },
     { id: "pg-payment-providers", label: "Payment Providers", category: "page", description: "Manage provider integrations, routing & failover", path: "/oms/payment-providers", keywords: ["payment", "providers", "paymongo", "xendit", "dragonpay", "coins", "pdax", "circle", "fireblocks", "routing", "failover"] },
+    { id: "pg-merchants", label: "Merchants", category: "page", description: "All tenant merchants", path: "/oms/merchants", keywords: ["merchants", "tenants", "operators"] },
+    { id: "pg-billing", label: "Billing & Plans", category: "page", description: "Subscription plans & invoices", path: "/oms/billing", keywords: ["billing", "plans", "subscription", "invoice"] },
+    { id: "pg-fast-bet", label: "Fast Bet Config", category: "page", description: "Fast bet game configuration", path: "/oms/fast-bet", keywords: ["fast", "bet", "game", "color", "bingo"] },
+    { id: "pg-odds", label: "Odds Engine", category: "page", description: "Odds management & feeds", path: "/oms/odds", keywords: ["odds", "engine", "feeds", "pricing"] },
+    { id: "pg-leaderboard", label: "Leaderboard", category: "page", description: "Leaderboard management", path: "/oms/leaderboard", keywords: ["leaderboard", "rankings", "top"] },
+    { id: "pg-promos", label: "Promo Codes", category: "page", description: "Manage promotional codes", path: "/oms/promos", keywords: ["promo", "codes", "coupons", "discount"] },
+    { id: "pg-content", label: "Content & CMS", category: "page", description: "Banners, announcements, pages", path: "/oms/content", keywords: ["content", "cms", "banners", "announcements"] },
+    { id: "pg-notif", label: "Notifications", category: "page", description: "Push & system notifications", path: "/oms/notif-mgmt", keywords: ["notifications", "push", "alerts", "broadcast"] },
+    { id: "pg-kyb", label: "Merchant KYB", category: "page", description: "Know Your Business verification", path: "/oms/kyb", keywords: ["kyb", "verification", "business", "compliance"] },
+    { id: "pg-admin-users", label: "Admin Users", category: "page", description: "OMS admin accounts & roles", path: "/oms/admin-users", keywords: ["admin", "users", "accounts", "roles", "rbac"] },
+    { id: "pg-paas-merchant", label: "Merchant Config", category: "page", description: "Merchant-specific settings", path: "/oms/paas-merchant", keywords: ["merchant", "config", "settings", "tenant"] },
+    { id: "pg-platform", label: "Platform Overview", category: "page", description: "Cross-merchant platform analytics", path: "/oms", keywords: ["platform", "overview", "global", "aggregate"] },
+    { id: "pg-fiat-tx", label: "Fiat Transactions", category: "page", description: "CVPay fiat payment transactions", path: "/oms/finance/fiat-transactions", keywords: ["fiat", "transactions", "cvpay", "gcash", "maya"] },
+    { id: "pg-cvpay-config", label: "CVPay Configuration", category: "page", description: "CVPay gateway credentials & settings", path: "/oms/finance/cvpay-config", keywords: ["cvpay", "config", "gateway", "credentials", "api"] },
   ];
 
   const users: CommandEntry[] = MOCK_USERS.slice(0, 10).map(u => ({

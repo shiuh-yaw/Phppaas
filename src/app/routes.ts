@@ -1,5 +1,5 @@
-import { createBrowserRouter } from "react-router";
-import { createElement } from "react";
+import { createBrowserRouter, Outlet } from "react-router";
+import { createElement, type ComponentType } from "react";
 import { RouteErrorElement } from "./components/route-error-boundary";
 
 /**
@@ -11,7 +11,7 @@ import { RouteErrorElement } from "./components/route-error-boundary";
  * - HydrateFallback: suppresses flash during SSR hydration
  * - errorElement: catches lazy-load failures and renders a recovery UI
  */
-const lazy = (loader: () => Promise<{ default: React.ComponentType<any> }>) =>
+const lazy = (loader: () => Promise<{ default: ComponentType<any> }>) =>
   () => loader().then(m => ({ Component: m.default }));
 
 // Named export wrapper for OmsLayout (not a default export)
@@ -20,6 +20,7 @@ const lazyOmsLayout = () =>
 
 export const router = createBrowserRouter([
   {
+    Component: Outlet,
     HydrateFallback: () => null,
     errorElement: createElement(RouteErrorElement),
     children: [

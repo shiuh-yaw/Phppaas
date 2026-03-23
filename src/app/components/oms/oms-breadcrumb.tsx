@@ -32,6 +32,11 @@ const PAGE_MAP: Record<string, { label: string; section: string }> = {
   merchants: { label: "Merchants", section: "Platform" },
   billing: { label: "Billing & Plans", section: "Platform" },
   "paas-config": { label: "PaaS Admin Config", section: "Platform" },
+  "paas-merchant": { label: "Merchant Config", section: "System" },
+  "payment-methods": { label: "Payment Methods", section: "Platform" },
+  "payment-providers": { label: "Payment Providers", section: "Platform" },
+  kyb: { label: "Merchant KYB", section: "Platform" },
+  "admin-users": { label: "Admin Users", section: "Platform" },
 };
 
 export function OmsBreadcrumb({ merchantName }: { merchantName?: string }) {

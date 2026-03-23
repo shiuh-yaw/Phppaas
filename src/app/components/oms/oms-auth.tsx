@@ -142,6 +142,7 @@ interface OmsAuthContextType {
   admin: AdminUser | null;
   isAuthenticated: boolean;
   pending2FA: AdminUser | null; // user who passed password but needs 2FA
+  demoTwoFACode: string;
   login: (email: string, password: string) => LoginResult;
   verify2FA: (code: string) => { ok: boolean; error?: string };
   cancel2FA: () => void;
@@ -163,6 +164,7 @@ const OmsAuthContext = createContext<OmsAuthContextType>({
   admin: null,
   isAuthenticated: false,
   pending2FA: null,
+  demoTwoFACode: "",
   login: () => ({ ok: false, reason: "invalid_credentials" }),
   verify2FA: () => ({ ok: false }),
   cancel2FA: () => {},
@@ -357,6 +359,7 @@ export function OmsAuthProvider({ children }: { children: ReactNode }) {
       admin,
       isAuthenticated: !!admin && admin.status !== "disabled",
       pending2FA,
+      demoTwoFACode: twoFACode,
       login,
       verify2FA,
       cancel2FA,
