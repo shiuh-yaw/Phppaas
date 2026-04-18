@@ -80,6 +80,7 @@ export const router = createBrowserRouter([
           { path: "wallet", lazy: lazy(() => import("./pages/oms/wallet")) },
           { path: "fast-bet", lazy: lazy(() => import("./pages/oms/fast-bet-config")) },
           { path: "odds", lazy: lazy(() => import("./pages/oms/odds")) },
+          { path: "settlement-engine", lazy: lazy(() => import("./pages/oms/settlement-engine")) },
           { path: "creators", lazy: lazy(() => import("./pages/oms/creators")) },
           { path: "rewards", lazy: lazy(() => import("./pages/oms/rewards-mgmt")) },
           { path: "affiliates", lazy: lazy(() => import("./pages/oms/affiliates-mgmt")) },

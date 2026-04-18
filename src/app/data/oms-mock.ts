@@ -407,6 +407,7 @@ export function generateCommandEntries(): CommandEntry[] {
     { id: "pg-platform", label: "Platform Overview", category: "page", description: "Cross-merchant platform analytics", path: "/oms", keywords: ["platform", "overview", "global", "aggregate"] },
     { id: "pg-fiat-tx", label: "Fiat Transactions", category: "page", description: "CVPay fiat payment transactions", path: "/oms/finance/fiat-transactions", keywords: ["fiat", "transactions", "cvpay", "gcash", "maya"] },
     { id: "pg-cvpay-config", label: "CVPay Configuration", category: "page", description: "CVPay gateway credentials & settings", path: "/oms/finance/cvpay-config", keywords: ["cvpay", "config", "gateway", "credentials", "api"] },
+    { id: "pg-settlement-engine", label: "Settlement Engine", category: "page", description: "Market settlement state machine & batch processing", path: "/oms/settlement-engine", keywords: ["settlement", "engine", "state", "machine", "batch", "resolve", "payout"] },
   ];
 
   const users: CommandEntry[] = MOCK_USERS.slice(0, 10).map(u => ({

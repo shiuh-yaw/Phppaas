@@ -1,6 +1,6 @@
 # PredictEx PaaS OMS - Product Requirements Document
 
-**Version:** 1.4
+**Version:** 1.5
 **Date:** April 18, 2026
 **Author:** Product Management
 **Status:** Draft for Engineering Review
@@ -7450,6 +7450,57 @@ KYB-TC-02,KYB Approval,Submission,"File too large (> 5MB)","Form partially fille
 | Gatling | Peak load simulation | JVM-based, detailed HTML reports |
 | Custom script | Database consistency checks | Post-test verification of wallet balances, bet statuses |
 
+### 21.10 Grafana Alert Thresholds (derived from SLA targets)
+
+> Each alert maps to a LOAD-TC scenario and fires when SLA targets are breached. Import via Grafana provisioning YAML or Terraform.
+
+| Alert ID | Panel / Metric | Condition | Severity | Linked TC | Grafana Expression |
+|---|---|---|---|---|---|
+| GFA-001 | `settlement_batch_duration_seconds` | Single market > 5s (100 bets) | Warning | LOAD-TC-01 | `avg_over_time(settlement_batch_duration_seconds{market_count="1"}[5m]) > 5` |
+| GFA-002 | `settlement_batch_duration_seconds` | Single market > 15s (1K bets) | Warning | LOAD-TC-02 | `avg_over_time(settlement_batch_duration_seconds{market_count="1",bet_range="1000"}[5m]) > 15` |
+| GFA-003 | `settlement_batch_duration_seconds` | Single market > 60s (10K bets) | Critical | LOAD-TC-03 | `avg_over_time(settlement_batch_duration_seconds{bet_range="10000"}[5m]) > 60` |
+| GFA-004 | `settlement_concurrent_markets` | 5-market concurrent > 30s | Critical | LOAD-TC-04 | `max(settlement_concurrent_duration_seconds{market_count="5"}) > 30` |
+| GFA-005 | `settlement_concurrent_markets` | 10-market concurrent > 120s | Critical | LOAD-TC-05 | `max(settlement_concurrent_duration_seconds{market_count="10"}) > 120` |
+| GFA-006 | `settlement_mixed_ops_duration` | Settlement + withdrawals > 45s | Warning | LOAD-TC-06 | `histogram_quantile(0.95, settlement_mixed_ops_duration_bucket) > 45` |
+| GFA-007 | `settlement_peak_duration` | Peak load > 180s | Critical | LOAD-TC-07 | `max(settlement_peak_duration_seconds) > 180` |
+| GFA-008 | `settlement_idempotent_resume` | Resume detects duplicate settlements | Critical | LOAD-TC-08 | `increase(settlement_duplicate_detected_total[1h]) > 0` |
+| GFA-009 | `db_connection_pool_active` | Pool utilization > 90% | Warning | LOAD-TC-09 | `db_connection_pool_active / db_connection_pool_max > 0.9` |
+| GFA-010 | `db_connection_pool_active` | Pool exhaustion (leaked connections) | Critical | LOAD-TC-09 | `db_connection_pool_leaked_total > 0` |
+| GFA-011 | `colorgame_round_settle_seconds` | Color Game round > 3s | Warning | LOAD-TC-10 | `histogram_quantile(0.99, colorgame_round_settle_seconds_bucket) > 3` |
+| GFA-012 | `settlement_failed_total` | Any failed settlement job | Critical | All | `increase(settlement_failed_total[5m]) > 0` |
+| GFA-013 | `settlement_queue_depth` | Queue depth > 50 pending | Warning | All | `settlement_queue_depth > 50` |
+| GFA-014 | `settlement_throughput_per_second` | Throughput < 500 bets/s | Warning | All | `rate(settlement_bets_processed_total[1m]) < 500` |
+| GFA-015 | `api_rate_limit_429_total` | Rate-limit violations > 100/min | Warning | RL-TC-* | `rate(api_rate_limit_429_total[1m]) > 100` |
+
+**Grafana Dashboard Layout (recommended panels):**
+
+| Row | Panels | Data Source |
+|---|---|---|
+| 1 - Overview | Active settlements gauge, Queue depth, Throughput (bets/s), Error rate | Prometheus |
+| 2 - Settlement | Batch duration heatmap, Per-market latency, State machine flow (Mermaid/Flowchart) | Prometheus + Loki |
+| 3 - Database | Connection pool utilization, Query latency P95/P99, Deadlock count | Prometheus (pg_exporter) |
+| 4 - Rate Limits | 429 responses/min by endpoint group, Tenant-level rate usage, Retry-After distribution | Prometheus |
+| 5 - Color Game | Round settle time P99, Rounds/minute, Bet volume per round | Prometheus |
+| 6 - Alerts | Alert history timeline, Active firing alerts, SLA compliance % | Alertmanager |
+
+### 21.11 Settlement Engine State Machine (OMS Implementation)
+
+> The settlement engine state machine is now implemented as a live OMS dashboard at `/oms/settlement-engine` (page 36). The implementation includes:
+
+**States:** `open` → `closed` → `resolving` → `resolved` → `settling` → `settled` (terminal)
+
+**Exception paths:** `voided` (from any pre-settled state), `disputed` (from resolved), `failed` (from resolving/settling, with retry)
+
+**OMS Features:**
+- Interactive state machine diagram with clickable states for filtering
+- Live-updating progress bars during batch settlement (simulated 2s tick)
+- Auto-transition from `settling` → `settled` when 100% processed
+- Manual state transitions with RBAC-gated controls and audit logging
+- Real-time metrics: active settlements, throughput, failures, disputes
+- Batch queue table with per-job detail panel
+- Transition rules reference grid
+- 8 mock settlement jobs spanning all states including Color Game rounds
+
 ---
 
 ## 22. Integration Dependency Graph
@@ -7642,7 +7693,8 @@ When modifying a module, check this table to identify downstream impacts:
 | **1.2** | 2026-04-18 | Added 5 sequence diagrams (KYB→Merchant, Settlement→Payout, Fiat Withdrawal, Creator Application, Risk Alert lifecycle). Added KYC Module future scope (Section 20) with full entity design, tenant config extension, 11 features, phased implementation plan. OmsUserRecord dual-model documentation (list vs. detail). |
 | **1.3** | 2026-04-18 | Test case matrix (Section 21) with 45 test cases across 6 categories derived from sequence diagram error scenarios. Integration dependency graph (Section 22) with Mermaid visualization of all 35 modules, dependency summary table, and impact analysis guide. **KYC Phase 1 prototype implemented**: mock data (10 applications, 24 documents, analytics), KYC Management page at `/oms/kyc` with review workflow, PII masking, document status tracking, analytics dashboard. Total page count: 35. |
 | **1.4** | 2026-04-18 | KYC ↔ User Management wiring: KYC Status column + KYC action button added to User Management table with `KycBadge` component and navigation link to `/oms/kyc`. TestRail/Zephyr export schema (Section 21.7) with CSV mapping template and automation priority tags. API rate-limit test cases (Section 21.8) covering 10 scenarios across standard/auth/export/webhook endpoints with tenant isolation verification. Settlement engine load testing (Section 21.9) with 10 scenarios from 100→50,000 bets, crash recovery, connection pool exhaustion, and Color Game rapid-fire. Total test cases: 65. |
+| **1.5** | 2026-04-18 | KYC filter dropdown added to User Management page (filter by verified/pending/review/rejected/expired/no_kyc). Grafana alert thresholds (Section 21.10): 15 alert rules derived from LOAD-TC and RL-TC SLA targets with PromQL expressions and recommended dashboard layout (6 rows, 18+ panels). Settlement engine state machine (Section 21.11): fully implemented interactive dashboard at `/oms/settlement-engine` (page 36) with 9 states, exception paths, live-updating batch progress, auto-transitions, manual RBAC-gated controls, 8 mock jobs, transition rules reference. Total page count: 36. |
 
 ---
 
-*End of PRD - PredictEx PaaS OMS v1.4 (Updated: April 18, 2026)*
+*End of PRD - PredictEx PaaS OMS v1.5 (Updated: April 18, 2026)*

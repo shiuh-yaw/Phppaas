@@ -93,6 +93,7 @@ const NAV_SECTIONS: NavSection[] = [
     items: [
       { label: "Fast Bet Config", icon: OmsFastBetIcon, path: "/oms/fast-bet" },
       { label: "Odds Engine", icon: OmsOddsIcon, path: "/oms/odds" },
+      { label: "Settlement Engine", icon: OmsBetsIcon, path: "/oms/settlement-engine" },
       { label: "Creator Mgmt", icon: OmsCreatorIcon, path: "/oms/creators", badge: "3" },
     ],
   },

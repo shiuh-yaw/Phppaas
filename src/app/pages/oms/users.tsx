@@ -489,6 +489,7 @@ export default function OmsUsers() {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<UserType | "all">("all");
   const [channelFilter, setChannelFilter] = useState<Channel | "all">("all");
+  const [kycFilter, setKycFilter] = useState<KycStatus | "no_kyc" | "all">("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -524,6 +525,11 @@ export default function OmsUsers() {
     }
     if (typeFilter !== "all" && u.userType !== typeFilter) return false;
     if (channelFilter !== "all" && u.channel !== channelFilter) return false;
+    if (kycFilter !== "all") {
+      const kyc = getKycByUserId(u.id);
+      if (!kyc) return kycFilter === "no_kyc";
+      return kyc.status === kycFilter;
+    }
     return true;
   });
 
@@ -600,6 +606,21 @@ export default function OmsUsers() {
               <option value="FG">FG</option>
               <option value="organic">Organic</option>
               <option value="agent">Agent</option>
+            </select>
+            <select
+              value={kycFilter}
+              onChange={e => { setKycFilter(e.target.value as any); setPage(1); }}
+              className="h-9 px-3 bg-[#f5f6f8] border border-[#e5e7eb] rounded-xl text-[#84888c] text-[11px] outline-none cursor-pointer"
+              style={{ ...pp, ...ss04 }}
+            >
+              <option value="all">KYC Status: All</option>
+              <option value="not_started">None</option>
+              <option value="pending">Pending</option>
+              <option value="in_review">Review</option>
+              <option value="verified">Verified</option>
+              <option value="rejected">Rejected</option>
+              <option value="expired">Expired</option>
+              <option value="no_kyc">No KYC</option>
             </select>
             {canExport && (
               <button onClick={() => { showOmsToast("Exporting user data...", "info"); if (admin) { logAudit({ adminEmail: admin.email, adminRole: admin.role, action: "admin_export_csv", target: "users", detail: `Exported ${filtered.length} users` }); } }} className="h-9 px-4 bg-[#f5f6f8] border border-[#e5e7eb] rounded-xl text-[#84888c] text-[11px] cursor-pointer hover:bg-[#e5e7eb] transition-colors" style={{ fontWeight: 600, ...pp, ...ss04 }}>Export CSV</button>
