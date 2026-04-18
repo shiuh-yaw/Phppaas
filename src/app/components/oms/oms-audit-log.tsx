@@ -53,7 +53,12 @@ export type AuditAction =
   | "REJECT_TRANSACTION"
   | "EXPORT_TRANSACTIONS"
   | "TEST_GATEWAY_CONNECTION"
-  | "UPDATE_GATEWAY_CONFIG";
+  | "UPDATE_GATEWAY_CONFIG"
+  // Settlement engine actions
+  | "market_settled"
+  | "settlement_transition"
+  | "settlement_dry_run"
+  | "settlement_dry_run_commit";
 
 export interface AuditEntry {
   id: string;
@@ -226,6 +231,11 @@ export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
   EXPORT_TRANSACTIONS: "Exported Transactions",
   TEST_GATEWAY_CONNECTION: "Tested Gateway Connection",
   UPDATE_GATEWAY_CONFIG: "Updated Gateway Config",
+  // Settlement engine actions
+  market_settled: "Market Settled",
+  settlement_transition: "Settlement Transition",
+  settlement_dry_run: "Settlement Dry Run",
+  settlement_dry_run_commit: "Settlement Dry Run Commit",
 };
 
 /**

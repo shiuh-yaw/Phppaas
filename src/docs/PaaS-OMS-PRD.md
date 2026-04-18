@@ -1,6 +1,6 @@
 # PredictEx PaaS OMS - Product Requirements Document
 
-**Version:** 1.5
+**Version:** 1.6
 **Date:** April 18, 2026
 **Author:** Product Management
 **Status:** Draft for Engineering Review
@@ -7697,4 +7697,8 @@ When modifying a module, check this table to identify downstream impacts:
 
 ---
 
-*End of PRD - PredictEx PaaS OMS v1.5 (Updated: April 18, 2026)*
+| **1.6** | 2026-04-18 | Settlement engine enhanced with two major features: (1) **WebSocket real-time event stream** for multi-admin collaboration — simulated WS feed with 15 event templates across 9 event types (admin_join/leave, transition, dry_run, dry_run_commit, system, alert, batch_progress, dispute_filed), admin presence indicators with avatar stacking in header + queue table viewers column, auto-scrolling feed with resume control, 4 mock connected admins with role/viewing-job context. (2) **Settlement dry-run mode** — payout preview modal before committing transitions for eligible states (resolved→settling, disputed→resolved), calculates winning/losing/voided bet distribution, full payout breakdown table with platform fee (5%), wallet impact analysis (hot wallet before/after, cold reserve, top-up required flag) with utilization bar, dynamic risk flags (high volume, disputed, wallet threshold, retry idempotency, abnormal win rate), estimated settlement duration, commit-with-spinner UX, all actions logged to audit trail and emitted to WS event stream. |
+
+---
+
+*End of PRD - PredictEx PaaS OMS v1.6 (Updated: April 18, 2026)*
