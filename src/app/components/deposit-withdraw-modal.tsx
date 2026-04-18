@@ -563,7 +563,7 @@ export function DepositWithdrawModal({
               <div className="flex items-center gap-1.5 pt-2">
                 <EmojiIcon emoji="🛡️" size={12} />
                 <span className="text-[10px]" style={{ color: t.textMut, ...ss, ...pp }}>
-                  Secured by PAGCOR &middot; ForeGate Inc. &copy; 2026
+                  Secured by PAGCOR &middot; PredictEx Inc. &copy; 2026
                 </span>
               </div>
             </div>

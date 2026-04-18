@@ -1341,7 +1341,7 @@ export default function OmsKyb() {
             <div>
               <p className="text-[#070808] text-[12px]" style={{ fontWeight: 600, ...ss04 }}>Platform Admin Access Required</p>
               <p className="text-[#84888c] text-[11px] mt-0.5" style={ss04}>
-                KYB application review and approval requires Platform Admin or Platform Ops access. Contact your ForeGate account manager for access.
+                KYB application review and approval requires Platform Admin or Platform Ops access. Contact your PredictEx account manager for access.
               </p>
             </div>
           </div>

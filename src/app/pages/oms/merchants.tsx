@@ -216,13 +216,13 @@ export default function OmsMerchants() {
       <OmsModal open={modalType === "edit"} onClose={() => setModalType(null)} title="Edit Merchant" subtitle={selected?.id}>
         <div className="space-y-3">
           <OmsField label="Merchant Name" required>
-            <OmsInput value={formName} onChange={setFormName} placeholder="e.g. Lucky Taya" />
+            <OmsInput value={formName} onChange={setFormName} placeholder="e.g. PredictEx" />
           </OmsField>
           <OmsField label="Slug (URL identifier)" required>
             <OmsInput value={formSlug} onChange={setFormSlug} placeholder="e.g. lucky-taya" />
           </OmsField>
           <OmsField label="Primary Domain" required>
-            <OmsInput value={formDomain} onChange={setFormDomain} placeholder="e.g. luckytaya.ph" />
+            <OmsInput value={formDomain} onChange={setFormDomain} placeholder="e.g. predictex.ph" />
           </OmsField>
           <div className="grid grid-cols-3 gap-3">
             <OmsField label="Plan" required>

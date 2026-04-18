@@ -43,10 +43,10 @@ interface MerchantUser {
 }
 
 const MOCK_WEBHOOKS: WebhookEndpoint[] = [
-  { id: "WH001", url: "https://api.luckytaya.ph/webhooks/bets", events: ["bet.placed", "bet.settled", "bet.voided"], status: "active", lastTriggered: "2 min ago", successRate: 99.8, signingSecret: "whsec_a1b2c3d4e5f6..." },
-  { id: "WH002", url: "https://api.luckytaya.ph/webhooks/payments", events: ["deposit.confirmed", "withdrawal.processed", "withdrawal.failed"], status: "active", lastTriggered: "5 min ago", successRate: 99.5, signingSecret: "whsec_g7h8i9j0k1l2..." },
-  { id: "WH003", url: "https://api.luckytaya.ph/webhooks/users", events: ["user.registered", "user.kyc_verified", "user.suspended"], status: "active", lastTriggered: "15 min ago", successRate: 100.0, signingSecret: "whsec_m3n4o5p6q7r8..." },
-  { id: "WH004", url: "https://staging.luckytaya.ph/webhooks/test", events: ["*"], status: "disabled", lastTriggered: "3 days ago", successRate: 85.2, signingSecret: "whsec_s9t0u1v2w3x4..." },
+  { id: "WH001", url: "https://api.predictex.ph/webhooks/bets", events: ["bet.placed", "bet.settled", "bet.voided"], status: "active", lastTriggered: "2 min ago", successRate: 99.8, signingSecret: "whsec_a1b2c3d4e5f6..." },
+  { id: "WH002", url: "https://api.predictex.ph/webhooks/payments", events: ["deposit.confirmed", "withdrawal.processed", "withdrawal.failed"], status: "active", lastTriggered: "5 min ago", successRate: 99.5, signingSecret: "whsec_g7h8i9j0k1l2..." },
+  { id: "WH003", url: "https://api.predictex.ph/webhooks/users", events: ["user.registered", "user.kyc_verified", "user.suspended"], status: "active", lastTriggered: "15 min ago", successRate: 100.0, signingSecret: "whsec_m3n4o5p6q7r8..." },
+  { id: "WH004", url: "https://staging.predictex.ph/webhooks/test", events: ["*"], status: "disabled", lastTriggered: "3 days ago", successRate: 85.2, signingSecret: "whsec_s9t0u1v2w3x4..." },
 ];
 
 const MOCK_API_KEYS: ApiKey[] = [
@@ -57,11 +57,11 @@ const MOCK_API_KEYS: ApiKey[] = [
 ];
 
 const MOCK_MERCHANT_USERS: MerchantUser[] = [
-  { id: "MU001", name: "Maria Santos", email: "maria.s@luckytaya.ph", role: "merchant_admin", status: "active", lastLogin: "10 min ago", twoFa: true },
-  { id: "MU002", name: "JM Reyes", email: "jm.r@luckytaya.ph", role: "merchant_ops", status: "active", lastLogin: "1 hr ago", twoFa: true },
-  { id: "MU003", name: "Rosa Lim", email: "rosa.l@luckytaya.ph", role: "merchant_finance", status: "active", lastLogin: "3 hr ago", twoFa: false },
-  { id: "MU004", name: "Ken Villanueva", email: "ken.v@luckytaya.ph", role: "merchant_support", status: "active", lastLogin: "30 min ago", twoFa: true },
-  { id: "MU005", name: "New Hire", email: "newhire@luckytaya.ph", role: "merchant_ops", status: "invited", lastLogin: "Never", twoFa: false },
+  { id: "MU001", name: "Maria Santos", email: "maria.s@predictex.ph", role: "merchant_admin", status: "active", lastLogin: "10 min ago", twoFa: true },
+  { id: "MU002", name: "JM Reyes", email: "jm.r@predictex.ph", role: "merchant_ops", status: "active", lastLogin: "1 hr ago", twoFa: true },
+  { id: "MU003", name: "Rosa Lim", email: "rosa.l@predictex.ph", role: "merchant_finance", status: "active", lastLogin: "3 hr ago", twoFa: false },
+  { id: "MU004", name: "Ken Villanueva", email: "ken.v@predictex.ph", role: "merchant_support", status: "active", lastLogin: "30 min ago", twoFa: true },
+  { id: "MU005", name: "New Hire", email: "newhire@predictex.ph", role: "merchant_ops", status: "invited", lastLogin: "Never", twoFa: false },
 ];
 
 const ALL_EVENTS = ["bet.placed", "bet.settled", "bet.voided", "deposit.confirmed", "withdrawal.processed", "withdrawal.failed", "user.registered", "user.kyc_verified", "user.suspended", "market.created", "market.resolved", "market.voided"];
@@ -197,7 +197,7 @@ export default function OmsMerchantDetail() {
                   { label: "API Integration", status: "connected", detail: "2 live keys active" },
                   { label: "Webhook Delivery", status: "healthy", detail: "99.7% success rate" },
                   { label: "Payment Gateway", status: "connected", detail: "GCash, Maya, BankTransfer" },
-                  { label: "KYC Provider", status: "connected", detail: "ForeGate KYC API" },
+                  { label: "KYC Provider", status: "connected", detail: "PredictEx KYC API" },
                   { label: "SSL Certificate", status: "valid", detail: "Expires 2027-01-15" },
                 ].map(i => (
                   <div key={i.label} className="flex items-center justify-between py-1.5">
@@ -294,7 +294,7 @@ export default function OmsMerchantDetail() {
       {tab === "api-keys" && (
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <p className="text-[#6b7280] text-[12px]">API keys authenticate requests to the ForeGate API. Keep secrets safe.</p>
+            <p className="text-[#6b7280] text-[12px]">API keys authenticate requests to the PredictEx API. Keep secrets safe.</p>
             <button onClick={() => { setKeyName(""); setKeyType("live"); setModalType("add-key"); }} className="h-8 px-4 bg-[#ff5222] hover:bg-[#e8491f] text-white text-[12px] rounded-lg cursor-pointer transition-colors" style={{ fontWeight: 600 }}>+ Generate Key</button>
           </div>
           <div className="bg-[#111827] border border-[#1f2937] rounded-xl overflow-hidden">
@@ -442,8 +442,8 @@ export default function OmsMerchantDetail() {
             <h3 className="text-white text-[14px]" style={{ fontWeight: 600 }}>Branding</h3>
             {[
               { label: "Brand Color", value: "#ff5222" },
-              { label: "Logo URL", value: "https://cdn.luckytaya.ph/logo.png" },
-              { label: "Favicon URL", value: "https://cdn.luckytaya.ph/favicon.ico" },
+              { label: "Logo URL", value: "https://cdn.predictex.ph/logo.png" },
+              { label: "Favicon URL", value: "https://cdn.predictex.ph/favicon.ico" },
               { label: "Tagline", value: "Mag-predict at manalo!" },
             ].map(b => (
               <div key={b.label} className="flex items-center justify-between py-1.5 border-b border-[#1f2937]/50 last:border-0">
@@ -463,7 +463,7 @@ export default function OmsMerchantDetail() {
             <h3 className="text-white text-[14px]" style={{ fontWeight: 600 }}>PAGCOR License</h3>
             {[
               { label: "License Number", value: "PAGCOR-OGC-2025-0042" },
-              { label: "Licensee", value: "ForeGate Gaming Corp." },
+              { label: "Licensee", value: "PredictEx Gaming Corp." },
               { label: "License Type", value: "Online Gaming (OGC)" },
               { label: "Issued Date", value: "2025-06-01" },
               { label: "Expiry Date", value: "2027-06-01" },

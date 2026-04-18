@@ -118,7 +118,7 @@ export function createDefaultConfig(merchantId: string): TenantConfig {
       { key: "contact_edit", label: "Contact Editing", description: "Edit contact details", fgOnly: false, merchantOverride: true },
     ],
     channels: [
-      { key: "FG", label: "ForeGate Direct", enabled: true, requiresApproval: false, autoAssignAgent: false },
+      { key: "FG", label: "PredictEx Direct", enabled: true, requiresApproval: false, autoAssignAgent: false },
       { key: "organic", label: "Organic", enabled: true, requiresApproval: false, autoAssignAgent: false },
       { key: "agent", label: "Agent Referral", enabled: true, requiresApproval: true, autoAssignAgent: true },
     ],

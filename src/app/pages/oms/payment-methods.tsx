@@ -294,7 +294,7 @@ const MOCK_PAYMENT_METHODS: PaymentMethodConfig[] = [
     chain: "Ethereum (ERC-20)", network: "Mainnet", contractAddress: "0x6B175474E89094C44Da98b954EedeAC495271d0F", confirmationsRequired: 12, currencySymbol: "DAI",
   },
   {
-    id: "PM009", name: "USDT (Tether)", shortName: "USDT", category: "stablecoin", provider: "ForeGate Crypto Gateway", apiVersion: "v1.2",
+    id: "PM009", name: "USDT (Tether)", shortName: "USDT", category: "stablecoin", provider: "PredictEx Crypto Gateway", apiVersion: "v1.2",
     icon: "₮", status: "live", enabledGlobally: true,
     merchantOverrides: {},
     depositEnabled: true, withdrawEnabled: true,
@@ -306,7 +306,7 @@ const MOCK_PAYMENT_METHODS: PaymentMethodConfig[] = [
     chain: "Tron (TRC-20)", network: "Mainnet", contractAddress: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t", confirmationsRequired: 20, currencySymbol: "USDT",
   },
   {
-    id: "PM011", name: "USDT (ERC-20)", shortName: "USDT-ETH", category: "stablecoin", provider: "ForeGate Crypto Gateway", apiVersion: "v1.2",
+    id: "PM011", name: "USDT (ERC-20)", shortName: "USDT-ETH", category: "stablecoin", provider: "PredictEx Crypto Gateway", apiVersion: "v1.2",
     icon: "₮E", status: "live", enabledGlobally: true,
     merchantOverrides: {},
     depositEnabled: true, withdrawEnabled: true,
@@ -318,7 +318,7 @@ const MOCK_PAYMENT_METHODS: PaymentMethodConfig[] = [
     chain: "Ethereum (ERC-20)", network: "Mainnet", contractAddress: "0xdAC17F958D2ee523a2206206994597C13D831ec7", confirmationsRequired: 12, currencySymbol: "USDT",
   },
   {
-    id: "PM012", name: "USDC (Circle)", shortName: "USDC", category: "stablecoin", provider: "ForeGate Crypto Gateway / Circle", apiVersion: "v1.1",
+    id: "PM012", name: "USDC (Circle)", shortName: "USDC", category: "stablecoin", provider: "PredictEx Crypto Gateway / Circle", apiVersion: "v1.1",
     icon: "◎", status: "live", enabledGlobally: true,
     merchantOverrides: {},
     depositEnabled: true, withdrawEnabled: true,
@@ -330,7 +330,7 @@ const MOCK_PAYMENT_METHODS: PaymentMethodConfig[] = [
     chain: "Solana / Ethereum / Polygon", network: "Mainnet", contractAddress: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", confirmationsRequired: 1, currencySymbol: "USDC",
   },
   {
-    id: "PM013", name: "USDC (Polygon)", shortName: "USDC-POL", category: "stablecoin", provider: "ForeGate Crypto Gateway / Circle", apiVersion: "v1.1",
+    id: "PM013", name: "USDC (Polygon)", shortName: "USDC-POL", category: "stablecoin", provider: "PredictEx Crypto Gateway / Circle", apiVersion: "v1.1",
     icon: "◎P", status: "testing", enabledGlobally: false,
     merchantOverrides: {},
     depositEnabled: true, withdrawEnabled: true,
@@ -342,7 +342,7 @@ const MOCK_PAYMENT_METHODS: PaymentMethodConfig[] = [
     chain: "Polygon (PoS)", network: "Mainnet", contractAddress: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359", confirmationsRequired: 128, currencySymbol: "USDC",
   },
   {
-    id: "PM014", name: "DAI (MakerDAO)", shortName: "DAI", category: "stablecoin", provider: "ForeGate Crypto Gateway", apiVersion: "v1.0",
+    id: "PM014", name: "DAI (MakerDAO)", shortName: "DAI", category: "stablecoin", provider: "PredictEx Crypto Gateway", apiVersion: "v1.0",
     icon: "◆", status: "testing", enabledGlobally: false,
     merchantOverrides: {},
     depositEnabled: true, withdrawEnabled: false,
@@ -354,7 +354,7 @@ const MOCK_PAYMENT_METHODS: PaymentMethodConfig[] = [
     chain: "Ethereum (ERC-20)", network: "Mainnet", contractAddress: "0x6B175474E89094C44Da98b954EedeAC495271d0F", confirmationsRequired: 12, currencySymbol: "DAI",
   },
   {
-    id: "PM015", name: "PYUSD (PayPal USD)", shortName: "PYUSD", category: "stablecoin", provider: "ForeGate Crypto Gateway / Paxos", apiVersion: "v0.9",
+    id: "PM015", name: "PYUSD (PayPal USD)", shortName: "PYUSD", category: "stablecoin", provider: "PredictEx Crypto Gateway / Paxos", apiVersion: "v0.9",
     icon: "PY", status: "disabled", enabledGlobally: false,
     merchantOverrides: {},
     depositEnabled: false, withdrawEnabled: false,
@@ -547,7 +547,7 @@ export default function PaymentMethodsMgmt() {
             <svg className="size-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M12 15v.01M12 12V8m0 12a9 9 0 110-18 9 9 0 010 18z" strokeLinecap="round" /></svg>
           </div>
           <h3 className="text-[#070808] text-[16px] mb-1" style={{ fontWeight: 600, ...ss04 }}>Access Restricted</h3>
-          <p className="text-[#b0b3b8] text-[12px]" style={ss04}>Payment Methods Management is only available to ForeGate Platform Admins & Ops.</p>
+          <p className="text-[#b0b3b8] text-[12px]" style={ss04}>Payment Methods Management is only available to PredictEx Platform Admins & Ops.</p>
         </div>
       </div>
     );

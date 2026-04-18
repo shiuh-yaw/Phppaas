@@ -14,7 +14,7 @@ function getMerchantData(merchantId: string | null, merchants: any[]) {
 
   // Seed multiplier based on merchant — gives different but consistent data per merchant
   const seed = m ? parseInt(m.id.replace("MCH", ""), 10) : 0;
-  const ggrFactor = m ? m.ggr / 78400000 : 1; // Normalize to Lucky Taya's scale
+  const ggrFactor = m ? m.ggr / 78400000 : 1; // Normalize to PredictEx's scale
   const userFactor = m ? m.users / 485230 : 1;
 
   const baseRevenue = [285000, 310000, 295000, 340000, 380000, 520000, 490000];

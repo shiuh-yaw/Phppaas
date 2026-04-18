@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { useT } from "../i18n/useT";
 import { Sidebar } from "../components/sidebar";
 import { Header } from "../components/header";
 import { useState } from "react";
@@ -8,6 +9,7 @@ const ss = { fontFeatureSettings: "'ss04'" };
 
 export default function NotFoundPage() {
   const navigate = useNavigate();
+  const t = useT();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -30,10 +32,10 @@ export default function NotFoundPage() {
             </div>
 
             <h1 className="text-[22px] text-[#070808] mb-2" style={{ fontWeight: 700, ...ss }}>
-              Naku, wala ditong page!
+              {t("notFound.title")}
             </h1>
             <p className="text-[14px] text-[#84888c] mb-8 leading-[1.6]" style={ss}>
-              Mukhang naligaw ka — ang page na hinahanap mo ay hindi namin makita. Baka na-move, na-delete, o mali ang URL.
+              {t("notFound.desc")}
             </p>
 
             {/* Action buttons */}
@@ -43,21 +45,21 @@ export default function NotFoundPage() {
                 className="h-11 px-6 rounded-xl bg-[#ff5222] text-white text-[13px] cursor-pointer hover:bg-[#e84a1e] transition-colors"
                 style={{ fontWeight: 600, ...ss }}
               >
-                Balik sa Home
+                {t("notFound.cta")}
               </button>
               <button
                 onClick={() => navigate("/markets")}
                 className="h-11 px-6 rounded-xl bg-white border border-[#f0f1f3] text-[#070808] text-[13px] cursor-pointer hover:bg-[#f7f8f9] transition-colors"
                 style={{ fontWeight: 500, ...ss }}
               >
-                Tingnan ang Markets
+                {t("nav.markets")}
               </button>
               <button
                 onClick={() => navigate(-1)}
                 className="h-11 px-6 rounded-xl bg-white border border-[#f0f1f3] text-[#84888c] text-[13px] cursor-pointer hover:bg-[#f7f8f9] transition-colors"
                 style={{ fontWeight: 500, ...ss }}
               >
-                Bumalik
+                {t("common.back")}
               </button>
             </div>
 

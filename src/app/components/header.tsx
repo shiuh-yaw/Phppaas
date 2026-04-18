@@ -4,6 +4,7 @@ import { BellIcon, GlobeIcon } from "./icons";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useAuth } from "./auth-context";
 import { EmojiIcon } from "./two-tone-icons";
+import { useT } from "../i18n/useT";
 
 const ss04 = { fontFeatureSettings: "'ss04'" };
 const pp = { fontFamily: "'Poppins', sans-serif" };
@@ -253,9 +254,19 @@ export function Header({ onDeposit, onMenuToggle }: HeaderProps) {
     }
   };
 
+  const t = useT();
+
+  const dropdownLabels: Record<string, string> = {
+    "/profile": t("nav.profile"),
+    "/portfolio": t("header.menu.portfolio"),
+    "/rewards": t("header.menu.rewards"),
+    "/leaderboard": t("header.menu.leaderboard"),
+    "/creator": t("header.menu.creator"),
+  };
+
   return (
     <>
-      <header className="h-14 md:h-16 w-full flex items-center justify-between px-3 md:px-6 border-b border-[#f5f6f7]" style={pp}>
+      <header className="h-14 md:h-16 w-full flex items-center justify-between px-3 md:px-6 border-b border-[#f5f6f7] dark:border-[#2a2d3a] bg-white dark:bg-[#181b24]" style={pp}>
         {/* Left side: hamburger (mobile) */}
         <div className="flex items-center gap-2">
           {onMenuToggle && (
@@ -301,7 +312,7 @@ export function Header({ onDeposit, onMenuToggle }: HeaderProps) {
 
               {/* Deposit Button */}
               <button onClick={onDeposit} className="bg-[#ff5222] hover:bg-[#e8491e] transition-colors text-white h-8 px-3 md:px-4 rounded-[6px] text-[12px] md:text-[14px] leading-[1.5] cursor-pointer" style={{ fontWeight: 500, ...ss04 }}>
-                Deposit
+                {t("header.deposit")}
               </button>
 
               {/* Bell with Notification Dropdown */}
@@ -321,7 +332,7 @@ export function Header({ onDeposit, onMenuToggle }: HeaderProps) {
               </div>
 
               {/* Dark mode toggle */}
-              <button onClick={toggleDarkMode} className="hidden md:flex items-center justify-center size-8 rounded-lg hover:bg-[#f5f6f7] cursor-pointer transition-colors" title={darkMode ? "Light mode" : "Dark mode"}>
+              <button onClick={toggleDarkMode} className="flex items-center justify-center size-8 rounded-lg hover:bg-[#f5f6f7] cursor-pointer transition-colors" title={darkMode ? "Light mode" : "Dark mode"}>
                 {darkMode ? (
                   <svg className="size-4 text-[#84888c]" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.5"><circle cx="10" cy="10" r="4" /><path d="M10 2v1m0 14v1m8-8h-1M3 10H2m13.66-5.66l-.71.71M5.05 14.95l-.71.71m11.32 0l-.71-.71M5.05 5.05l-.71-.71" strokeLinecap="round" /></svg>
                 ) : (
@@ -394,7 +405,7 @@ export function Header({ onDeposit, onMenuToggle }: HeaderProps) {
                       ].map((item) => (
                         <button key={item.route} onClick={() => { setDropdownOpen(false); navigate(item.route); }} className="w-full flex items-center gap-2.5 px-4 py-2 hover:bg-[#fafafa] transition-colors cursor-pointer text-left">
                           {item.icon}
-                          <span className="text-[12px] text-[#070808]" style={{ fontWeight: 500, ...ss04 }}>{item.label}</span>
+                          <span className="text-[12px] text-[#070808]" style={{ fontWeight: 500, ...ss04 }}>{dropdownLabels[item.route]}</span>
                         </button>
                       ))}
                     </div>
@@ -406,7 +417,7 @@ export function Header({ onDeposit, onMenuToggle }: HeaderProps) {
                           <path d="M9 7l-4 3 4 3" stroke="#FF5222" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
                           <path d="M5 10h9" stroke="#dc2626" strokeWidth="1.8" strokeLinecap="round" />
                         </svg>
-                        <span className="text-[12px] text-[#dc2626]" style={{ fontWeight: 500, ...ss04 }}>Mag-logout</span>
+                        <span className="text-[12px] text-[#dc2626]" style={{ fontWeight: 500, ...ss04 }}>{t("header.logout")}</span>
                       </button>
                     </div>
                   </div>
@@ -424,10 +435,10 @@ export function Header({ onDeposit, onMenuToggle }: HeaderProps) {
               <div className="bg-[#dfe0e2] h-4 w-px hidden sm:block" />
 
               <button onClick={() => navigate("/login")} className="bg-white border border-[#f0f1f3] hover:border-[#dfe0e2] text-[#070808] h-8 px-3 md:px-4 rounded-[6px] text-[12px] md:text-[13px] leading-[1.5] cursor-pointer transition-colors" style={{ fontWeight: 500, ...ss04 }}>
-                Login
+                {t("header.login")}
               </button>
               <button onClick={() => navigate("/signup")} className="bg-[#ff5222] hover:bg-[#e8491e] transition-colors text-white h-8 px-3 md:px-4 rounded-[6px] text-[12px] md:text-[13px] leading-[1.5] cursor-pointer" style={{ fontWeight: 600, ...ss04 }}>
-                Signup
+                {t("header.signup")}
               </button>
 
               <button onClick={handleAvatarClick} className="size-8 rounded-full overflow-hidden border-2 border-[#dfe0e2] cursor-pointer hover:border-[#ff5222]/30 transition-all hover:scale-105 bg-[#f7f8f9] flex items-center justify-center">

@@ -49,83 +49,73 @@ function FeaturedHeroCard() {
   return (
     <div
       className="relative w-full rounded-2xl overflow-hidden cursor-pointer bg-white"
-      style={{ height: 260, animation: "pulse-glow 3s ease-in-out infinite", border: "1px solid #f0f1f3" }}
+      style={{ minHeight: 220, animation: "pulse-glow 3s ease-in-out infinite", border: "1px solid #f0f1f3" }}
       onClick={() => navigate("/market/pba-finals")}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* BG Image — basketball fans cheering in arena */}
       <ImageWithFallback
         src="https://images.unsplash.com/photo-1601588462898-cb949cee5702?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080"
         alt=""
         className="absolute inset-0 w-full h-full object-cover"
         style={{ transform: hovered ? "scale(1.03)" : "scale(1)", transition: "transform 0.6s ease" }}
       />
-      {/* Light overlay */}
       <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.78) 40%, rgba(255,82,34,0.06) 100%)" }} />
 
-      {/* Content */}
-      <div className="relative z-10 h-full flex flex-col justify-between p-6">
+      <div className="relative z-10 h-full flex flex-col justify-between p-4 sm:p-6 gap-3">
         {/* Top badges */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 bg-[#ff5222] text-white text-[10px] px-2.5 py-1 rounded-full" style={{ fontWeight: 700, animation: "live-ring 1.5s ease-out infinite", ...ss04 }}>
-              <span className="size-1.5 bg-white rounded-full animate-pulse" /> LIVE NOW
-            </span>
-            <span className="bg-[#070808]/6 backdrop-blur-sm text-[#070808] text-[10px] px-2 py-1 rounded-full inline-flex items-center gap-1" style={{ fontWeight: 600, ...ss04 }}><EmojiIcon emoji="🏀" size={12} /> PBA Philippine Cup</span>
-            <span className="bg-[#ff5222]/10 text-[#ff5222] text-[10px] px-2 py-1 rounded-full inline-flex items-center gap-1" style={{ fontWeight: 700, ...ss04 }}><EmojiIcon emoji="🔥" size={12} /> TRENDING #1</span>
-          </div>
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          <span className="flex items-center gap-1.5 bg-[#ff5222] text-white text-[10px] px-2.5 py-1 rounded-full" style={{ fontWeight: 700, animation: "live-ring 1.5s ease-out infinite", ...ss04 }}>
+            <span className="size-1.5 bg-white rounded-full animate-pulse" /> LIVE NOW
+          </span>
+          <span className="bg-[#070808]/6 backdrop-blur-sm text-[#070808] text-[10px] px-2 py-1 rounded-full inline-flex items-center gap-1" style={{ fontWeight: 600, ...ss04 }}><EmojiIcon emoji="🏀" size={12} /> PBA Philippine Cup</span>
+          <span className="bg-[#ff5222]/10 text-[#ff5222] text-[10px] px-2 py-1 rounded-full inline-flex items-center gap-1" style={{ fontWeight: 700, ...ss04 }}><EmojiIcon emoji="🔥" size={12} /> TRENDING #1</span>
+          <div className="hidden sm:flex items-center gap-2 ml-auto">
             <span className="text-[#84888c] text-[11px]" style={ss04}>Q3 · 4:23</span>
             <span className="bg-[#070808]/5 text-[#84888c] text-[10px] px-2 py-1 rounded" style={ss04}>1,240 bettors</span>
           </div>
         </div>
 
         {/* Middle - VS Section */}
-        <div className="flex items-center justify-center gap-6">
-          {/* Team A */}
-          <div className="flex flex-col items-center gap-1.5" style={{ animation: "float-up 0.5s ease-out" }}>
-            <div className="size-16 rounded-2xl bg-gradient-to-br from-[#f97316] to-[#dc2626] flex items-center justify-center shadow-lg" style={{ boxShadow: "0 4px 20px rgba(249,115,22,0.4)" }}>
-              <EmojiIcon emoji="🏀" size={28} />
+        <div className="flex items-center justify-center gap-4 sm:gap-6">
+          <div className="flex flex-col items-center gap-1" style={{ animation: "float-up 0.5s ease-out" }}>
+            <div className="size-12 sm:size-16 rounded-2xl bg-gradient-to-br from-[#f97316] to-[#dc2626] flex items-center justify-center shadow-lg" style={{ boxShadow: "0 4px 20px rgba(249,115,22,0.4)" }}>
+              <EmojiIcon emoji="🏀" size={22} />
             </div>
-            <span className="text-[#070808] text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp }}>Ginebra</span>
-            <span className="text-[#dc2626] text-[32px]" style={{ fontWeight: 800, ...ss04, ...pp, animation: "count-pulse 2s ease-in-out infinite" }}>78</span>
+            <span className="text-[#070808] text-[15px] sm:text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp }}>Ginebra</span>
+            <span className="text-[#dc2626] text-[24px] sm:text-[32px]" style={{ fontWeight: 800, ...ss04, ...pp, animation: "count-pulse 2s ease-in-out infinite" }}>78</span>
           </div>
-
-          {/* VS badge */}
           <div className="flex flex-col items-center gap-1">
-            <div className="size-12 rounded-full bg-gradient-to-br from-[#ff5222] to-[#ff8c00] flex items-center justify-center shadow-xl" style={{ boxShadow: "0 0 30px rgba(255,82,34,0.4)" }}>
-              <span className="text-white text-[14px]" style={{ fontWeight: 800, ...pp }}>VS</span>
+            <div className="size-10 sm:size-12 rounded-full bg-gradient-to-br from-[#ff5222] to-[#ff8c00] flex items-center justify-center shadow-xl" style={{ boxShadow: "0 0 30px rgba(255,82,34,0.4)" }}>
+              <span className="text-white text-[12px] sm:text-[14px]" style={{ fontWeight: 800, ...pp }}>VS</span>
             </div>
             <span className="text-[#b0b3b8] text-[10px]" style={{ fontWeight: 500, ...ss04 }}>GAME 7</span>
           </div>
-
-          {/* Team B */}
-          <div className="flex flex-col items-center gap-1.5" style={{ animation: "float-up 0.5s ease-out 0.1s both" }}>
-            <div className="size-16 rounded-2xl bg-gradient-to-br from-[#3b82f6] to-[#1d4ed8] flex items-center justify-center shadow-lg" style={{ boxShadow: "0 4px 20px rgba(59,130,246,0.4)" }}>
-              <EmojiIcon emoji="🏀" size={28} />
+          <div className="flex flex-col items-center gap-1" style={{ animation: "float-up 0.5s ease-out 0.1s both" }}>
+            <div className="size-12 sm:size-16 rounded-2xl bg-gradient-to-br from-[#3b82f6] to-[#1d4ed8] flex items-center justify-center shadow-lg" style={{ boxShadow: "0 4px 20px rgba(59,130,246,0.4)" }}>
+              <EmojiIcon emoji="🏀" size={22} />
             </div>
-            <span className="text-[#070808] text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp }}>San Miguel</span>
-            <span className="text-[#1d4ed8] text-[32px]" style={{ fontWeight: 800, ...ss04, ...pp, animation: "count-pulse 2s ease-in-out infinite 0.5s" }}>72</span>
+            <span className="text-[#070808] text-[15px] sm:text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp }}>San Miguel</span>
+            <span className="text-[#1d4ed8] text-[24px] sm:text-[32px]" style={{ fontWeight: 800, ...ss04, ...pp, animation: "count-pulse 2s ease-in-out infinite 0.5s" }}>72</span>
           </div>
         </div>
 
         {/* Bottom - Odds + CTA */}
-        <div className="flex items-end justify-between">
-          <div className="flex items-center gap-3">
-            <button className="bg-gradient-to-r from-[#f97316] to-[#dc2626] hover:from-[#ea580c] hover:to-[#b91c1c] text-white h-11 px-6 rounded-xl flex items-center gap-2 transition-all cursor-pointer" style={{ fontWeight: 600, ...ss04, ...pp, boxShadow: "0 4px 15px rgba(249,115,22,0.4)" }}>
-              <span className="text-[14px]">Ginebra</span>
-              <span className="text-[12px] bg-white/20 px-1.5 py-0.5 rounded" style={{ fontWeight: 700 }}>x1.65</span>
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button className="bg-gradient-to-r from-[#f97316] to-[#dc2626] hover:from-[#ea580c] hover:to-[#b91c1c] text-white h-9 sm:h-11 px-4 sm:px-6 rounded-xl flex items-center gap-2 transition-all cursor-pointer flex-1 sm:flex-initial justify-center" style={{ fontWeight: 600, ...ss04, ...pp, boxShadow: "0 4px 15px rgba(249,115,22,0.4)" }}>
+              <span className="text-[13px] sm:text-[14px]">Ginebra</span>
+              <span className="text-[11px] sm:text-[12px] bg-white/20 px-1.5 py-0.5 rounded" style={{ fontWeight: 700 }}>x1.65</span>
             </button>
-            <button className="bg-gradient-to-r from-[#3b82f6] to-[#1d4ed8] hover:from-[#2563eb] hover:to-[#1e40af] text-white h-11 px-6 rounded-xl flex items-center gap-2 transition-all cursor-pointer" style={{ fontWeight: 600, ...ss04, ...pp, boxShadow: "0 4px 15px rgba(59,130,246,0.4)" }}>
-              <span className="text-[14px]">San Miguel</span>
-              <span className="text-[12px] bg-white/20 px-1.5 py-0.5 rounded" style={{ fontWeight: 700 }}>x2.35</span>
+            <button className="bg-gradient-to-r from-[#3b82f6] to-[#1d4ed8] hover:from-[#2563eb] hover:to-[#1e40af] text-white h-9 sm:h-11 px-4 sm:px-6 rounded-xl flex items-center gap-2 transition-all cursor-pointer flex-1 sm:flex-initial justify-center" style={{ fontWeight: 600, ...ss04, ...pp, boxShadow: "0 4px 15px rgba(59,130,246,0.4)" }}>
+              <span className="text-[13px] sm:text-[14px]">San Miguel</span>
+              <span className="text-[11px] sm:text-[12px] bg-white/20 px-1.5 py-0.5 rounded" style={{ fontWeight: 700 }}>x2.35</span>
             </button>
           </div>
-          <div className="flex flex-col items-end gap-0.5">
+          <div className="flex items-center sm:items-end sm:flex-col gap-1.5 justify-between">
             <span className="text-[#b0b3b8] text-[10px]" style={ss04}>Total Pool</span>
-            <span className="text-[#070808] text-[22px]" style={{ fontWeight: 700, ...ss04, ...pp }}>₱320,000</span>
-            <span className="text-[#ff5222] text-[10px]" style={{ fontWeight: 600, ...ss04 }}>+₱18,500 sa huling 5 min</span>
+            <span className="text-[#070808] text-[18px] sm:text-[22px]" style={{ fontWeight: 700, ...ss04, ...pp }}>₱320,000</span>
+            <span className="text-[#ff5222] text-[10px] hidden sm:inline" style={{ fontWeight: 600, ...ss04 }}>+₱18,500 sa huling 5 min</span>
           </div>
         </div>
       </div>
@@ -204,7 +194,7 @@ function ColorGamePremiumCard() {
         </div>
 
         {/* Dice Colors */}
-        <div className="flex items-center justify-center gap-2.5 my-3">
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2.5 my-3">
           {DICE_COLORS.map((c, i) => (
             <button
               key={i}
@@ -213,7 +203,7 @@ function ColorGamePremiumCard() {
               style={{ transform: selectedColor === i ? "scale(1.15)" : "scale(1)" }}
             >
               <div
-                className="size-10 rounded-xl flex items-center justify-center transition-all"
+                className="size-8 sm:size-10 rounded-xl flex items-center justify-center transition-all"
                 style={{
                   background: c.color,
                   boxShadow: selectedColor === i ? `0 0 14px ${c.glow}, 0 4px 10px ${c.glow}` : "0 2px 6px rgba(0,0,0,0.08)",
@@ -278,7 +268,7 @@ function JackpotPromoCard() {
         {/* Jackpot */}
         <div className="flex flex-col items-center gap-1 my-2">
           <span className="text-[#d97706] text-[10px]" style={{ fontWeight: 600, ...ss04, letterSpacing: "0.1em" }}>JACKPOT PRIZE</span>
-          <span className="text-[36px]" style={{ fontWeight: 800, animation: "jackpot-flash 2s ease-in-out infinite", ...ss04, ...pp }}>₱500,000</span>
+          <span className="text-[28px] sm:text-[36px]" style={{ fontWeight: 800, animation: "jackpot-flash 2s ease-in-out infinite", ...ss04, ...pp }}>₱500,000</span>
           <span className="text-[#b0b3b8] text-[11px]" style={ss04}>Susunod na draw: 4:23 PM</span>
         </div>
 
@@ -372,10 +362,126 @@ function NBALiveCard() {
   );
 }
 
+/* ============ TIER 1 — ORDERBOOK MARKET HERO ============ */
+function OrderbookHeroCard() {
+  const navigate = useNavigate();
+
+  const asks = [
+    { price: 65, shares: 15600, depth: 71 },
+    { price: 64, shares: 8900,  depth: 40 },
+    { price: 63, shares: 22100, depth: 100 },
+  ];
+  const bids = [
+    { price: 61, shares: 18700, depth: 85 },
+    { price: 60, shares: 11200, depth: 51 },
+    { price: 59, shares: 9800,  depth: 44 },
+  ];
+
+  return (
+    <div
+      className="relative w-full rounded-2xl overflow-hidden cursor-pointer"
+      style={{ background: "#0d1117", border: "1px solid rgba(255,255,255,0.08)", minHeight: 200 }}
+      onClick={() => navigate("/market/btc-200k")}
+    >
+      <div className="absolute inset-0 pointer-events-none"
+        style={{ backgroundImage: "linear-gradient(rgba(255,82,34,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,82,34,0.025) 1px,transparent 1px)", backgroundSize: "48px 48px" }} />
+      <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle,rgba(34,197,94,0.07) 0%,transparent 70%)" }} />
+
+      <div className="relative z-10 flex flex-col lg:flex-row gap-5 p-4 sm:p-6">
+        {/* Left: Market Info */}
+        <div className="flex-1 flex flex-col gap-3 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="bg-[#ff5222] text-white text-[9px] px-2.5 py-1 rounded-full inline-flex items-center gap-1.5" style={{ fontWeight: 700, ...ss04 }}>📊 ORDERBOOK · TIER 1</span>
+            <span className="bg-white/10 text-white/70 text-[9px] px-2 py-0.5 rounded-full" style={{ fontWeight: 700, ...ss04 }}>🆕 NEW MODULE</span>
+            <span className="flex items-center gap-1 bg-[#22c55e]/20 text-[#22c55e] text-[9px] px-2 py-0.5 rounded-full" style={{ fontWeight: 700, ...ss04 }}>
+              <span className="size-1.5 bg-[#22c55e] rounded-full animate-pulse" /> LIVE TRADING
+            </span>
+            <span className="text-white/30 text-[10px] ml-auto hidden sm:block" style={ss04}>Closes Dec 31, 2026</span>
+          </div>
+          <h3 className="text-white text-[17px] sm:text-[21px] leading-[1.3]" style={{ fontWeight: 700, ...ss04, ...pp }}>
+            Bitcoin aabot ba sa $200,000 by Dec 31, 2026?
+          </h3>
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex flex-col">
+              <span className="text-white/40 text-[9px]" style={ss04}>YES PRICE</span>
+              <span className="text-[#22c55e] text-[28px] leading-none" style={{ fontWeight: 800, fontVariantNumeric: "tabular-nums", ...ss04, ...pp }}>62¢</span>
+            </div>
+            <div className="w-px h-10 bg-white/10" />
+            <div className="flex flex-col">
+              <span className="text-white/40 text-[9px]" style={ss04}>NO PRICE</span>
+              <span className="text-[#ef4444] text-[28px] leading-none" style={{ fontWeight: 800, fontVariantNumeric: "tabular-nums", ...ss04, ...pp }}>38¢</span>
+            </div>
+            <div className="w-px h-10 bg-white/10" />
+            <div className="flex flex-col">
+              <span className="text-white/40 text-[9px]" style={ss04}>24h VOL</span>
+              <span className="text-white text-[18px] leading-none" style={{ fontWeight: 700, ...ss04, ...pp }}>$4.2M</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[#22c55e] text-[12px]" style={{ fontWeight: 600, ...ss04 }}>▲ +3.2%</span>
+              <span className="text-white/30 text-[9px]" style={ss04}>24h change</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mt-1">
+            <button className="flex-1 sm:flex-initial h-10 px-5 rounded-xl text-[13px] cursor-pointer transition-all hover:brightness-110 active:scale-[0.97]"
+              style={{ background: "linear-gradient(135deg,#16a34a,#15803d)", color: "#fff", fontWeight: 600, boxShadow: "0 4px 16px rgba(22,163,74,0.35)", ...ss04, ...pp }}
+              onClick={e => { e.stopPropagation(); navigate("/market/btc-200k"); }}>
+              Buy YES · 62¢
+            </button>
+            <button className="flex-1 sm:flex-initial h-10 px-5 rounded-xl text-[13px] cursor-pointer transition-all hover:brightness-110 active:scale-[0.97]"
+              style={{ background: "linear-gradient(135deg,#dc2626,#991b1b)", color: "#fff", fontWeight: 600, boxShadow: "0 4px 16px rgba(220,38,38,0.35)", ...ss04, ...pp }}
+              onClick={e => { e.stopPropagation(); navigate("/market/btc-200k"); }}>
+              Buy NO · 38¢
+            </button>
+            <div className="hidden sm:flex flex-col items-end ml-1">
+              <span className="text-white/30 text-[9px]" style={ss04}>Open Interest</span>
+              <span className="text-white text-[14px]" style={{ fontWeight: 600, ...ss04, ...pp }}>$12.8M</span>
+            </div>
+          </div>
+          <p className="text-white/30 text-[11px] leading-[1.5] hidden sm:block" style={ss04}>
+            Trade YES/NO shares at real-time market prices. Each share pays ₱1 if the event resolves in your favor. Spread: 2¢ · 28,450 open orders.
+          </p>
+        </div>
+
+        {/* Right: Mini Orderbook Preview */}
+        <div className="hidden lg:flex flex-col w-[220px] shrink-0 rounded-xl overflow-hidden"
+          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="flex items-center px-3 py-2 border-b border-white/5">
+            <span className="flex-1 text-[9px] text-white/30" style={ss04}>Price</span>
+            <span className="text-[9px] text-white/30 text-right" style={ss04}>Shares</span>
+          </div>
+          {[...asks].reverse().map((a, i) => (
+            <div key={i} className="relative flex items-center px-3 h-8">
+              <div className="absolute inset-y-0 right-0" style={{ width: `${a.depth}%`, background: "rgba(239,68,68,0.10)" }} />
+              <span className="flex-1 text-[12px] text-[#ef4444] relative z-10" style={{ fontWeight: 600, fontVariantNumeric: "tabular-nums", ...ss04 }}>{a.price}¢</span>
+              <span className="text-[11px] text-white/40 text-right relative z-10" style={{ fontVariantNumeric: "tabular-nums", ...ss04 }}>{a.shares.toLocaleString()}</span>
+            </div>
+          ))}
+          <div className="flex items-center justify-center px-3 py-1.5 border-y border-white/5" style={{ background: "rgba(255,255,255,0.02)" }}>
+            <span className="text-[9px] text-white/30" style={ss04}>Spread 2¢ · 62¢ Last</span>
+          </div>
+          {bids.map((b, i) => (
+            <div key={i} className="relative flex items-center px-3 h-8">
+              <div className="absolute inset-y-0 left-0" style={{ width: `${b.depth}%`, background: "rgba(34,197,94,0.10)" }} />
+              <span className="flex-1 text-[12px] text-[#22c55e] relative z-10" style={{ fontWeight: 600, fontVariantNumeric: "tabular-nums", ...ss04 }}>{b.price}¢</span>
+              <span className="text-[11px] text-white/40 text-right relative z-10" style={{ fontVariantNumeric: "tabular-nums", ...ss04 }}>{b.shares.toLocaleString()}</span>
+            </div>
+          ))}
+          <div className="px-3 py-2 mt-auto border-t border-white/5">
+            <span className="text-[9px] text-white/20 block text-center" style={ss04}>Open full trading view →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ============ HOT MARKETS CHIPS ============ */
 function HotMarketsStrip() {
   const navigate = useNavigate();
   const chips = [
+    { emoji: "₿",  label: "BTC $200K? [OB]", pool: "$4.2M", hot: true, slug: "btc-200k" },
+    { emoji: "🏀", label: "Gilas FIBA 2027 [OB]", pool: "₱2.8M", hot: true, slug: "ph-gilas-fiba" },
     { emoji: "🏆", label: "PBA Champion 2026", pool: "₱430K", hot: true, slug: "pba-finals" },
     { emoji: "🏀", label: "PBA MVP 2026", pool: "₱280K", hot: false, slug: "pba-mvp" },
     { emoji: "🥊", label: "Donaire vs Inoue III", pool: "₱540K", hot: true, slug: "boxing-donaire" },
@@ -409,61 +515,59 @@ function BoxingHeroCard() {
   return (
     <div
       className="relative w-full rounded-2xl overflow-hidden cursor-pointer bg-white"
-      style={{ height: 260, animation: "pulse-glow 3s ease-in-out infinite", border: "1px solid #e0e8f0", boxShadow: "0 0 15px rgba(8,109,224,0.08)" }}
+      style={{ minHeight: 220, animation: "pulse-glow 3s ease-in-out infinite", border: "1px solid #e0e8f0", boxShadow: "0 0 15px rgba(8,109,224,0.08)" }}
       onClick={() => navigate("/market/boxing-donaire")}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       <ImageWithFallback src="https://images.unsplash.com/photo-1575654402720-0af3480d1fad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080" alt="" className="absolute inset-0 w-full h-full object-cover" style={{ transform: hovered ? "scale(1.03)" : "scale(1)", transition: "transform 0.6s ease" }} />
       <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.93) 0%, rgba(255,255,255,0.8) 40%, rgba(8,109,224,0.06) 100%)" }} />
-      <div className="relative z-10 h-full flex flex-col justify-between p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 bg-[#086de0] text-white text-[10px] px-2.5 py-1 rounded-full" style={{ fontWeight: 700, ...ss04 }}><EmojiIcon emoji="🥊" size={12} /> WBC WELTERWEIGHT</span>
-            <span className="bg-[#086de0]/10 text-[#086de0] text-[10px] px-2 py-1 rounded-full inline-flex items-center gap-1" style={{ fontWeight: 700, ...ss04 }}><EmojiIcon emoji="🔥" size={12} /> MAIN EVENT</span>
-          </div>
-          <div className="flex items-center gap-2">
+      <div className="relative z-10 h-full flex flex-col justify-between p-4 sm:p-6 gap-3">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          <span className="flex items-center gap-1.5 bg-[#086de0] text-white text-[10px] px-2.5 py-1 rounded-full" style={{ fontWeight: 700, ...ss04 }}><EmojiIcon emoji="🥊" size={12} /> WBC WELTERWEIGHT</span>
+          <span className="bg-[#086de0]/10 text-[#086de0] text-[10px] px-2 py-1 rounded-full inline-flex items-center gap-1" style={{ fontWeight: 700, ...ss04 }}><EmojiIcon emoji="🔥" size={12} /> MAIN EVENT</span>
+          <div className="hidden sm:flex items-center gap-2 ml-auto">
             <span className="text-[#84888c] text-[11px]" style={ss04}>Mar 28, 2026</span>
             <span className="bg-[#070808]/5 text-[#84888c] text-[10px] px-2 py-1 rounded" style={ss04}>2,100 bettors</span>
           </div>
         </div>
-        <div className="flex items-center justify-center gap-8">
-          <div className="flex flex-col items-center gap-1.5" style={{ animation: "float-up 0.5s ease-out" }}>
-            <div className="size-16 rounded-2xl bg-gradient-to-br from-[#dc2626] to-[#991b1b] flex items-center justify-center shadow-lg" style={{ boxShadow: "0 4px 20px rgba(220,38,38,0.35)" }}>
-              <EmojiIcon emoji="🥊" size={28} />
+        <div className="flex items-center justify-center gap-5 sm:gap-8">
+          <div className="flex flex-col items-center gap-1" style={{ animation: "float-up 0.5s ease-out" }}>
+            <div className="size-12 sm:size-16 rounded-2xl bg-gradient-to-br from-[#dc2626] to-[#991b1b] flex items-center justify-center shadow-lg" style={{ boxShadow: "0 4px 20px rgba(220,38,38,0.35)" }}>
+              <EmojiIcon emoji="🥊" size={22} />
             </div>
-            <span className="text-[#070808] text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp }}>Donaire</span>
+            <span className="text-[#070808] text-[15px] sm:text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp }}>Donaire</span>
             <span className="text-[#dc2626] text-[14px]" style={{ fontWeight: 700, ...ss04 }}>x3.50</span>
           </div>
           <div className="flex flex-col items-center gap-1">
-            <div className="size-12 rounded-full bg-gradient-to-br from-[#086de0] to-[#1d4ed8] flex items-center justify-center shadow-xl" style={{ boxShadow: "0 0 30px rgba(8,109,224,0.3)", animation: "punch-shake 3s ease-in-out infinite" }}>
-              <span className="text-white text-[14px]" style={{ fontWeight: 800, ...pp }}>VS</span>
+            <div className="size-10 sm:size-12 rounded-full bg-gradient-to-br from-[#086de0] to-[#1d4ed8] flex items-center justify-center shadow-xl" style={{ boxShadow: "0 0 30px rgba(8,109,224,0.3)", animation: "punch-shake 3s ease-in-out infinite" }}>
+              <span className="text-white text-[12px] sm:text-[14px]" style={{ fontWeight: 800, ...pp }}>VS</span>
             </div>
             <span className="text-[#b0b3b8] text-[10px]" style={{ fontWeight: 500, ...ss04 }}>12 ROUNDS</span>
           </div>
-          <div className="flex flex-col items-center gap-1.5" style={{ animation: "float-up 0.5s ease-out 0.1s both" }}>
-            <div className="size-16 rounded-2xl bg-gradient-to-br from-[#086de0] to-[#1e40af] flex items-center justify-center shadow-lg" style={{ boxShadow: "0 4px 20px rgba(8,109,224,0.35)" }}>
-              <EmojiIcon emoji="🥊" size={28} />
+          <div className="flex flex-col items-center gap-1" style={{ animation: "float-up 0.5s ease-out 0.1s both" }}>
+            <div className="size-12 sm:size-16 rounded-2xl bg-gradient-to-br from-[#086de0] to-[#1e40af] flex items-center justify-center shadow-lg" style={{ boxShadow: "0 4px 20px rgba(8,109,224,0.35)" }}>
+              <EmojiIcon emoji="🥊" size={22} />
             </div>
-            <span className="text-[#070808] text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp }}>Inoue</span>
+            <span className="text-[#070808] text-[15px] sm:text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp }}>Inoue</span>
             <span className="text-[#086de0] text-[14px]" style={{ fontWeight: 700, ...ss04 }}>x1.35</span>
           </div>
         </div>
-        <div className="flex items-end justify-between">
-          <div className="flex items-center gap-3">
-            <button className="bg-gradient-to-r from-[#dc2626] to-[#991b1b] hover:from-[#b91c1c] hover:to-[#7f1d1d] text-white h-11 px-6 rounded-xl flex items-center gap-2 transition-all cursor-pointer" style={{ fontWeight: 600, ...ss04, ...pp, boxShadow: "0 4px 15px rgba(220,38,38,0.35)" }}>
-              <span className="text-[14px]">Donaire</span>
-              <span className="text-[12px] bg-white/20 px-1.5 py-0.5 rounded" style={{ fontWeight: 700 }}>x3.50</span>
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto">
+            <button className="bg-gradient-to-r from-[#dc2626] to-[#991b1b] hover:from-[#b91c1c] hover:to-[#7f1d1d] text-white h-9 sm:h-11 px-4 sm:px-6 rounded-xl flex items-center gap-2 transition-all cursor-pointer flex-1 sm:flex-initial justify-center shrink-0" style={{ fontWeight: 600, ...ss04, ...pp, boxShadow: "0 4px 15px rgba(220,38,38,0.35)" }}>
+              <span className="text-[13px] sm:text-[14px]">Donaire</span>
+              <span className="text-[11px] sm:text-[12px] bg-white/20 px-1.5 py-0.5 rounded" style={{ fontWeight: 700 }}>x3.50</span>
             </button>
-            <button className="bg-[#f0f5ff] border border-[#c4d6f0] text-[#84888c] h-11 px-4 rounded-xl text-[12px] transition-all cursor-pointer" style={{ fontWeight: 600, ...ss04, ...pp }}>
+            <button className="bg-[#f0f5ff] border border-[#c4d6f0] text-[#84888c] h-9 sm:h-11 px-3 sm:px-4 rounded-xl text-[11px] sm:text-[12px] transition-all cursor-pointer shrink-0" style={{ fontWeight: 600, ...ss04, ...pp }}>
               Draw <span className="text-[#b0b3b8]">x15</span>
             </button>
-            <button className="bg-gradient-to-r from-[#086de0] to-[#1e40af] hover:from-[#1d4ed8] hover:to-[#1e3a8a] text-white h-11 px-6 rounded-xl flex items-center gap-2 transition-all cursor-pointer" style={{ fontWeight: 600, ...ss04, ...pp, boxShadow: "0 4px 15px rgba(8,109,224,0.35)" }}>
-              <span className="text-[14px]">Inoue</span>
-              <span className="text-[12px] bg-white/20 px-1.5 py-0.5 rounded" style={{ fontWeight: 700 }}>x1.35</span>
+            <button className="bg-gradient-to-r from-[#086de0] to-[#1e40af] hover:from-[#1d4ed8] hover:to-[#1e3a8a] text-white h-9 sm:h-11 px-4 sm:px-6 rounded-xl flex items-center gap-2 transition-all cursor-pointer flex-1 sm:flex-initial justify-center shrink-0" style={{ fontWeight: 600, ...ss04, ...pp, boxShadow: "0 4px 15px rgba(8,109,224,0.35)" }}>
+              <span className="text-[13px] sm:text-[14px]">Inoue</span>
+              <span className="text-[11px] sm:text-[12px] bg-white/20 px-1.5 py-0.5 rounded" style={{ fontWeight: 700 }}>x1.35</span>
             </button>
           </div>
-          <div className="flex flex-col items-end gap-0.5">
+          <div className="flex items-center sm:items-end sm:flex-col gap-1.5 justify-between">
             <span className="text-[#b0b3b8] text-[10px]" style={ss04}>Total Pool</span>
             <span className="text-[#070808] text-[22px]" style={{ fontWeight: 700, ...ss04, ...pp }}>₱540,000</span>
             <span className="text-[#086de0] text-[10px]" style={{ fontWeight: 600, ...ss04 }}>+₱32,000 kahapon</span>
@@ -493,14 +597,14 @@ function EsportsPremiumCard() {
           </div>
           <span className="text-[#b0b3b8] text-[11px]" style={ss04}>14D 8h</span>
         </div>
-        <div className="flex items-center justify-center gap-4 my-2">
+        <div className="flex items-center justify-center gap-3 sm:gap-4 my-2">
           {[
             { team: "Blacklist Intl.", odds: "x1.60", color: "#6366f1", emoji: "⚔️" },
             { team: "ONIC PH", odds: "x2.40", color: "#ec4899", emoji: "🛡️" },
             { team: "Echo", odds: "x4.20", color: "#06b6d4", emoji: "🗡️" },
           ].map((t, i) => (
-            <button key={i} className="flex flex-col items-center gap-1.5 cursor-pointer transition-all hover:scale-105" onClick={e => e.stopPropagation()}>
-              <div className="size-12 rounded-xl flex items-center justify-center" style={{ background: t.color, boxShadow: `0 4px 14px ${t.color}40` }}>
+            <button key={i} className="flex flex-col items-center gap-1 sm:gap-1.5 cursor-pointer transition-all hover:scale-105" onClick={e => e.stopPropagation()}>
+              <div className="size-10 sm:size-12 rounded-xl flex items-center justify-center" style={{ background: t.color, boxShadow: `0 4px 14px ${t.color}40` }}>
                 <EmojiIcon emoji={t.emoji} size={24} />
               </div>
               <span className="text-[#070808] text-[11px]" style={{ fontWeight: 600, ...ss04, ...pp }}>{t.team}</span>
@@ -538,10 +642,10 @@ function BingoPremiumCard() {
           </div>
           <span className="bg-[#ff5222]/10 text-[#ff5222] text-[11px] px-2 py-0.5 rounded-full" style={{ fontWeight: 700, ...ss04 }}>0:15</span>
         </div>
-        <div className="flex items-center justify-center gap-3 my-3">
+        <div className="flex items-center justify-center gap-2 sm:gap-3 my-3">
           {bingoNums.map((n, i) => (
-            <div key={i} className="size-12 rounded-full flex items-center justify-center shadow-md" style={{ background: `linear-gradient(135deg, ${["#dc2626", "#2563eb", "#16a34a", "#d97706", "#8b5cf6"][i]}, ${["#991b1b", "#1d4ed8", "#166534", "#b45309", "#6d28d9"][i]})`, animation: `bingo-pop 0.4s ease-out ${i * 0.1}s both`, boxShadow: `0 4px 12px ${["rgba(220,38,38,0.3)", "rgba(37,99,235,0.3)", "rgba(22,163,74,0.3)", "rgba(217,119,6,0.3)", "rgba(139,92,246,0.3)"][i]}` }}>
-              <span className="text-white text-[16px]" style={{ fontWeight: 800, ...ss04 }}>{n}</span>
+            <div key={i} className="size-9 sm:size-12 rounded-full flex items-center justify-center shadow-md" style={{ background: `linear-gradient(135deg, ${["#dc2626", "#2563eb", "#16a34a", "#d97706", "#8b5cf6"][i]}, ${["#991b1b", "#1d4ed8", "#166534", "#b45309", "#6d28d9"][i]})`, animation: `bingo-pop 0.4s ease-out ${i * 0.1}s both`, boxShadow: `0 4px 12px ${["rgba(220,38,38,0.3)", "rgba(37,99,235,0.3)", "rgba(22,163,74,0.3)", "rgba(217,119,6,0.3)", "rgba(139,92,246,0.3)"][i]}` }}>
+              <span className="text-white text-[13px] sm:text-[16px]" style={{ fontWeight: 800, ...ss04 }}>{n}</span>
             </div>
           ))}
         </div>
@@ -619,46 +723,43 @@ function LotteryHeroCard() {
   const [hovered, setHovered] = useState(false);
   const lottoNums = [8, 17, 23, 31, 42, 45];
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden cursor-pointer bg-white" style={{ height: 260, border: "1px solid #ede5f5", boxShadow: "0 0 15px rgba(139,92,246,0.08)" }} onClick={() => navigate("/market/lotto-645")} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
-      {/* Person celebrating lottery win */}
+    <div className="relative w-full rounded-2xl overflow-hidden cursor-pointer bg-white" style={{ minHeight: 220, border: "1px solid #ede5f5", boxShadow: "0 0 15px rgba(139,92,246,0.08)" }} onClick={() => navigate("/market/lotto-645")} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
       <ImageWithFallback src="https://images.unsplash.com/photo-1724866976329-71fbbc171db2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080" alt="" className="absolute inset-0 w-full h-full object-cover" style={{ transform: hovered ? "scale(1.03)" : "scale(1)", transition: "transform 0.6s ease" }} />
       <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0.82) 40%, rgba(139,92,246,0.06) 100%)" }} />
-      <div className="relative z-10 h-full flex flex-col justify-between p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="bg-[#8b5cf6] text-white text-[10px] px-2.5 py-1 rounded-full inline-flex items-center gap-1" style={{ fontWeight: 700, ...ss04 }}><EmojiIcon emoji="🎰" size={12} /> PCSO LOTTO 6/45</span>
-            <span className="bg-[#d97706]/10 text-[#d97706] text-[10px] px-2 py-1 rounded-full inline-flex items-center gap-1" style={{ fontWeight: 700, ...ss04, animation: "jackpot-flash 2s ease-in-out infinite" }}><EmojiIcon emoji="💰" size={12} /> MEGA JACKPOT</span>
-          </div>
-          <div className="flex items-center gap-2">
+      <div className="relative z-10 h-full flex flex-col justify-between p-4 sm:p-6 gap-3">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          <span className="bg-[#8b5cf6] text-white text-[10px] px-2.5 py-1 rounded-full inline-flex items-center gap-1" style={{ fontWeight: 700, ...ss04 }}><EmojiIcon emoji="🎰" size={12} /> PCSO LOTTO 6/45</span>
+          <span className="bg-[#d97706]/10 text-[#d97706] text-[10px] px-2 py-1 rounded-full inline-flex items-center gap-1" style={{ fontWeight: 700, ...ss04, animation: "jackpot-flash 2s ease-in-out infinite" }}><EmojiIcon emoji="💰" size={12} /> MEGA JACKPOT</span>
+          <div className="hidden sm:flex items-center gap-2 ml-auto">
             <span className="text-[#84888c] text-[11px]" style={ss04}>Draw: 9:00 PM</span>
             <span className="bg-[#8b5cf6]/10 text-[#8b5cf6] text-[10px] px-2 py-1 rounded animate-pulse" style={{ fontWeight: 700, ...ss04 }}>6h 30m</span>
           </div>
         </div>
-        <div className="flex flex-col items-center gap-3">
-          <div className="flex items-center gap-2.5">
+        <div className="flex flex-col items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
             {lottoNums.map((n, i) => (
-              <div key={i} className="size-12 rounded-full flex items-center justify-center" style={{ background: "linear-gradient(135deg, #fbbf24, #d97706)", boxShadow: "0 4px 14px rgba(217,119,6,0.3)", animation: `bingo-pop 0.4s ease-out ${i * 0.08}s both` }}>
-                <span className="text-white text-[16px]" style={{ fontWeight: 800, ...ss04 }}>{n}</span>
+              <div key={i} className="size-9 sm:size-12 rounded-full flex items-center justify-center" style={{ background: "linear-gradient(135deg, #fbbf24, #d97706)", boxShadow: "0 4px 14px rgba(217,119,6,0.3)", animation: `bingo-pop 0.4s ease-out ${i * 0.08}s both` }}>
+                <span className="text-white text-[13px] sm:text-[16px]" style={{ fontWeight: 800, ...ss04 }}>{n}</span>
               </div>
             ))}
           </div>
           <span className="text-[#b0b3b8] text-[11px]" style={ss04}>Ma-hit ba ang jackpot ngayong gabi?</span>
         </div>
-        <div className="flex items-end justify-between">
-          <div className="flex items-center gap-3">
-            <button className="bg-gradient-to-r from-[#16a34a] to-[#15803d] hover:from-[#15803d] hover:to-[#166534] text-white h-11 px-6 rounded-xl flex items-center gap-2 transition-all cursor-pointer" style={{ fontWeight: 600, ...ss04, ...pp, boxShadow: "0 4px 15px rgba(22,163,74,0.35)" }}>
-              <span className="text-[14px]">Oo, Ma-hit!</span>
-              <span className="text-[12px] bg-white/20 px-1.5 py-0.5 rounded" style={{ fontWeight: 700 }}>12%</span>
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button className="bg-gradient-to-r from-[#16a34a] to-[#15803d] hover:from-[#15803d] hover:to-[#166534] text-white h-9 sm:h-11 px-4 sm:px-6 rounded-xl flex items-center gap-2 transition-all cursor-pointer flex-1 sm:flex-initial justify-center" style={{ fontWeight: 600, ...ss04, ...pp, boxShadow: "0 4px 15px rgba(22,163,74,0.35)" }}>
+              <span className="text-[13px] sm:text-[14px]">Oo, Ma-hit!</span>
+              <span className="text-[11px] sm:text-[12px] bg-white/20 px-1.5 py-0.5 rounded" style={{ fontWeight: 700 }}>12%</span>
             </button>
-            <button className="bg-gradient-to-r from-[#dc2626] to-[#991b1b] hover:from-[#b91c1c] hover:to-[#7f1d1d] text-white h-11 px-6 rounded-xl flex items-center gap-2 transition-all cursor-pointer" style={{ fontWeight: 600, ...ss04, ...pp, boxShadow: "0 4px 15px rgba(220,38,38,0.35)" }}>
-              <span className="text-[14px]">Hindi</span>
-              <span className="text-[12px] bg-white/20 px-1.5 py-0.5 rounded" style={{ fontWeight: 700 }}>88%</span>
+            <button className="bg-gradient-to-r from-[#dc2626] to-[#991b1b] hover:from-[#b91c1c] hover:to-[#7f1d1d] text-white h-9 sm:h-11 px-4 sm:px-6 rounded-xl flex items-center gap-2 transition-all cursor-pointer flex-1 sm:flex-initial justify-center" style={{ fontWeight: 600, ...ss04, ...pp, boxShadow: "0 4px 15px rgba(220,38,38,0.35)" }}>
+              <span className="text-[13px] sm:text-[14px]">Hindi</span>
+              <span className="text-[11px] sm:text-[12px] bg-white/20 px-1.5 py-0.5 rounded" style={{ fontWeight: 700 }}>88%</span>
             </button>
           </div>
-          <div className="flex flex-col items-end gap-0.5">
+          <div className="flex items-center sm:items-end sm:flex-col gap-1.5 justify-between">
             <span className="text-[#b0b3b8] text-[10px]" style={ss04}>Jackpot Prize</span>
-            <span className="text-[28px]" style={{ fontWeight: 800, animation: "jackpot-flash 2s ease-in-out infinite", ...ss04, ...pp }}>₱49.5M</span>
-            <span className="text-[#8b5cf6] text-[10px]" style={{ fontWeight: 600, ...ss04 }}>890 bettors · ₱55k pool</span>
+            <span className="text-[22px] sm:text-[28px]" style={{ fontWeight: 800, animation: "jackpot-flash 2s ease-in-out infinite", ...ss04, ...pp }}>₱49.5M</span>
+            <span className="text-[#8b5cf6] text-[10px] hidden sm:inline" style={{ fontWeight: 600, ...ss04 }}>890 bettors · ₱55k pool</span>
           </div>
         </div>
       </div>
@@ -892,8 +993,13 @@ function MarketGrid() {
         <FeaturedHeroCard />
       </div>
 
+      {/* Orderbook Market — New Module */}
+      <div className="mt-3">
+        <OrderbookHeroCard />
+      </div>
+
       {/* 3-Card Row: Color Game + NBA Live + Fast Bet Jackpot */}
-      <div className="flex gap-3 mt-3" style={{ height: 320 }}>
+      <div className="flex flex-col md:flex-row gap-3 mt-3 md:h-[320px]">
         <ColorGamePremiumCard />
         <NBALiveCard />
         <JackpotPromoCard />
@@ -905,7 +1011,7 @@ function MarketGrid() {
       </div>
 
       {/* Remaining Tier 1 Cards */}
-      <div className="flex gap-3 h-[260px] w-full mb-3">
+      <div className="flex flex-col md:flex-row gap-3 md:h-[260px] w-full mb-3">
         <MultiOptionCard author="Juan Cruz" question="Sino ang PBA Philippine Cup Champion 2026?" endTime="30D" volume="₱430k Vol" image="https://images.unsplash.com/photo-1659367527460-92759bf33263?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200" options={["Ginebra 0.28", "SMB 0.24", "TNT 0.18", "Meralco 0.15", "NLEX 0.08", "Iba pa 0.07"]} avatarIdx={0} tier={1} category="Basketball" />
         <MultiOptionCard author="Maria Santos" question="Sino ang PBA MVP 2026?" endTime="45D" volume="₱280k Vol" image="https://images.unsplash.com/photo-1659367527460-92759bf33263?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200" options={["Brownlee 0.31", "CJ Perez 0.26", "Bolick 0.19", "Parks 0.14", "Lee 0.06", "Iba pa 0.04"]} avatarIdx={1} tier={1} category="Basketball" />
         <YesNoCard author="Carlo Reyes" question="NBA Finals 2026: Mananalo ba ang Lakers?" chance={38} endTime="60D" volume="₱1.5M Vol" image="https://images.unsplash.com/photo-1626902672889-eccde7b626e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200" avatarIdx={2} tier={1} category="Basketball" bettors={5200} />
@@ -923,7 +1029,7 @@ function MarketGrid() {
       </div>
 
       {/* 3-Card Row: Esports + Bingo + Pacquiao */}
-      <div className="flex gap-3 mt-3" style={{ height: 320 }}>
+      <div className="flex flex-col md:flex-row gap-3 mt-3 md:h-[320px]">
         <EsportsPremiumCard />
         <BingoPremiumCard />
         <YesNoCard author="Marco Tan" question="Pacquiao comeback exhibition fight sa 2026? Babalik ba ang Pambansang Kamao?" chance={35} endTime="90D" volume="₱890k Vol" image="https://images.unsplash.com/photo-1542720046-1e772598ea39?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200" avatarIdx={4} tier={2} category="Boxing" bettors={4300} />
@@ -935,7 +1041,7 @@ function MarketGrid() {
       </div>
 
       {/* Remaining Tier 2 Cards */}
-      <div className="flex gap-3 h-[260px] w-full mb-3">
+      <div className="flex flex-col md:flex-row gap-3 md:h-[260px] w-full mb-3">
         <BuyCard author="Paolo Gomez" question="Sino mananalo sa Dota 2 SEA Invitational?" endTime="7D" volume="₱145k Vol" image="https://images.unsplash.com/photo-1772587003187-65b32c91df91?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200" options={[{ label: "T1" }, { label: "Tundra" }, { label: "Team Spirit" }]} avatarIdx={0} tier={2} category="Esports" />
         <MultiOptionCard author="Rina Dela Cruz" question="MLBB M6 MVP Award — sino kukunin?" endTime="14D" volume="₱98k Vol" image="https://images.unsplash.com/photo-1761322667465-272f507c3673?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200" options={["OhMyV33nus 0.22", "Hadji 0.20", "KarlTzy 0.18", "Emann 0.15", "Wise 0.12", "Iba pa 0.13"]} avatarIdx={3} tier={2} category="Esports" />
         <BingoCard roundId="Bingo #445" nextDraw="0:15" ranges={[{ range: "1-15", multiplier: "x5.2", hot: true }, { range: "16-30", multiplier: "x4.8", hot: false }, { range: "31-45", multiplier: "x4.1", hot: false }, { range: "46-60", multiplier: "x6.3", hot: true }, { range: "61-75", multiplier: "x3.9", hot: false }]} totalPool="₱28,100" players={86} />
@@ -953,7 +1059,7 @@ function MarketGrid() {
       </div>
 
       {/* 3-Card Row: Showbiz + Weather + Economy */}
-      <div className="flex gap-3 mt-3" style={{ height: 320 }}>
+      <div className="flex flex-col md:flex-row gap-3 mt-3 md:h-[320px]">
         <ShowbizPremiumCard />
         <WeatherPremiumCard />
         <EconomyPremiumCard />
@@ -965,13 +1071,13 @@ function MarketGrid() {
       </div>
 
       {/* Remaining Tier 3 Cards */}
-      <div className="flex gap-3 h-[260px] w-full mb-3">
+      <div className="flex flex-col md:flex-row gap-3 md:h-[260px] w-full mb-3">
         <YesNoCard author="Angela Lim" question="BSP magra-raise ba ng interest rate sa Q2 2026 meeting?" chance={45} endTime="30D" volume="₱180k Vol" image="https://images.unsplash.com/photo-1766218329569-53c9270bb305?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200" avatarIdx={5} tier={3} category="Economy" bettors={650} />
         <BuyCard author="Rina Dela Cruz" question="Biggest concert sa PH this 2026?" endTime="60D" volume="₱65k Vol" image="https://images.unsplash.com/photo-1763178466088-09e3678eb56b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200" options={[{ label: "Taylor Swift" }, { label: "BTS / K-Pop" }, { label: "SB19" }]} avatarIdx={3} tier={3} category="Showbiz" />
         <YesNoCard author="Paolo Gomez" question="PH GDP growth aabot ba sa 7% this 2026?" chance={28} endTime="120D" volume="₱95k Vol" image="https://images.unsplash.com/photo-1766218329569-53c9270bb305?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200" avatarIdx={0} tier={3} category="Economy" bettors={410} />
       </div>
 
-      <div className="flex gap-3 h-[260px] w-full mb-3">
+      <div className="flex flex-col md:flex-row gap-3 md:h-[260px] w-full mb-3">
         <FastBetCard author="Juan Cruz" question="Ilan ang typhoon na lalanding sa PH this 2026?" endTime="180D" volume="₱45k Vol" image="https://images.unsplash.com/photo-1726312497465-8b5c6d0bc7b0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200" outcomes={[{ label: "25+", pct: "15%" }, { label: "20-24", pct: "38%" }, { label: "15-19", pct: "32%" }]} avatarIdx={0} tier={3} category="Weather" />
         <YesNoCard author="Joy Villanueva" question="Miss Universe 2026 — mananalo ba ang Pilipinas?" chance={18} endTime="90D" volume="₱120k Vol" image="https://images.unsplash.com/photo-1765546813202-4beae747f145?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200" avatarIdx={1} tier={3} category="Showbiz" bettors={750} />
         <FastBetCard author="Marco Tan" question="USD/PHP exchange rate sa Dec 2026?" endTime="120D" volume="₱210k Vol" image="https://images.unsplash.com/photo-1766218329569-53c9270bb305?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200" outcomes={[{ label: "₱60+", pct: "5%" }, { label: "₱58-60", pct: "28%" }, { label: "₱55-58", pct: "42%" }]} avatarIdx={4} tier={3} category="Economy" />

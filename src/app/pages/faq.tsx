@@ -29,8 +29,8 @@ const FAQS: { category: string; q: string; a: string }[] = [
   { category: "betting", q: "Paano tumaya?", a: "Pumili ng market, piliin ang iyong prediction (Yes/No o specific outcome), i-set ang halaga, at i-confirm ang bet. Kapag naresolba ang market, matatanggap mo ang payout kung tama ang prediction mo." },
   { category: "betting", q: "Ano ang Fast Bet?", a: "Ang Fast Bet ay isang simplified betting mode para sa mga Color Game at iba pang quick-result markets. Mas mabilis ang betting experience." },
   { category: "betting", q: "Maaari ko bang kanselahin ang bet ko?", a: "Hindi. Lahat ng confirmed bets ay final. Siguraduhing tama ang lahat bago mag-confirm." },
-  { category: "security", q: "Paano protektado ang account ko?", a: "Gumagamit kami ng AES-256 encryption, 2FA, at regular security audits. Maaari mo ring i-enable ang biometric login sa profile mo." },
-  { category: "security", q: "Paano mag-enable ng 2FA?", a: "Pumunta sa Profile > Security > Two-Factor Authentication at i-on ang toggle. Mag-rereceive ka ng code sa bawat login." },
+  { category: "security", q: "Paano protektado ang account ko?", a: "Gumagamit kami ng AES-256 encryption, Multi-Factor Authentication (MFA), at regular security audits. Maaari mong i-enable ang Phone OTP, Authenticator App, o Email verification sa profile mo para sa dagdag na proteksyon." },
+  { category: "security", q: "Paano mag-enable ng MFA?", a: "Pumunta sa Profile > Security > Multi-Factor Authentication. Maaari kang mag-set up ng tatlong MFA methods: Phone OTP (SMS), Authenticator App (Google Authenticator, Authy), at Email Verification. Recommended ang pagkakaroon ng dalawang methods na naka-enable." },
   { category: "security", q: "Paano mag-report ng suspicious activity?", a: "I-contact ang support team namin sa support@luckytaya.ph o gamitin ang in-app Support Tickets feature." },
 ];
 

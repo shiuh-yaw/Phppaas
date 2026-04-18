@@ -18,38 +18,48 @@ const lazy = (loader: () => Promise<{ default: ComponentType<any> }>) =>
 const lazyOmsLayout = () =>
   import("./components/oms/oms-layout").then(m => ({ Component: m.OmsLayout }));
 
+// UserLayout wraps all user-portal routes with the mobile BottomNav
+const lazyUserLayout = () =>
+  import("./components/user-layout").then(m => ({ Component: m.default }));
+
 export const router = createBrowserRouter([
   {
     Component: Outlet,
     HydrateFallback: () => null,
     errorElement: createElement(RouteErrorElement),
     children: [
-      { path: "/", lazy: lazy(() => import("./pages/home")) },
+      // Auth pages — no bottom nav
       { path: "/login", lazy: lazy(() => import("./pages/login")) },
       { path: "/signup", lazy: lazy(() => import("./pages/signup")) },
-      { path: "/markets", lazy: lazy(() => import("./pages/markets")) },
-      { path: "/market/:id", lazy: lazy(() => import("./pages/market-detail")) },
-      { path: "/portfolio", lazy: lazy(() => import("./pages/portfolio")) },
-      { path: "/profile", lazy: lazy(() => import("./pages/profile")) },
-      { path: "/creator", lazy: lazy(() => import("./pages/creator")) },
-      { path: "/creator/apply", lazy: lazy(() => import("./pages/creator")) },
-      { path: "/creator/create", lazy: lazy(() => import("./pages/creator")) },
-      { path: "/rewards", lazy: lazy(() => import("./pages/rewards")) },
-      { path: "/fast-bet", lazy: lazy(() => import("./pages/fast-bet")) },
-      { path: "/leaderboard", lazy: lazy(() => import("./pages/leaderboard")) },
-      { path: "/affiliate", lazy: lazy(() => import("./pages/affiliate")) },
-      { path: "/notifications", lazy: lazy(() => import("./pages/notifications")) },
-      { path: "/kyc", lazy: lazy(() => import("./pages/kyc")) },
-      // Compliance & Info Pages
-      { path: "/responsible-gaming", lazy: lazy(() => import("./pages/responsible-gaming")) },
-      { path: "/privacy-policy", lazy: lazy(() => import("./pages/privacy-policy")) },
-      { path: "/terms", lazy: lazy(() => import("./pages/terms")) },
-      { path: "/faq", lazy: lazy(() => import("./pages/faq")) },
-      { path: "/about", lazy: lazy(() => import("./pages/about")) },
-      { path: "/transactions", lazy: lazy(() => import("./pages/transaction-history")) },
-      { path: "/wallet", lazy: lazy(() => import("./pages/wallet")) },
-      // Dynamic Category Route — resolves :slug to the correct category page
-      { path: "/category/:slug", lazy: lazy(() => import("./pages/category-dynamic")) },
+      // User portal — wrapped with UserLayout (includes BottomNav)
+      {
+        lazy: lazyUserLayout,
+        children: [
+          { path: "/", lazy: lazy(() => import("./pages/home")) },
+          { path: "/markets", lazy: lazy(() => import("./pages/markets")) },
+          { path: "/market/:id", lazy: lazy(() => import("./pages/market-detail")) },
+          { path: "/portfolio", lazy: lazy(() => import("./pages/portfolio")) },
+          { path: "/profile", lazy: lazy(() => import("./pages/profile")) },
+          { path: "/creator", lazy: lazy(() => import("./pages/creator")) },
+          { path: "/creator/apply", lazy: lazy(() => import("./pages/creator")) },
+          { path: "/creator/create", lazy: lazy(() => import("./pages/creator")) },
+          { path: "/rewards", lazy: lazy(() => import("./pages/rewards")) },
+          { path: "/fast-bet", lazy: lazy(() => import("./pages/fast-bet")) },
+          { path: "/leaderboard", lazy: lazy(() => import("./pages/leaderboard")) },
+          { path: "/affiliate", lazy: lazy(() => import("./pages/affiliate")) },
+          { path: "/notifications", lazy: lazy(() => import("./pages/notifications")) },
+          { path: "/kyc", lazy: lazy(() => import("./pages/kyc")) },
+          // Compliance & Info Pages
+          { path: "/responsible-gaming", lazy: lazy(() => import("./pages/responsible-gaming")) },
+          { path: "/privacy-policy", lazy: lazy(() => import("./pages/privacy-policy")) },
+          { path: "/terms", lazy: lazy(() => import("./pages/terms")) },
+          { path: "/faq", lazy: lazy(() => import("./pages/faq")) },
+          { path: "/about", lazy: lazy(() => import("./pages/about")) },
+          { path: "/transactions", lazy: lazy(() => import("./pages/transaction-history")) },
+          // Dynamic Category Route
+          { path: "/category/:slug", lazy: lazy(() => import("./pages/category-dynamic")) },
+        ],
+      },
       // OMS Routes — Multi-Tenant SaaS Platform
       {
         path: "/oms",

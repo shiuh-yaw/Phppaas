@@ -10,6 +10,7 @@ export interface User {
   avatar: string;
   balance: number;
   portfolio: number;
+  email?: string;
 }
 
 interface AuthContextType {

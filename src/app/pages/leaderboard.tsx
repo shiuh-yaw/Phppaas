@@ -127,7 +127,7 @@ function Podium({ entries }: { entries: LeaderboardEntry[] }) {
   const animDelays = ["0.15s", "0s", "0.3s"];
 
   return (
-    <div className="flex items-end justify-center gap-4 pt-6 pb-4">
+    <div className="flex items-end justify-center gap-2 sm:gap-4 pt-6 pb-4">
       {podiumOrder.map((e, i) => (
         <div
           key={e.rank}
@@ -143,7 +143,7 @@ function Podium({ entries }: { entries: LeaderboardEntry[] }) {
           {/* Avatar */}
           <div className="relative mb-2">
             <div
-              className="size-16 rounded-full overflow-hidden ring-3 transition-transform group-hover:scale-105"
+              className="size-12 sm:size-16 rounded-full overflow-hidden ring-3 transition-transform group-hover:scale-105"
               style={{
                 ringColor: ringColors[i],
                 boxShadow: i === 1 ? "0 0 20px rgba(251,191,36,0.35)" : `0 4px 12px rgba(0,0,0,0.08)`,
@@ -172,7 +172,7 @@ function Podium({ entries }: { entries: LeaderboardEntry[] }) {
 
           {/* Podium block */}
           <div
-            className="w-24 rounded-t-xl flex flex-col items-center justify-end pb-3 pt-3 transition-all"
+            className="w-20 sm:w-24 rounded-t-xl flex flex-col items-center justify-end pb-3 pt-3 transition-all"
             style={{ height: heights[i], background: gradients[i], boxShadow: i === 1 ? "0 -4px 20px rgba(251,191,36,0.2)" : "0 -2px 8px rgba(0,0,0,0.04)" }}
           >
             <span className="text-[10px] text-white/80 mb-0.5" style={ss}>{labels[i]}</span>
@@ -192,7 +192,7 @@ function Podium({ entries }: { entries: LeaderboardEntry[] }) {
 /* ====================== YOUR RANK BANNER ====================== */
 function YourRankBanner() {
   return (
-    <div className="rounded-xl border-2 border-dashed border-[#ff5222]/30 bg-[#fff8f5] px-5 py-3.5 flex items-center gap-4">
+    <div className="rounded-xl border-2 border-dashed border-[#ff5222]/30 bg-[#fff8f5] px-3 sm:px-5 py-3 sm:py-3.5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
       <div className="flex items-center gap-3 flex-1 min-w-0">
         <div className="size-10 rounded-full overflow-hidden ring-2 ring-[#ff5222]/30 shrink-0">
           <ImageWithFallback src={AVATARS[4]} alt="You" className="size-full object-cover" />
@@ -206,19 +206,21 @@ function YourRankBanner() {
         </div>
       </div>
 
-      <div className="flex items-center gap-6">
-        <div className="flex flex-col items-center">
-          <span className="text-[10px] text-[#b0b3b8]" style={ss}>Profit</span>
-          <span className="text-[14px] text-[#00bf85]" style={{ fontWeight: 700, ...ss }}>+₱12,340</span>
+      <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto justify-between sm:justify-end">
+        <div className="flex items-center gap-4 sm:gap-6">
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] text-[#b0b3b8]" style={ss}>Profit</span>
+            <span className="text-[14px] text-[#00bf85]" style={{ fontWeight: 700, ...ss }}>+₱12,340</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] text-[#b0b3b8]" style={ss}>Win Rate</span>
+            <span className="text-[14px] text-[#070808]" style={{ fontWeight: 700, ...ss }}>52%</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-[14px] text-[#ff5222] inline-flex items-center gap-0.5" style={{ fontWeight: 700, ...ss }}><EmojiIcon emoji="🔥" size={14} /> 3</span>
+          </div>
         </div>
-        <div className="flex flex-col items-center">
-          <span className="text-[10px] text-[#b0b3b8]" style={ss}>Win Rate</span>
-          <span className="text-[14px] text-[#070808]" style={{ fontWeight: 700, ...ss }}>52%</span>
-        </div>
-        <div className="flex flex-col items-center">
-          <span className="text-[14px] text-[#ff5222] inline-flex items-center gap-0.5" style={{ fontWeight: 700, ...ss }}><EmojiIcon emoji="🔥" size={14} /> 3</span>
-        </div>
-        <button className="bg-[#ff5222] hover:bg-[#e8491e] text-white h-9 px-5 rounded-xl text-[12px] transition-all cursor-pointer" style={{ fontWeight: 600, ...ss, ...pp }}>
+        <button className="bg-[#ff5222] hover:bg-[#e8491e] text-white h-9 px-4 sm:px-5 rounded-xl text-[12px] transition-all cursor-pointer whitespace-nowrap" style={{ fontWeight: 600, ...ss, ...pp }}>
           Tumaya pa! ⚡
         </button>
       </div>
@@ -236,14 +238,14 @@ function StatsCards() {
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
       {stats.map((s, i) => (
-        <div key={i} className="bg-white rounded-xl border border-[#f0f1f3] px-4 py-3.5 flex flex-col gap-1 hover:border-[#dfe0e2] transition-colors">
+        <div key={i} className="bg-white rounded-xl border border-[#f0f1f3] px-3 sm:px-4 py-3 sm:py-3.5 flex flex-col gap-1 hover:border-[#dfe0e2] transition-colors">
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-[#84888c]" style={{ fontWeight: 500, ...ss }}>{s.label}</span>
             <EmojiIcon emoji={s.emoji} size={18} />
           </div>
-          <span className="text-[20px] text-[#070808]" style={{ fontWeight: 700, ...ss }}>{s.value}</span>
+          <span className="text-[16px] sm:text-[20px] text-[#070808]" style={{ fontWeight: 700, ...ss }}>{s.value}</span>
           <span className="text-[10px]" style={{ fontWeight: 500, color: s.color, ...ss }}>{s.change}</span>
         </div>
       ))}
@@ -270,85 +272,137 @@ function LeaderboardTable({ entries, sortBy }: { entries: LeaderboardEntry[]; so
   };
 
   return (
-    <div className="bg-white rounded-xl border border-[#f0f1f3] overflow-hidden">
-      {/* Table header */}
-      <div className="grid items-center px-5 py-2.5 border-b border-[#f5f6f7]" style={{ gridTemplateColumns: "40px 1fr 100px 90px 80px 70px 90px 90px" }}>
-        <span className="text-[10px] text-[#b0b3b8]" style={{ fontWeight: 600, ...ss }}>#</span>
-        <span className="text-[10px] text-[#b0b3b8]" style={{ fontWeight: 600, ...ss }}>Player</span>
-        <span className="text-[10px] text-[#b0b3b8] text-right" style={{ fontWeight: 600, ...ss }}>Profit</span>
-        <span className="text-[10px] text-[#b0b3b8] text-right" style={{ fontWeight: 600, ...ss }}>Total Bets</span>
-        <span className="text-[10px] text-[#b0b3b8] text-right" style={{ fontWeight: 600, ...ss }}>Win Rate</span>
-        <span className="text-[10px] text-[#b0b3b8] text-center" style={{ fontWeight: 600, ...ss }}>Streak</span>
-        <span className="text-[10px] text-[#b0b3b8] text-center" style={{ fontWeight: 600, ...ss }}>Fav Game</span>
-        <span className="text-[10px] text-[#b0b3b8] text-center" style={{ fontWeight: 600, ...ss }}>Tier</span>
+    <>
+      {/* Desktop Table */}
+      <div className="hidden md:block bg-white rounded-xl border border-[#f0f1f3] overflow-hidden">
+        <div className="grid items-center px-5 py-2.5 border-b border-[#f5f6f7]" style={{ gridTemplateColumns: "40px 1fr 100px 90px 80px 70px 90px 90px" }}>
+          <span className="text-[10px] text-[#b0b3b8]" style={{ fontWeight: 600, ...ss }}>#</span>
+          <span className="text-[10px] text-[#b0b3b8]" style={{ fontWeight: 600, ...ss }}>Player</span>
+          <span className="text-[10px] text-[#b0b3b8] text-right" style={{ fontWeight: 600, ...ss }}>Profit</span>
+          <span className="text-[10px] text-[#b0b3b8] text-right" style={{ fontWeight: 600, ...ss }}>Total Bets</span>
+          <span className="text-[10px] text-[#b0b3b8] text-right" style={{ fontWeight: 600, ...ss }}>Win Rate</span>
+          <span className="text-[10px] text-[#b0b3b8] text-center" style={{ fontWeight: 600, ...ss }}>Streak</span>
+          <span className="text-[10px] text-[#b0b3b8] text-center" style={{ fontWeight: 600, ...ss }}>Fav Game</span>
+          <span className="text-[10px] text-[#b0b3b8] text-center" style={{ fontWeight: 600, ...ss }}>Tier</span>
+        </div>
+        {sorted.map((e, i) => {
+          const tc = TIER_COLORS[e.tier];
+          return (
+            <div
+              key={e.handle + e.rank}
+              className="grid items-center px-5 py-2.5 border-b border-[#fafafa] hover:bg-[#fafbfc] transition-colors cursor-pointer group"
+              style={{ gridTemplateColumns: "40px 1fr 100px 90px 80px 70px 90px 90px", animation: `row-enter 0.3s ease-out ${i * 0.03}s both` }}
+              onClick={() => navigate("/portfolio")}
+            >
+              <div className="flex items-center justify-center w-5">{getRankDisplay(e.rank)}</div>
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="size-8 rounded-full overflow-hidden shrink-0 ring-1 ring-[#f0f1f3] group-hover:ring-[#ff5222]/20 transition-all">
+                  <ImageWithFallback src={e.avatar} alt={e.name} className="size-full object-cover" />
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[12px] text-[#070808] truncate" style={{ fontWeight: 500, ...ss }}>{e.name}</span>
+                    {e.badges.slice(0, 2).map((b, bi) => (
+                      <span key={bi}><EmojiIcon emoji={b} size={12} /></span>
+                    ))}
+                  </div>
+                  <span className="text-[10px] text-[#b0b3b8]" style={ss}>{e.handle}</span>
+                </div>
+              </div>
+              <span className="text-[12px] text-right" style={{ fontWeight: 600, color: "#00bf85", ...ss }}>+{formatPeso(e.profit)}</span>
+              <span className="text-[12px] text-[#070808] text-right" style={{ fontWeight: 500, ...ss }}>{e.totalBets.toLocaleString()}</span>
+              <div className="flex items-center justify-end gap-1">
+                <div className="w-10 h-1.5 bg-[#f0f1f3] rounded-full overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: `${e.winRate}%`, background: e.winRate >= 65 ? "#10b981" : e.winRate >= 50 ? "#f59e0b" : "#ef4444" }} />
+                </div>
+                <span className="text-[11px] text-[#070808]" style={{ fontWeight: 600, ...ss }}>{e.winRate}%</span>
+              </div>
+              <div className="flex items-center justify-center">
+                {e.streak > 0 ? (
+                  <span className="text-[11px] flex items-center gap-0.5" style={{ fontWeight: 600, color: e.streak >= 7 ? "#ff5222" : e.streak >= 3 ? "#f59e0b" : "#84888c", ...ss }}>
+                    {e.streak >= 5 && <EmojiIcon emoji="🔥" size={12} />}{e.streak}
+                  </span>
+                ) : (
+                  <span className="text-[10px] text-[#dfe0e2]" style={ss}>—</span>
+                )}
+              </div>
+              <div className="flex items-center justify-center gap-1">
+                <EmojiIcon emoji={e.favEmoji} size={14} />
+                <span className="text-[10px] text-[#84888c]" style={{ fontWeight: 500, ...ss }}>{e.favGame}</span>
+              </div>
+              <div className="flex items-center justify-center">
+                <span className="text-[9px] px-2 py-0.5 rounded-full" style={{ fontWeight: 600, background: tc.bg, color: tc.text, ...ss }}>{tc.label}</span>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Table rows */}
-      {sorted.map((e, i) => {
-        const tc = TIER_COLORS[e.tier];
-        return (
-          <div
-            key={e.handle + e.rank}
-            className="grid items-center px-5 py-2.5 border-b border-[#fafafa] hover:bg-[#fafbfc] transition-colors cursor-pointer group"
-            style={{ gridTemplateColumns: "40px 1fr 100px 90px 80px 70px 90px 90px", animation: `row-enter 0.3s ease-out ${i * 0.03}s both` }}
-            onClick={() => navigate("/portfolio")}
-          >
-            <div className="flex items-center justify-center w-5">{getRankDisplay(e.rank)}</div>
-
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="size-8 rounded-full overflow-hidden shrink-0 ring-1 ring-[#f0f1f3] group-hover:ring-[#ff5222]/20 transition-all">
-                <ImageWithFallback src={e.avatar} alt={e.name} className="size-full object-cover" />
-              </div>
-              <div className="flex flex-col min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[12px] text-[#070808] truncate" style={{ fontWeight: 500, ...ss }}>{e.name}</span>
-                  {e.badges.slice(0, 2).map((b, bi) => (
-                    <span key={bi}><EmojiIcon emoji={b} size={12} /></span>
-                  ))}
+      {/* Mobile Card List */}
+      <div className="md:hidden flex flex-col gap-2">
+        {sorted.map((e, i) => {
+          const tc = TIER_COLORS[e.tier];
+          return (
+            <div
+              key={e.handle + e.rank}
+              className="bg-white rounded-xl border border-[#f0f1f3] p-3 cursor-pointer hover:shadow-sm transition-all"
+              style={{ animation: `row-enter 0.3s ease-out ${i * 0.03}s both` }}
+              onClick={() => navigate("/portfolio")}
+            >
+              <div className="flex items-center gap-3">
+                {/* Rank */}
+                <div className="size-7 rounded-full flex items-center justify-center shrink-0" style={{ background: "#f5f6f7" }}>
+                  {getRankDisplay(e.rank)}
                 </div>
-                <span className="text-[10px] text-[#b0b3b8]" style={ss}>{e.handle}</span>
+                {/* Avatar */}
+                <div className="size-9 rounded-full overflow-hidden shrink-0 ring-1 ring-[#f0f1f3]">
+                  <ImageWithFallback src={e.avatar} alt={e.name} className="size-full object-cover" />
+                </div>
+                {/* Name & handle */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[13px] text-[#070808] truncate" style={{ fontWeight: 600, ...ss }}>{e.name}</span>
+                    {e.badges.slice(0, 2).map((b, bi) => (
+                      <span key={bi}><EmojiIcon emoji={b} size={11} /></span>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] text-[#b0b3b8]" style={ss}>{e.handle}</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ fontWeight: 600, background: tc.bg, color: tc.text, ...ss }}>{tc.label}</span>
+                  </div>
+                </div>
+                {/* Profit */}
+                <div className="text-right shrink-0">
+                  <div className="text-[14px]" style={{ fontWeight: 700, color: "#00bf85", ...ss }}>+{formatPeso(e.profit)}</div>
+                </div>
+              </div>
+              {/* Stats row */}
+              <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-[#f5f6f7]">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] text-[#b0b3b8]" style={ss}>WR</span>
+                    <span className="text-[11px] text-[#070808]" style={{ fontWeight: 600, ...ss }}>{e.winRate}%</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] text-[#b0b3b8]" style={ss}>Bets</span>
+                    <span className="text-[11px] text-[#070808]" style={{ fontWeight: 500, ...ss }}>{e.totalBets.toLocaleString()}</span>
+                  </div>
+                  {e.streak > 0 && (
+                    <span className="text-[11px] flex items-center gap-0.5" style={{ fontWeight: 600, color: e.streak >= 7 ? "#ff5222" : e.streak >= 3 ? "#f59e0b" : "#84888c", ...ss }}>
+                      {e.streak >= 5 && <EmojiIcon emoji="🔥" size={11} />}{e.streak} streak
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-1">
+                  <EmojiIcon emoji={e.favEmoji} size={13} />
+                  <span className="text-[10px] text-[#84888c]" style={{ fontWeight: 500, ...ss }}>{e.favGame}</span>
+                </div>
               </div>
             </div>
-
-            <span className="text-[12px] text-right" style={{ fontWeight: 600, color: "#00bf85", ...ss }}>
-              +{formatPeso(e.profit)}
-            </span>
-
-            <span className="text-[12px] text-[#070808] text-right" style={{ fontWeight: 500, ...ss }}>
-              {e.totalBets.toLocaleString()}
-            </span>
-
-            <div className="flex items-center justify-end gap-1">
-              <div className="w-10 h-1.5 bg-[#f0f1f3] rounded-full overflow-hidden">
-                <div className="h-full rounded-full" style={{ width: `${e.winRate}%`, background: e.winRate >= 65 ? "#10b981" : e.winRate >= 50 ? "#f59e0b" : "#ef4444" }} />
-              </div>
-              <span className="text-[11px] text-[#070808]" style={{ fontWeight: 600, ...ss }}>{e.winRate}%</span>
-            </div>
-
-            <div className="flex items-center justify-center">
-              {e.streak > 0 ? (
-                <span className="text-[11px] flex items-center gap-0.5" style={{ fontWeight: 600, color: e.streak >= 7 ? "#ff5222" : e.streak >= 3 ? "#f59e0b" : "#84888c", ...ss }}>
-                  {e.streak >= 5 && <EmojiIcon emoji="🔥" size={12} />}{e.streak}
-                </span>
-              ) : (
-                <span className="text-[10px] text-[#dfe0e2]" style={ss}>—</span>
-              )}
-            </div>
-
-            <div className="flex items-center justify-center gap-1">
-              <EmojiIcon emoji={e.favEmoji} size={14} />
-              <span className="text-[10px] text-[#84888c]" style={{ fontWeight: 500, ...ss }}>{e.favGame}</span>
-            </div>
-
-            <div className="flex items-center justify-center">
-              <span className="text-[9px] px-2 py-0.5 rounded-full" style={{ fontWeight: 600, background: tc.bg, color: tc.text, ...ss }}>
-                {tc.label}
-              </span>
-            </div>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+    </>
   );
 }
 
@@ -357,35 +411,35 @@ function PrizePoolBanner() {
   return (
     <div className="rounded-xl overflow-hidden relative" style={{
       background: "linear-gradient(135deg, #ff5222 0%, #ff8c00 50%, #fbbf24 100%)",
-      height: 80,
+      minHeight: 80,
     }}>
       <div className="absolute inset-0" style={{
         background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%)",
         backgroundSize: "200% 100%",
         animation: "shimmer-bg 3s linear infinite",
       }} />
-      <div className="relative z-10 h-full flex items-center justify-between px-6">
-        <div className="flex items-center gap-4">
-          <EmojiIcon emoji="🏆" size={28} />
+      <div className="relative z-10 h-full flex flex-col sm:flex-row items-start sm:items-center justify-between px-4 sm:px-6 py-3 sm:py-0 gap-2 sm:gap-0" style={{ minHeight: 80 }}>
+        <div className="flex items-center gap-3 sm:gap-4">
+          <EmojiIcon emoji="🏆" size={24} />
           <div className="flex flex-col">
-            <span className="text-white/80 text-[11px]" style={{ fontWeight: 500, ...ss }}>Weekly Leaderboard Prize Pool</span>
-            <span className="text-white text-[24px]" style={{ fontWeight: 800, ...ss }}>₱250,000</span>
+            <span className="text-white/80 text-[10px] sm:text-[11px]" style={{ fontWeight: 500, ...ss }}>Weekly Leaderboard Prize Pool</span>
+            <span className="text-white text-[20px] sm:text-[24px]" style={{ fontWeight: 800, ...ss }}>₱250,000</span>
           </div>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 sm:gap-6">
           <div className="flex flex-col items-center">
-            <span className="text-white/70 text-[9px]" style={ss}>1st Place</span>
-            <span className="text-white text-[14px]" style={{ fontWeight: 700, ...ss }}>₱100K</span>
+            <span className="text-white/70 text-[9px]" style={ss}>1st</span>
+            <span className="text-white text-[12px] sm:text-[14px]" style={{ fontWeight: 700, ...ss }}>₱100K</span>
           </div>
           <div className="flex flex-col items-center">
-            <span className="text-white/70 text-[9px]" style={ss}>2nd Place</span>
-            <span className="text-white text-[14px]" style={{ fontWeight: 700, ...ss }}>₱50K</span>
+            <span className="text-white/70 text-[9px]" style={ss}>2nd</span>
+            <span className="text-white text-[12px] sm:text-[14px]" style={{ fontWeight: 700, ...ss }}>₱50K</span>
           </div>
           <div className="flex flex-col items-center">
-            <span className="text-white/70 text-[9px]" style={ss}>3rd Place</span>
-            <span className="text-white text-[14px]" style={{ fontWeight: 700, ...ss }}>₱25K</span>
+            <span className="text-white/70 text-[9px]" style={ss}>3rd</span>
+            <span className="text-white text-[12px] sm:text-[14px]" style={{ fontWeight: 700, ...ss }}>₱25K</span>
           </div>
-          <div className="flex flex-col items-center">
+          <div className="hidden sm:flex flex-col items-center">
             <span className="text-white/70 text-[9px]" style={ss}>Top 10</span>
             <span className="text-white text-[14px]" style={{ fontWeight: 700, ...ss }}>₱7.5K each</span>
           </div>
@@ -429,20 +483,20 @@ export default function LeaderboardPage() {
         <Sidebar onDeposit={openDeposit} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <div className="flex-1 min-w-0 flex flex-col">
           <Header onDeposit={openDeposit} onMenuToggle={() => setSidebarOpen(true)} />
-          <div className="flex-1 px-6 py-5 overflow-auto">
-            <div className="max-w-[1100px] mx-auto flex flex-col gap-5">
+          <div className="flex-1 px-3 sm:px-6 py-4 sm:py-5 overflow-auto pb-24 md:pb-0">
+            <div className="max-w-[1100px] mx-auto flex flex-col gap-4 sm:gap-5">
 
               {/* Page Title */}
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-3">
-                    <span className="text-[22px] text-[#070808] inline-flex items-center gap-2" style={{ fontWeight: 700, ...ss }}><EmojiIcon emoji="🏆" size={22} /> Leaderboard</span>
+                    <span className="text-[20px] sm:text-[22px] text-[#070808] inline-flex items-center gap-2" style={{ fontWeight: 700, ...ss }}><EmojiIcon emoji="🏆" size={22} /> Leaderboard</span>
                     <span className="text-[10px] bg-[#ff5222] text-white px-2 py-0.5 rounded-full" style={{ fontWeight: 700, ...ss }}>LIVE</span>
                   </div>
-                  <span className="text-[12px] text-[#84888c]" style={ss}>Sino ang pinaka-magaling na bettor sa Lucky Taya? Tingnan ang rankings!</span>
+                  <span className="text-[12px] text-[#84888c] hidden sm:block" style={ss}>Sino ang pinaka-magaling na bettor sa Lucky Taya? Tingnan ang rankings!</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-[#b0b3b8]" style={ss}>Last updated: 2 mins ago</span>
+                  <span className="text-[10px] text-[#b0b3b8] hidden sm:inline" style={ss}>Last updated: 2 mins ago</span>
                   <button className="bg-white border border-[#f0f1f3] text-[#070808] h-8 px-3 rounded-lg text-[11px] cursor-pointer hover:bg-[#f7f8f9] transition-colors" style={{ fontWeight: 500, ...ss }}>
                     ↻ Refresh
                   </button>
@@ -458,14 +512,14 @@ export default function LeaderboardPage() {
               {/* Your Rank */}
               <YourRankBanner />
 
-              {/* Time Filters */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-5">
+              {/* Time Filters + Sort */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3 sm:gap-5 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
                   {TIME_FILTERS.map((t) => (
                     <button
                       key={t}
                       onClick={() => { setTimeFilter(t); setPage(1); }}
-                      className="relative pb-2 text-[14px] transition-colors cursor-pointer"
+                      className="relative pb-2 text-[13px] sm:text-[14px] transition-colors cursor-pointer whitespace-nowrap shrink-0"
                       style={{ color: timeFilter === t ? "#070808" : "#84888c", fontWeight: timeFilter === t ? 600 : 400, ...ss }}
                     >
                       {t}
@@ -474,13 +528,13 @@ export default function LeaderboardPage() {
                   ))}
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-[#b0b3b8]" style={ss}>Sort by:</span>
+                <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+                  <span className="text-[10px] text-[#b0b3b8] shrink-0 hidden sm:inline" style={ss}>Sort by:</span>
                   {SORT_OPTIONS.map((s) => (
                     <button
                       key={s.key}
                       onClick={() => { setSortBy(s.key); setPage(1); }}
-                      className={`h-7 px-3 rounded-md text-[11px] transition-all cursor-pointer border ${sortBy === s.key ? "bg-[#ff5222]/5 border-[#ff5222]/20 text-[#ff5222]" : "bg-white border-[#f0f1f3] text-[#84888c] hover:border-[#dfe0e2]"}`}
+                      className={`h-7 px-2.5 sm:px-3 rounded-md text-[11px] transition-all cursor-pointer border shrink-0 ${sortBy === s.key ? "bg-[#ff5222]/5 border-[#ff5222]/20 text-[#ff5222]" : "bg-white border-[#f0f1f3] text-[#84888c] hover:border-[#dfe0e2]"}`}
                       style={{ fontWeight: sortBy === s.key ? 600 : 400, ...ss }}
                     >
                       {s.label}

@@ -105,7 +105,7 @@ export function Rankings() {
   const navigate = useNavigate();
 
   return (
-    <div className="w-[280px] shrink-0 flex flex-col gap-3" style={{ fontFamily: "'Poppins', sans-serif" }}>
+    <div className="w-full lg:w-[280px] shrink-0 flex flex-col gap-3" style={{ fontFamily: "'Poppins', sans-serif" }}>
       <div className="flex items-center justify-between">
         <span className="text-[14px] text-[#070808] leading-[1.5]" style={{ fontWeight: 600, ...ss04 }}>Rankings</span>
         <span className="text-[12px] text-[#ff5222] cursor-pointer hover:underline" style={{ fontWeight: 500, ...ss04 }} onClick={() => navigate("/leaderboard")}>Tingnan lahat</span>

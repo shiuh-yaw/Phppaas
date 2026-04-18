@@ -294,7 +294,7 @@ export default function KybApply() {
               <span className="text-white text-[11px]" style={{ fontWeight: 800 }}>FG</span>
             </div>
             <div>
-              <p className="text-[#070808] text-[14px]" style={{ fontWeight: 700, ...ss04 }}>ForeGate KYB Application</p>
+              <p className="text-[#070808] text-[14px]" style={{ fontWeight: 700, ...ss04 }}>PredictEx KYB Application</p>
               <p className="text-[#b0b3b8] text-[10px]" style={ss04}>Merchant Know-Your-Business Verification</p>
             </div>
           </div>
@@ -633,7 +633,7 @@ export default function KybApply() {
                 {/* Terms */}
                 <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
                   <p className="text-amber-700 text-[11px]" style={{ fontWeight: 500, ...ss04 }}>
-                    By submitting this application, you certify that all information provided is true and correct. ForeGate reserves the right to verify all documents against Philippine government databases. Misrepresentation may result in permanent denial of platform access.
+                    By submitting this application, you certify that all information provided is true and correct. PredictEx reserves the right to verify all documents against Philippine government databases. Misrepresentation may result in permanent denial of platform access.
                   </p>
                 </div>
               </div>
@@ -676,7 +676,7 @@ export default function KybApply() {
         {/* Info footer */}
         <div className="mt-4 p-3 bg-white border border-[#e5e7eb] rounded-xl">
           <p className="text-[#b0b3b8] text-[10px] text-center" style={ss04}>
-            Need help? Contact our merchant onboarding team at <span className="text-[#ff5222]" style={{ fontWeight: 600 }}>onboarding@foregate.ph</span> or call <span className="text-[#ff5222]" style={{ fontWeight: 600 }}>+63 2 8888 GATE (4283)</span>
+            Need help? Contact our merchant onboarding team at <span className="text-[#ff5222]" style={{ fontWeight: 600 }}>onboarding@predictex.ph</span> or call <span className="text-[#ff5222]" style={{ fontWeight: 600 }}>+63 2 8888 GATE (4283)</span>
           </p>
         </div>
       </div>

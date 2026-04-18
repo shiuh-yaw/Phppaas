@@ -23,10 +23,10 @@ export function Banner() {
       </div>
 
       <div className="relative flex items-center justify-between h-full px-4 md:px-7">
-        <div className="flex flex-col gap-2.5 max-w-[60%] md:max-w-[55%]">
+        <div className="flex flex-col gap-2.5 max-w-full sm:max-w-[60%] md:max-w-[55%]">
           <div className="flex items-center gap-2">
             <span className="bg-white/20 text-white text-[10px] px-2 py-0.5 rounded-full" style={{ fontWeight: 600, ...ss04 }}>
-              LUCKY TAYA
+              PREDICTEX
             </span>
             <span className="bg-white/15 text-white/90 text-[10px] px-2 py-0.5 rounded-full" style={{ fontWeight: 500, ...ss04 }}>
               PAGCOR Licensed
@@ -41,7 +41,7 @@ export function Banner() {
         </div>
 
         {/* Highlight chips */}
-        <div className="flex flex-col gap-2 shrink-0">
+        <div className="hidden sm:flex flex-col gap-2 shrink-0">
           {highlights.map((h) => (
             <div key={h.label} className="flex items-center gap-2 bg-white/15 rounded-lg px-3 py-1.5 backdrop-blur-sm hover:bg-white/25 transition-colors cursor-pointer">
               <EmojiIcon emoji={h.emoji} size={18} />

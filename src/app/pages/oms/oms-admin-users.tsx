@@ -83,12 +83,12 @@ const MOCK_ACTIVITY: ActivityEntry[] = [
 
 /* ==================== MOCK DATA — all OMS admin accounts ==================== */
 const INITIAL_ADMINS: AdminUser[] = [
-  { id: "A001", name: "Carlos Reyes", email: "admin@foregate.ph", role: "platform_admin", avatar: "", lastLogin: "2026-03-14 08:45 PHT", tenantName: "ForeGate Platform", status: "active", needsPasswordChange: false },
-  { id: "A002", name: "Ana Dela Cruz", email: "ops@foregate.ph", role: "platform_ops", avatar: "", lastLogin: "2026-03-14 07:20 PHT", tenantName: "ForeGate Platform", status: "active", needsPasswordChange: false },
-  { id: "MA001", name: "Maria Santos", email: "admin@luckytaya.ph", role: "merchant_admin", avatar: "", lastLogin: "2026-03-14 09:10 PHT", merchantId: "MCH001", tenantName: "Lucky Taya", status: "active", needsPasswordChange: false },
+  { id: "A001", name: "Carlos Reyes", email: "admin@predictex.ph", role: "platform_admin", avatar: "", lastLogin: "2026-03-14 08:45 PHT", tenantName: "PredictEx Platform", status: "active", needsPasswordChange: false },
+  { id: "A002", name: "Ana Dela Cruz", email: "ops@predictex.ph", role: "platform_ops", avatar: "", lastLogin: "2026-03-14 07:20 PHT", tenantName: "PredictEx Platform", status: "active", needsPasswordChange: false },
+  { id: "MA001", name: "Maria Santos", email: "admin@predictex.ph", role: "merchant_admin", avatar: "", lastLogin: "2026-03-14 09:10 PHT", merchantId: "MCH001", tenantName: "PredictEx", status: "active", needsPasswordChange: false },
   { id: "MA002", name: "Rico Santos", email: "newadmin@betmanila.com", role: "merchant_admin", avatar: "", lastLogin: "\u2014", merchantId: "MCH002", tenantName: "BetManila", status: "first_login", needsPasswordChange: true },
-  { id: "MA003", name: "Jenny Lim", email: "disabled@luckytaya.ph", role: "merchant_ops", avatar: "", lastLogin: "2026-02-28 14:00 PHT", merchantId: "MCH001", tenantName: "Lucky Taya", status: "disabled", needsPasswordChange: false },
-  { id: "MA004", name: "Rafael Cruz", email: "finance@luckytaya.ph", role: "merchant_finance", avatar: "", lastLogin: "2026-03-13 16:30 PHT", merchantId: "MCH001", tenantName: "Lucky Taya", status: "active", needsPasswordChange: false },
+  { id: "MA003", name: "Jenny Lim", email: "disabled@predictex.ph", role: "merchant_ops", avatar: "", lastLogin: "2026-02-28 14:00 PHT", merchantId: "MCH001", tenantName: "PredictEx", status: "disabled", needsPasswordChange: false },
+  { id: "MA004", name: "Rafael Cruz", email: "finance@predictex.ph", role: "merchant_finance", avatar: "", lastLogin: "2026-03-13 16:30 PHT", merchantId: "MCH001", tenantName: "PredictEx", status: "active", needsPasswordChange: false },
   { id: "MA005", name: "Sophia Villanueva", email: "support@sugalph.com", role: "merchant_support", avatar: "", lastLogin: "2026-03-14 06:55 PHT", merchantId: "MCH003", tenantName: "Sugal PH", status: "active", needsPasswordChange: false },
   { id: "MA006", name: "Marco Tan", email: "admin@sugalph.com", role: "merchant_admin", avatar: "", lastLogin: "2026-03-13 22:10 PHT", merchantId: "MCH003", tenantName: "Sugal PH", status: "active", needsPasswordChange: false },
   { id: "MA007", name: "Dina Aquino", email: "ops@tongitslive.ph", role: "merchant_ops", avatar: "", lastLogin: "2026-03-12 11:40 PHT", merchantId: "MCH006", tenantName: "Tongits Live", status: "active", needsPasswordChange: false },
@@ -258,7 +258,7 @@ export default function OmsAdminUsers() {
       avatar: "",
       lastLogin: "\u2014",
       merchantId: isPlatRole ? undefined : cMerchant,
-      tenantName: isPlatRole ? "ForeGate Platform" : merchant?.name,
+      tenantName: isPlatRole ? "PredictEx Platform" : merchant?.name,
       status: "first_login",
       needsPasswordChange: true,
     };
@@ -277,7 +277,7 @@ export default function OmsAdminUsers() {
       name: eName.trim() || a.name,
       role: eRole,
       merchantId: isPlatRole ? undefined : (eMerchant || a.merchantId),
-      tenantName: isPlatRole ? "ForeGate Platform" : (merchant?.name || a.tenantName),
+      tenantName: isPlatRole ? "PredictEx Platform" : (merchant?.name || a.tenantName),
     } : a));
     logAudit({ adminEmail: admin?.email || "", adminRole: role, action: "admin_edit", target: editTarget.email, detail: `Updated role to ${ROLE_LABELS[eRole]}${isPlatRole ? "" : ` for ${merchant?.name || eMerchant}`}` });
     setEditTarget(null);
@@ -393,7 +393,7 @@ export default function OmsAdminUsers() {
           </select>
           <select value={merchantFilter} onChange={e => setMerchantFilter(e.target.value)} className="h-8 px-2.5 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-[#9ca3af] text-[11px] outline-none cursor-pointer" style={ss04}>
             <option value="all">{t("common.all", "All")} Tenants</option>
-            <option value="platform">Platform (ForeGate)</option>
+            <option value="platform">Platform (PredictEx)</option>
             {merchantOptions.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
           </select>
           <div className="flex-1" />
@@ -535,7 +535,7 @@ export default function OmsAdminUsers() {
           <OmsInput value={cName} onChange={setCName} placeholder="e.g. Maria Santos" />
         </OmsField>
         <OmsField label="Email Address" required>
-          <OmsInput value={cEmail} onChange={setCEmail} placeholder="e.g. maria@luckytaya.ph" type="email" />
+          <OmsInput value={cEmail} onChange={setCEmail} placeholder="e.g. maria@predictex.ph" type="email" />
         </OmsField>
         <OmsField label="Role" required>
           <OmsSelect value={cRole} onChange={v => setCRole(v as AdminRole)} options={Object.entries(ROLE_LABELS).map(([k, v]) => ({ value: k, label: v }))} />
@@ -619,7 +619,7 @@ export default function OmsAdminUsers() {
                   { label: "ID", value: viewTarget.id, show: true },
                   { label: "Email", value: viewTarget.email, show: canViewEmail },
                   { label: "Role", value: ROLE_LABELS[viewTarget.role], show: true },
-                  { label: "Tenant", value: viewTarget.tenantName || "ForeGate Platform", show: true },
+                  { label: "Tenant", value: viewTarget.tenantName || "PredictEx Platform", show: true },
                   { label: "Merchant ID", value: viewTarget.merchantId || "\u2014", show: true },
                   { label: "Status", value: STATUS_BADGE[viewTarget.status].label, show: true },
                   { label: "Last Login", value: viewTarget.lastLogin, show: canViewLastLogin },

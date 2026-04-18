@@ -75,7 +75,7 @@ const ALL_ROLES = ALL_TENANT_ROLES;
       { key: "contact_edit", label: "Contact Editing", description: "Edit user social/contact details", fgOnly: false, merchantOverride: true },
     ],
     channels: [
-      { key: "FG", label: "ForeGate Direct", enabled: true, requiresApproval: false, autoAssignAgent: false },
+      { key: "FG", label: "PredictEx Direct", enabled: true, requiresApproval: false, autoAssignAgent: false },
       { key: "organic", label: "Organic", enabled: true, requiresApproval: false, autoAssignAgent: false },
       { key: "agent", label: "Agent Referral", enabled: true, requiresApproval: true, autoAssignAgent: true },
     ],
@@ -327,7 +327,7 @@ export default function PaasConfig() {
             <svg className="size-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M12 15v.01M12 12V8m0 12a9 9 0 110-18 9 9 0 010 18z" strokeLinecap="round" /></svg>
           </div>
           <h3 className="text-[#070808] text-[16px] mb-1" style={{ fontWeight: 600, ...ss04 }}>Access Restricted</h3>
-          <p className="text-[#b0b3b8] text-[12px]" style={ss04}>PaaS Admin Config is only available to ForeGate Platform Admins.</p>
+          <p className="text-[#b0b3b8] text-[12px]" style={ss04}>PaaS Admin Config is only available to PredictEx Platform Admins.</p>
         </div>
       </div>
     );
@@ -525,7 +525,7 @@ export default function PaasConfig() {
         <div className="space-y-4">
           <SectionCard
             title="Permission Rules Matrix"
-            subtitle="Define which actions each tenant role can perform within User Management. Critical permissions (marked FG ONLY) require ForeGate Platform Admin and cannot be delegated to merchants."
+            subtitle="Define which actions each tenant role can perform within User Management. Critical permissions (marked FG ONLY) require PredictEx Platform Admin and cannot be delegated to merchants."
             badge={<span className="text-[9px] px-2 py-0.5 rounded-full bg-purple-50 text-purple-500" style={{ fontWeight: 600, ...ss04 }}>{config.permissions.length} RULES</span>}
             actions={
               <div className="flex gap-1 flex-wrap">
@@ -671,7 +671,7 @@ export default function PaasConfig() {
                 <div>
                   <p className="text-amber-700 text-[11px]" style={{ fontWeight: 600, ...ss04 }}>Important Policy Note</p>
                   <p className="text-amber-600 text-[10px] mt-0.5" style={ss04}>
-                    Controls marked "FG ONLY" (suspend trading/deposit/withdraw, withdraw limits, withdraw fee, whitelist) are always reserved for ForeGate Platform Admin.
+                    Controls marked "FG ONLY" (suspend trading/deposit/withdraw, withdraw limits, withdraw fee, whitelist) are always reserved for PredictEx Platform Admin.
                     Enabling "Merchant Override" allows Merchant Admins to also manage these controls for their own tenant users. All actions are audit-logged regardless.
                   </p>
                 </div>

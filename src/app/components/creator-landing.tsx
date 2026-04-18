@@ -63,12 +63,12 @@ export function CreatorLanding() {
         </div>
       </div>
 
-      {/* ===== WHAT IS FOREGATE ===== */}
+      {/* ===== WHAT IS PREDICTEX ===== */}
       <div className="bg-[#fafafa] relative">
         <div className="max-w-[1200px] mx-auto px-6 lg:px-8 py-20 lg:py-[120px] flex flex-col gap-6 items-center">
           <div className="flex items-center gap-1">
             <h2 className="text-[32px] lg:text-[40px] text-center leading-[1.3]" style={{ color: "#070808", fontWeight: 600, ...ss }}>
-              Ano ang ForeGate
+              Ano ang PredictEx
             </h2>
             {/* Gradient question mark */}
             <svg className="w-[24px] h-[38px] ml-1" viewBox="0 0 32 50.71" fill="none" style={{ transform: "rotate(20deg)" }}>
@@ -82,7 +82,7 @@ export function CreatorLanding() {
             </svg>
           </div>
           <p className="text-[14px] lg:text-[16px] text-center leading-[1.6] max-w-[900px]" style={{ color: "#84888c", ...ss }}>
-            Sa ForeGate, kahit sino ay pwedeng gawing prediction market ang kanilang opinyon. Content creator ka man, community leader, o may matapang na hot take — ngayon ay may paraan ka nang kumita mula sa iyong impluwensya. Ang aming mga plug-in tools ay ginagawang madali ang pag-engage ng iyong audience at kumita mula sa iyong influence.
+            Sa PredictEx, kahit sino ay pwedeng gawing prediction market ang kanilang opinyon. Content creator ka man, community leader, o may matapang na hot take — ngayon ay may paraan ka nang kumita mula sa iyong impluwensya. Ang aming mga plug-in tools ay ginagawang madali ang pag-engage ng iyong audience at kumita mula sa iyong influence.
           </p>
         </div>
       </div>
@@ -180,7 +180,7 @@ export function CreatorLanding() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 relative">
             {[
-              { num: "01", text: "Mag-apply bilang ForeGate Creator", cta: true },
+              { num: "01", text: "Mag-apply bilang PredictEx Creator", cta: true },
               { num: "02", text: "I-launch ang iyong unang prediction market sa ilang minuto", cta: false },
               { num: "03", text: "I-share sa iyong audience at magsimulang kumita", cta: false },
               { num: "04", text: "Ma-access ang opisyal na suporta, exclusive incentives, at growth tools", cta: false },
@@ -222,7 +222,7 @@ export function CreatorLanding() {
             {/* Apply card */}
             <div className="rounded-xl border border-[#dfe0e2] p-8 flex flex-col justify-between gap-6 min-h-[160px]">
               <span className="text-[18px] lg:text-[20px] leading-[1.35]" style={{ color: "#070808", fontWeight: 600, ...ss }}>
-                Mag-apply bilang ForeGate Creator
+                Mag-apply bilang PredictEx Creator
               </span>
               <button
                 onClick={() => openAuth("signup")}
@@ -245,7 +245,7 @@ export function CreatorLanding() {
                   </svg>
                   <div className="flex flex-col">
                     <span className="text-[14px]" style={{ color: "#070808", fontWeight: 500, ...ss }}>Email</span>
-                    <span className="text-[12px]" style={{ color: "#070808", ...ss }}>business@foregate.com</span>
+                    <span className="text-[12px]" style={{ color: "#070808", ...ss }}>business@predictex.com</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -254,7 +254,7 @@ export function CreatorLanding() {
                   </svg>
                   <div className="flex flex-col">
                     <span className="text-[14px]" style={{ color: "#070808", fontWeight: 500, ...ss }}>Telegram</span>
-                    <span className="text-[12px]" style={{ color: "#070808", ...ss }}>t.me/ForeGate</span>
+                    <span className="text-[12px]" style={{ color: "#070808", ...ss }}>t.me/PredictEx</span>
                   </div>
                 </div>
               </div>

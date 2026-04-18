@@ -239,9 +239,9 @@ export function OmsLogin() {
           <p className="text-[#84888c] text-[12px] mb-1" style={ss04}>The account <span className="text-[#070808]" style={{ fontWeight: 600 }}>{disabledUser?.email || email}</span> has been disabled.</p>
           {disabledUser?.tenantName && <p className="text-[#b0b3b8] text-[11px] mb-4" style={ss04}>Tenant: {disabledUser.tenantName}</p>}
           <div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-5 text-left">
-            <p className="text-red-500 text-[11px]" style={{ fontWeight: 500, ...ss04 }}>This account has been suspended by the platform administrator. If you believe this is an error, please contact your administrator or the ForeGate support team.</p>
+            <p className="text-red-500 text-[11px]" style={{ fontWeight: 500, ...ss04 }}>This account has been suspended by the platform administrator. If you believe this is an error, please contact your administrator or the PredictEx support team.</p>
           </div>
-          <p className="text-[#b0b3b8] text-[11px] mb-4" style={ss04}>support@foregate.ph · +63 2 8888 GATE</p>
+          <p className="text-[#b0b3b8] text-[11px] mb-4" style={ss04}>support@predictex.ph · +63 2 8888 GATE</p>
           <button onClick={() => { setScreen("login"); resetFields(); setDisabledUser(null); }} className="w-full h-10 bg-[#f5f6f8] border border-[#e5e7eb] text-[#84888c] text-[13px] rounded-xl cursor-pointer hover:bg-[#e5e7eb] transition-colors" style={{ fontWeight: 600, ...ss04 }}>Back to Sign In</button>
         </div>
       </AuthCard>
@@ -387,12 +387,12 @@ export function OmsLogin() {
 
   /* PASSWORD LOGIN (default) */
   return (
-    <AuthCard title="ForeGate Platform" subtitle="Multi-Tenant Operator Management System">
+    <AuthCard title="PredictEx Platform" subtitle="Multi-Tenant Operator Management System">
       {success && <div className="mb-4 p-2.5 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-600 text-[12px]" style={ss04}>{success}</div>}
       <form onSubmit={handlePasswordLogin} className="bg-white border border-[#f0f1f3] rounded-2xl p-6" style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.06)" }}>
         <div className="mb-4">
           <label className="block text-[#84888c] text-[12px] mb-1.5" style={{ fontWeight: 500, ...ss04 }}>Email</label>
-          <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full h-10 px-3 bg-[#f5f6f8] border border-[#e5e7eb] rounded-xl text-[#070808] text-[13px] outline-none focus:border-[#ff5222] transition-colors placeholder-[#b0b3b8]" placeholder="admin@foregate.ph" style={ss04} />
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full h-10 px-3 bg-[#f5f6f8] border border-[#e5e7eb] rounded-xl text-[#070808] text-[13px] outline-none focus:border-[#ff5222] transition-colors placeholder-[#b0b3b8]" placeholder="admin@predictex.ph" style={ss04} />
         </div>
         <div className="mb-4">
           <div className="flex items-center justify-between mb-1.5">
@@ -417,11 +417,11 @@ export function OmsLogin() {
         <p className="text-[#84888c] text-[11px]" style={{ fontWeight: 500, ...ss04 }}>Demo Accounts:</p>
         <div className="space-y-1">
           {[
-            { badge: "PLATFORM", cls: "bg-red-50 text-red-500", txt: "admin@foregate.ph / admin123" },
-            { badge: "PLATFORM", cls: "bg-orange-50 text-orange-500", txt: "ops@foregate.ph / ops123" },
-            { badge: "MERCHANT", cls: "bg-blue-50 text-blue-500", txt: "admin@luckytaya.ph / lt123" },
+            { badge: "PLATFORM", cls: "bg-red-50 text-red-500", txt: "admin@predictex.ph / admin123" },
+            { badge: "PLATFORM", cls: "bg-orange-50 text-orange-500", txt: "ops@predictex.ph / ops123" },
+            { badge: "MERCHANT", cls: "bg-blue-50 text-blue-500", txt: "admin@predictex.ph / lt123" },
             { badge: "1ST LOGIN", cls: "bg-amber-50 text-amber-600", txt: "newadmin@betmanila.com / Bm$4xK9q2w" },
-            { badge: "DISABLED", cls: "bg-red-50 text-red-500", txt: "disabled@luckytaya.ph / disabled123" },
+            { badge: "DISABLED", cls: "bg-red-50 text-red-500", txt: "disabled@predictex.ph / disabled123" },
           ].map(d => (
             <div key={d.txt} className="flex items-center gap-2">
               <span className={`text-[8px] px-1.5 py-0.5 rounded ${d.cls}`} style={{ fontWeight: 600, ...ss04 }}>{d.badge}</span>
@@ -458,7 +458,7 @@ function FirstLoginGate() {
       const result = completeFirstLogin(newPw);
       setLoading(false);
       if (!result.ok) setError(result.error || "Failed to update password");
-      else showOmsToast("Password updated! Welcome to ForeGate.", "success");
+      else showOmsToast("Password updated! Welcome to PredictEx.", "success");
     }, 600);
   };
 
@@ -721,7 +721,7 @@ function OmsSidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () 
                 <svg className="size-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
               </div>
               <div>
-                <span className="text-[#070808] text-[13px] block leading-tight" style={{ fontWeight: 700, ...ss04 }}>ForeGate</span>
+                <span className="text-[#070808] text-[13px] block leading-tight" style={{ fontWeight: 700, ...ss04 }}>PredictEx</span>
                 <span className="text-[#b0b3b8] text-[9px] block leading-tight" style={{ fontWeight: 500, ...ss04 }}>SaaS Platform v2.0</span>
               </div>
             </div>

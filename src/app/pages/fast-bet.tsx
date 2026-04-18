@@ -449,7 +449,7 @@ export default function FastBetPage() {
         <Header onDeposit={openDeposit} onMenuToggle={() => setSidebarOpen(true)} />
 
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-[1400px] mx-auto px-6 py-6 flex flex-col gap-6">
+          <div className="max-w-[1400px] mx-auto px-3 sm:px-6 py-4 sm:py-6 flex flex-col gap-4 sm:gap-6 pb-24 md:pb-6">
 
             {/* ===== TAB BAR: Events / Fast Bet ===== */}
             <div className="flex flex-col gap-4">
@@ -546,7 +546,7 @@ export default function FastBetPage() {
             </div>
 
             {/* ===== BET PANEL ===== */}
-            <div className="grid grid-cols-[1fr_380px] gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_380px] gap-6">
               <div className="flex flex-col gap-6">
                 {/* ===== POSITIONS / HISTORY ===== */}
                 <div className="flex flex-col gap-4">
@@ -561,8 +561,8 @@ export default function FastBetPage() {
                     ))}
                   </div>
 
-                  {/* Table header */}
-                  <div className="flex items-center gap-2 py-2 border-b" style={{ borderColor: "#f5f6f7" }}>
+                  {/* Table header - desktop */}
+                  <div className="hidden sm:flex items-center gap-2 py-2 border-b" style={{ borderColor: "#f5f6f7" }}>
                     <div className="w-[240px] shrink-0"><span className="text-[12px]" style={{ color: "#84888c", ...ss, ...pp }}>Market</span></div>
                     <div className="flex-1"><span className="text-[12px]" style={{ color: "#84888c", ...ss, ...pp }}>#</span></div>
                     <div className="flex-1"><span className="text-[12px]" style={{ color: "#84888c", ...ss, ...pp }}>Direksiyon</span></div>
@@ -571,37 +571,71 @@ export default function FastBetPage() {
                     <div className="w-[100px] shrink-0 text-right"><span className="text-[12px]" style={{ color: "#84888c", ...ss, ...pp }}>Est. PNL</span></div>
                   </div>
 
-                  {/* Table rows */}
+                  {/* Table rows - desktop */}
                   {positions.map(pos => (
-                    <div key={pos.id} className="flex items-center gap-2 py-3 border-b transition-colors hover:bg-[#fafafa]" style={{ borderColor: "#f5f6f7" }}>
-                      <div className="w-[240px] shrink-0 flex items-center gap-2">
-                        <EmojiIcon emoji={pos.emoji} size={22} />
-                        <span className="text-[13px]" style={{ color: "#070808", fontWeight: 500, ...ss, ...pp }}>{pos.game}</span>
+                    <div key={pos.id}>
+                      {/* Desktop row */}
+                      <div className="hidden sm:flex items-center gap-2 py-3 border-b transition-colors hover:bg-[#fafafa]" style={{ borderColor: "#f5f6f7" }}>
+                        <div className="w-[240px] shrink-0 flex items-center gap-2">
+                          <EmojiIcon emoji={pos.emoji} size={22} />
+                          <span className="text-[13px]" style={{ color: "#070808", fontWeight: 500, ...ss, ...pp }}>{pos.game}</span>
+                        </div>
+                        <div className="flex-1"><span className="text-[13px]" style={{ color: "#070808", ...ss, ...pp }}>{pos.roundId}</span></div>
+                        <div className="flex-1">
+                          <span className="text-[13px] px-2 py-0.5 rounded" style={{
+                            background: pos.side === "up" ? "#e6fff3" : "#fff1f0",
+                            color: pos.side === "up" ? "#00bf85" : "#f5222d",
+                            fontWeight: 500, ...ss, ...pp,
+                          }}>
+                            {pos.side === "up" ? activeGame.upLabel : activeGame.downLabel}
+                          </span>
+                        </div>
+                        <div className="flex-1"><span className="text-[13px]" style={{ color: "#070808", ...ss, ...pp }}>₱{pos.amount.toLocaleString()}</span></div>
+                        <div className="flex-1">
+                          <span className="text-[13px]" style={{
+                            color: pos.status === "Won" ? "#00bf85" : pos.status === "Lost" ? "#f5222d" : "#84888c",
+                            fontWeight: 500, ...ss, ...pp,
+                          }}>{pos.status === "Won" ? "Panalo" : pos.status === "Lost" ? "Talo" : "Open"}</span>
+                        </div>
+                        <div className="w-[100px] shrink-0 text-right">
+                          <span className="text-[13px]" style={{
+                            color: pos.pnl > 0 ? "#00bf85" : pos.pnl < 0 ? "#f5222d" : "#84888c",
+                            fontWeight: 600, ...ss, ...pp,
+                          }}>
+                            {pos.pnl > 0 ? "+" : ""}{pos.pnl === 0 ? "-" : `₱${Math.abs(pos.pnl).toLocaleString()}`}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex-1"><span className="text-[13px]" style={{ color: "#070808", ...ss, ...pp }}>{pos.roundId}</span></div>
-                      <div className="flex-1">
-                        <span className="text-[13px] px-2 py-0.5 rounded" style={{
-                          background: pos.side === "up" ? "#e6fff3" : "#fff1f0",
-                          color: pos.side === "up" ? "#00bf85" : "#f5222d",
-                          fontWeight: 500, ...ss, ...pp,
-                        }}>
-                          {pos.side === "up" ? activeGame.upLabel : activeGame.downLabel}
-                        </span>
-                      </div>
-                      <div className="flex-1"><span className="text-[13px]" style={{ color: "#070808", ...ss, ...pp }}>₱{pos.amount.toLocaleString()}</span></div>
-                      <div className="flex-1">
-                        <span className="text-[13px]" style={{
-                          color: pos.status === "Won" ? "#00bf85" : pos.status === "Lost" ? "#f5222d" : "#84888c",
-                          fontWeight: 500, ...ss, ...pp,
-                        }}>{pos.status === "Won" ? "Panalo" : pos.status === "Lost" ? "Talo" : "Open"}</span>
-                      </div>
-                      <div className="w-[100px] shrink-0 text-right">
-                        <span className="text-[13px]" style={{
-                          color: pos.pnl > 0 ? "#00bf85" : pos.pnl < 0 ? "#f5222d" : "#84888c",
-                          fontWeight: 600, ...ss, ...pp,
-                        }}>
-                          {pos.pnl > 0 ? "+" : ""}{pos.pnl === 0 ? "-" : `₱${Math.abs(pos.pnl).toLocaleString()}`}
-                        </span>
+
+                      {/* Mobile card */}
+                      <div className="sm:hidden bg-white rounded-xl border border-[#f0f1f3] p-3 mb-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <EmojiIcon emoji={pos.emoji} size={20} />
+                            <span className="text-[13px]" style={{ color: "#070808", fontWeight: 500, ...ss, ...pp }}>{pos.game}</span>
+                            <span className="text-[11px] text-[#b0b3b8]" style={ss}>#{pos.roundId}</span>
+                          </div>
+                          <span className="text-[13px]" style={{
+                            color: pos.pnl > 0 ? "#00bf85" : pos.pnl < 0 ? "#f5222d" : "#84888c",
+                            fontWeight: 600, ...ss, ...pp,
+                          }}>
+                            {pos.pnl > 0 ? "+" : ""}{pos.pnl === 0 ? "-" : `₱${Math.abs(pos.pnl).toLocaleString()}`}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 mt-2">
+                          <span className="text-[12px] px-2 py-0.5 rounded" style={{
+                            background: pos.side === "up" ? "#e6fff3" : "#fff1f0",
+                            color: pos.side === "up" ? "#00bf85" : "#f5222d",
+                            fontWeight: 500, ...ss,
+                          }}>
+                            {pos.side === "up" ? activeGame.upLabel : activeGame.downLabel}
+                          </span>
+                          <span className="text-[12px] text-[#070808]" style={{ ...ss }}>₱{pos.amount.toLocaleString()}</span>
+                          <span className="text-[12px]" style={{
+                            color: pos.status === "Won" ? "#00bf85" : pos.status === "Lost" ? "#f5222d" : "#84888c",
+                            fontWeight: 500, ...ss,
+                          }}>{pos.status === "Won" ? "Panalo" : pos.status === "Lost" ? "Talo" : "Open"}</span>
+                        </div>
                       </div>
                     </div>
                   ))}

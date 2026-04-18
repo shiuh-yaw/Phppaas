@@ -1,0 +1,419 @@
+/*
+ * ForeGate / Lucky Taya — Global Dark Mode Overrides
+ * ===================================================
+ * Because 90%+ of components use hardcoded hex colors (bg-white, text-[#070808], etc.),
+ * this stylesheet provides a cascading dark mode layer that remaps them via CSS.
+ *
+ * Strategy:
+ * 1. CSS custom properties for platform colors (--fg-*)
+ * 2. .dark class overrides for inline Tailwind arbitrary values
+ * 3. Targeted element selectors for common patterns
+ */
+
+/* ===== Platform Color Tokens ===== */
+:root {
+  --fg-bg: #ffffff;
+  --fg-bg-subtle: #fafbfc;
+  --fg-bg-muted: #fafafa;
+  --fg-bg-card: #ffffff;
+  --fg-bg-input: #fafafa;
+  --fg-bg-hover: #f5f6f7;
+  --fg-bg-surface: #f9f9fa;
+  --fg-border: #f0f1f3;
+  --fg-border-subtle: #f5f6f7;
+  --fg-border-medium: #e5e7eb;
+  --fg-border-strong: #eef0f2;
+  --fg-text: #070808;
+  --fg-text-secondary: #555555;
+  --fg-text-muted: #84888c;
+  --fg-text-faint: #b0b3b8;
+  --fg-text-ghost: #a0a3a7;
+  --fg-text-pale: #9ca3af;
+  --fg-divider: #dfe0e2;
+  --fg-shadow-color: rgba(0,0,0,0.04);
+  --fg-shadow-strong: rgba(0,0,0,0.06);
+  --fg-overlay: rgba(0,0,0,0.40);
+}
+
+.dark {
+  --fg-bg: #0f1117;
+  --fg-bg-subtle: #151821;
+  --fg-bg-muted: #1a1d27;
+  --fg-bg-card: #181b24;
+  --fg-bg-input: #1e2130;
+  --fg-bg-hover: #1e2130;
+  --fg-bg-surface: #1a1d27;
+  --fg-border: #2a2d3a;
+  --fg-border-subtle: #22252f;
+  --fg-border-medium: #333648;
+  --fg-border-strong: #2a2d3a;
+  --fg-text: #e8eaed;
+  --fg-text-secondary: #b0b3bc;
+  --fg-text-muted: #8a8d96;
+  --fg-text-faint: #5f6270;
+  --fg-text-ghost: #4a4d58;
+  --fg-text-pale: #6b6e7a;
+  --fg-divider: #2a2d3a;
+  --fg-shadow-color: rgba(0,0,0,0.2);
+  --fg-shadow-strong: rgba(0,0,0,0.3);
+  --fg-overlay: rgba(0,0,0,0.65);
+}
+
+/* ===== Body & Root ===== */
+.dark body,
+.dark {
+  background-color: var(--fg-bg) !important;
+  color: var(--fg-text) !important;
+}
+
+/* ===== Global background overrides ===== */
+.dark .bg-white { background-color: var(--fg-bg-card) !important; }
+.dark .bg-\[\#ffffff\] { background-color: var(--fg-bg-card) !important; }
+.dark .bg-\[\#fafbfc\] { background-color: var(--fg-bg-subtle) !important; }
+.dark .bg-\[\#fafafa\] { background-color: var(--fg-bg-muted) !important; }
+.dark .bg-\[\#f9f9fa\] { background-color: var(--fg-bg-surface) !important; }
+.dark .bg-\[\#f5f6f7\] { background-color: var(--fg-bg-hover) !important; }
+.dark .bg-\[\#f7f8f9\] { background-color: var(--fg-bg-hover) !important; }
+.dark .bg-\[\#f3f3f5\] { background-color: var(--fg-bg-input) !important; }
+.dark .bg-\[\#f0f1f3\] { background-color: var(--fg-bg-hover) !important; }
+.dark .bg-\[\#f7f8fa\] { background-color: var(--fg-bg) !important; }
+
+/* White with opacity */
+.dark .bg-white\/95 { background-color: rgba(15, 17, 23, 0.95) !important; }
+.dark .bg-white\/90 { background-color: rgba(15, 17, 23, 0.9) !important; }
+.dark .bg-white\/80 { background-color: rgba(15, 17, 23, 0.8) !important; }
+
+/* ===== Border overrides ===== */
+.dark .border-\[\#f0f1f3\] { border-color: var(--fg-border) !important; }
+.dark .border-\[\#f5f6f7\] { border-color: var(--fg-border-subtle) !important; }
+.dark .border-\[\#e5e7eb\] { border-color: var(--fg-border-medium) !important; }
+.dark .border-\[\#eef0f2\] { border-color: var(--fg-border-strong) !important; }
+.dark .border-\[\#f9fafb\] { border-color: var(--fg-border-subtle) !important; }
+.dark .border-\[\#dfe0e2\] { border-color: var(--fg-divider) !important; }
+
+/* ===== Text color overrides ===== */
+.dark .text-\[\#070808\] { color: var(--fg-text) !important; }
+.dark .text-\[\#555\] { color: var(--fg-text-secondary) !important; }
+.dark .text-\[\#555555\] { color: var(--fg-text-secondary) !important; }
+.dark .text-\[\#84888c\] { color: var(--fg-text-muted) !important; }
+.dark .text-\[\#b0b3b8\] { color: var(--fg-text-faint) !important; }
+.dark .text-\[\#a0a3a7\] { color: var(--fg-text-ghost) !important; }
+.dark .text-\[\#9ca3af\] { color: var(--fg-text-pale) !important; }
+.dark .text-\[\#8B93A0\] { color: var(--fg-text-muted) !important; }
+
+/* Opacity-based text on #070808 */
+.dark .text-\[\#070808\]\/70 { color: rgba(232, 234, 237, 0.7) !important; }
+.dark .text-\[\#070808\]\/80 { color: rgba(232, 234, 237, 0.8) !important; }
+.dark .text-\[\#070808\]\/50 { color: rgba(232, 234, 237, 0.5) !important; }
+
+/* ===== Hover state overrides ===== */
+.dark .hover\:bg-\[\#f5f6f7\]:hover { background-color: var(--fg-bg-hover) !important; }
+.dark .hover\:bg-\[\#fafafa\]:hover { background-color: var(--fg-bg-muted) !important; }
+.dark .hover\:bg-\[\#f9f9fa\]:hover { background-color: var(--fg-bg-surface) !important; }
+.dark .hover\:text-\[\#070808\]:hover { color: var(--fg-text) !important; }
+.dark .hover\:text-\[\#84888c\]:hover { color: var(--fg-text-muted) !important; }
+.dark .hover\:bg-\[\#fef2f2\]:hover { background-color: rgba(220, 38, 38, 0.1) !important; }
+.dark .hover\:border-\[\#dfe0e2\]:hover { border-color: var(--fg-divider) !important; }
+
+/* ===== Special background patterns ===== */
+/* Subtle colored backgrounds - make them work in dark mode */
+.dark .bg-\[\#fff4ed\] { background-color: rgba(255, 82, 34, 0.12) !important; }
+.dark .bg-\[\#eef4ff\] { background-color: rgba(59, 130, 246, 0.12) !important; }
+.dark .bg-\[\#fef2f2\] { background-color: rgba(220, 38, 38, 0.1) !important; }
+.dark .bg-\[\#f3f0ff\] { background-color: rgba(139, 92, 246, 0.12) !important; }
+.dark .bg-\[\#e6fff3\] { background-color: rgba(0, 191, 133, 0.12) !important; }
+.dark .bg-\[\#eff6ff\] { background-color: rgba(59, 130, 246, 0.1) !important; }
+.dark .bg-\[\#ecfdf5\] { background-color: rgba(16, 185, 129, 0.1) !important; }
+.dark .bg-\[\#fffbeb\] { background-color: rgba(245, 158, 11, 0.1) !important; }
+.dark .bg-\[\#f0fdf4\] { background-color: rgba(34, 197, 94, 0.1) !important; }
+.dark .bg-\[\#fef9c3\] { background-color: rgba(234, 179, 8, 0.12) !important; }
+.dark .bg-\[\#f5f3ff\] { background-color: rgba(139, 92, 246, 0.1) !important; }
+.dark .bg-\[\#fdf2f8\] { background-color: rgba(236, 72, 153, 0.1) !important; }
+.dark .bg-\[\#f0f9ff\] { background-color: rgba(14, 165, 233, 0.1) !important; }
+
+/* Blue info boxes */
+.dark .border-\[\#bfdbfe\] { border-color: rgba(59, 130, 246, 0.25) !important; }
+
+/* ===== Divider / separator overrides ===== */
+.dark .bg-\[\#f5f6f7\] { background-color: var(--fg-border-subtle) !important; }
+.dark .bg-\[\#f0f1f3\] { background-color: var(--fg-border) !important; }
+.dark .bg-\[\#eef0f2\] { background-color: var(--fg-border-strong) !important; }
+.dark .bg-\[\#dfe0e2\] { background-color: var(--fg-divider) !important; }
+.dark .bg-\[\#e5e7eb\] { background-color: var(--fg-border-medium) !important; }
+.dark .bg-\[\#f9fafb\] { background-color: var(--fg-border-subtle) !important; }
+
+/* ===== Input fields ===== */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: var(--fg-bg-input) !important;
+  color: var(--fg-text) !important;
+  border-color: var(--fg-border) !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--fg-text-faint) !important;
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  background-color: var(--fg-bg-card) !important;
+  border-color: rgba(255, 82, 34, 0.4) !important;
+}
+
+/* ===== Shadow overrides ===== */
+.dark .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3), 0 4px 6px -4px rgba(0,0,0,0.3) !important; }
+.dark .shadow-xl { box-shadow: 0 20px 25px -5px rgba(0,0,0,0.35), 0 8px 10px -6px rgba(0,0,0,0.3) !important; }
+.dark .shadow-sm { box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important; }
+
+/* ===== Scrollbar styling ===== */
+.dark ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: var(--fg-bg-subtle);
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--fg-border-medium);
+  border-radius: 3px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--fg-text-faint);
+}
+
+/* ===== Modal / overlay backdrops ===== */
+.dark .bg-black\/40 { background-color: var(--fg-overlay) !important; }
+.dark .bg-black\/50 { background-color: rgba(0,0,0,0.6) !important; }
+.dark .bg-black\/60 { background-color: rgba(0,0,0,0.7) !important; }
+
+/* ===== Login / Signup page - white panel ===== */
+.dark .bg-white.flex-1,
+.dark .flex-1.bg-white {
+  background-color: var(--fg-bg) !important;
+}
+
+/* ===== Inline style color overrides via data attributes ===== */
+/* These are targeted at common style={{color: "#070808"}} patterns */
+/* We handle them by overriding text color on all elements within .dark */
+.dark [style*="color: #070808"],
+.dark [style*="color:#070808"],
+.dark [style*="color: rgb(7, 8, 8)"] {
+  color: var(--fg-text) !important;
+}
+
+.dark [style*="color: #555"],
+.dark [style*="color:#555"] {
+  color: var(--fg-text-secondary) !important;
+}
+
+.dark [style*="color: #84888c"],
+.dark [style*="color:#84888c"] {
+  color: var(--fg-text-muted) !important;
+}
+
+.dark [style*="color: #b0b3b8"],
+.dark [style*="color:#b0b3b8"] {
+  color: var(--fg-text-faint) !important;
+}
+
+.dark [style*="color: #a0a3a7"],
+.dark [style*="color:#a0a3a7"] {
+  color: var(--fg-text-ghost) !important;
+}
+
+/* Background inline style overrides */
+.dark [style*="background: #fff"],
+.dark [style*="background:#fff"],
+.dark [style*="background-color: #fff"],
+.dark [style*="background-color:#fff"],
+.dark [style*="background: white"],
+.dark [style*="background-color: white"] {
+  background-color: var(--fg-bg-card) !important;
+}
+
+.dark [style*="background: #fafbfc"],
+.dark [style*="background:#fafbfc"],
+.dark [style*="background-color: #fafbfc"] {
+  background-color: var(--fg-bg-subtle) !important;
+}
+
+.dark [style*="background: #fafafa"],
+.dark [style*="background:#fafafa"],
+.dark [style*="background-color: #fafafa"] {
+  background-color: var(--fg-bg-muted) !important;
+}
+
+.dark [style*="background: #f5f6f7"],
+.dark [style*="background:#f5f6f7"] {
+  background-color: var(--fg-bg-hover) !important;
+}
+
+/* Border inline style overrides */
+.dark [style*="border-color: #f0f1f3"],
+.dark [style*="border: 1px solid #f0f1f3"],
+.dark [style*="border:1px solid #f0f1f3"] {
+  border-color: var(--fg-border) !important;
+}
+
+.dark [style*="border: 1px solid #f5f6f7"],
+.dark [style*="border: 1.5px solid #fde68a"] {
+  border-color: var(--fg-border) !important;
+}
+
+.dark [style*="border: 1px solid #e5e7eb"],
+.dark [style*="border: 1.5px solid"] {
+  border-color: var(--fg-border-medium) !important;
+}
+
+/* ===== Card shadow overrides ===== */
+.dark [style*="box-shadow: 0 1px 12px rgba(0,0,0,0.04)"],
+.dark [style*="boxShadow"] {
+  /* handled by individual component adjustments */
+}
+
+/* ===== Emerald/Success tints in dark ===== */
+.dark .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.1) !important; }
+.dark .bg-amber-50 { background-color: rgba(245, 158, 11, 0.1) !important; }
+.dark .bg-orange-50 { background-color: rgba(249, 115, 22, 0.1) !important; }
+.dark .bg-blue-50 { background-color: rgba(59, 130, 246, 0.1) !important; }
+.dark .bg-red-50 { background-color: rgba(239, 68, 68, 0.1) !important; }
+.dark .bg-purple-50 { background-color: rgba(168, 85, 247, 0.1) !important; }
+.dark .bg-pink-50 { background-color: rgba(236, 72, 153, 0.1) !important; }
+.dark .bg-gray-50 { background-color: var(--fg-bg-muted) !important; }
+.dark .bg-gray-100 { background-color: var(--fg-bg-hover) !important; }
+
+/* Tinted 100-level backgrounds */
+.dark .bg-emerald-100 { background-color: rgba(16, 185, 129, 0.15) !important; }
+.dark .bg-amber-100 { background-color: rgba(245, 158, 11, 0.15) !important; }
+.dark .bg-red-100 { background-color: rgba(239, 68, 68, 0.15) !important; }
+.dark .bg-blue-100 { background-color: rgba(59, 130, 246, 0.15) !important; }
+.dark .bg-purple-100 { background-color: rgba(168, 85, 247, 0.15) !important; }
+
+/* ===== Ring/outline overrides ===== */
+.dark .ring-white { --tw-ring-color: var(--fg-bg-card) !important; }
+.dark .ring-2.ring-white { --tw-ring-color: var(--fg-bg-card) !important; }
+
+/* ===== Gradient from/to overrides ===== */
+.dark .from-amber-50 { --tw-gradient-from: rgba(245, 158, 11, 0.1) !important; }
+.dark .to-orange-50 { --tw-gradient-to: rgba(249, 115, 22, 0.1) !important; }
+
+/* ===== Table overrides ===== */
+.dark table th {
+  background-color: var(--fg-bg-subtle) !important;
+  color: var(--fg-text-muted) !important;
+  border-color: var(--fg-border) !important;
+}
+.dark table td {
+  border-color: var(--fg-border-subtle) !important;
+}
+.dark table tr:hover td {
+  background-color: var(--fg-bg-hover) !important;
+}
+
+/* ===== Login/Signup white right panel ===== */
+.dark .min-h-screen .bg-white {
+  background-color: var(--fg-bg) !important;
+}
+
+/* ===== Specific component fixes ===== */
+
+/* Bottom nav */
+.dark nav[class*="bg-white"][class*="border-t"] {
+  background-color: var(--fg-bg-card) !important;
+  border-color: var(--fg-border) !important;
+}
+
+/* Header */
+.dark header {
+  background-color: var(--fg-bg-card) !important;
+  border-color: var(--fg-border) !important;
+}
+
+.dark header[style*="box-shadow"] {
+  box-shadow: 0 1px 12px rgba(0,0,0,0.15) !important;
+}
+
+/* Sidebar */
+.dark aside,
+.dark [class*="border-r"][class*="bg-white"][class*="w-\[210px\]"] {
+  background-color: var(--fg-bg-card) !important;
+  border-color: var(--fg-border) !important;
+}
+
+/* Footer */
+.dark footer {
+  background-color: var(--fg-bg-subtle) !important;
+}
+
+/* Dropdown menus */
+.dark [class*="absolute"][class*="bg-white"][class*="rounded-xl"][class*="shadow"] {
+  background-color: var(--fg-bg-card) !important;
+  border-color: var(--fg-border) !important;
+}
+
+/* Cards with border */
+.dark [class*="bg-white"][class*="rounded-2xl"][class*="border"] {
+  background-color: var(--fg-bg-card) !important;
+  border-color: var(--fg-border) !important;
+}
+.dark [class*="bg-white"][class*="rounded-xl"][class*="border"] {
+  background-color: var(--fg-bg-card) !important;
+  border-color: var(--fg-border) !important;
+}
+.dark [class*="bg-white"][class*="rounded-lg"][class*="border"] {
+  background-color: var(--fg-bg-card) !important;
+  border-color: var(--fg-border) !important;
+}
+
+/* ===== Keep accent colors vibrant ===== */
+/* The #ff5222 orange, emerald, etc. should stay the same in dark mode */
+/* Only override neutral/gray tones */
+
+/* ===== SVG Icon Fixes ===== */
+/* Override hardcoded fill/stroke on SVG elements that use dark colors */
+/* This catches ALL icons across icons.tsx, two-tone-icons.tsx, and inline SVGs */
+
+/* Primary dark fills/strokes → light in dark mode */
+.dark [fill="#070808"] { fill: #e8eaed !important; }
+.dark [stroke="#070808"] { stroke: #e8eaed !important; }
+
+/* Gray fills used in dropdown menu icons (header.tsx) */
+.dark [fill="#8B93A0"] { fill: #9ca0ab !important; }
+.dark [fill="#B0B7C3"] { fill: #7a8090 !important; }
+
+/* Muted icon fills */
+.dark [fill="#84888C"] { fill: #8a8d96 !important; }
+.dark [stroke="#84888C"] { stroke: #8a8d96 !important; }
+.dark [fill="#A0A3A7"] { fill: #6b6e7a !important; }
+.dark [stroke="#A0A3A7"] { stroke: #6b6e7a !important; }
+.dark [fill="#b0b3b8"] { fill: #5f6270 !important; }
+.dark [stroke="#b0b3b8"] { stroke: #5f6270 !important; }
+.dark [fill="#9ca3af"] { fill: #6b6e7a !important; }
+.dark [stroke="#9ca3af"] { stroke: #6b6e7a !important; }
+
+/* White SVG elements on dark bg stay white — but white on white card needs to flip */
+/* Keep white fills where they're used as accent on colored backgrounds (like #ff5222 bg) */
+
+/* SVG text fill */
+.dark svg text[fill="#070808"] { fill: #e8eaed !important; }
+
+/* Inline SVGs using stroke="currentColor" automatically inherit text color — no fix needed */
+
+/* ===== Transition for dark mode toggle ===== */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0.15s;
+  transition-timing-function: ease-out;
+}
+
+/* Exclude animations from transition */
+[style*="animation"],
+[class*="animate-"],
+[class*="transition-"] {
+  transition-property: background-color, border-color, color, box-shadow;
+}

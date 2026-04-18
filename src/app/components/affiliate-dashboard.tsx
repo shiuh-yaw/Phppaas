@@ -336,7 +336,7 @@ export function AffiliateDashboard({ referralLink, copied, onCopyLink, onBack }:
         )}
 
         <div className="flex items-center justify-center py-6">
-          <span className="text-[10px] text-[#a0a3a7]" style={ss}>PAGCOR Licensed — Lucky Taya Affiliate Program &copy; 2026</span>
+          <span className="text-[10px] text-[#a0a3a7]" style={ss}>PAGCOR Licensed — PredictEx Affiliate Program &copy; 2026</span>
         </div>
       </div>
     </div>

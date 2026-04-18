@@ -2,18 +2,19 @@ import { useNavigate, useLocation } from "react-router";
 import imgFrame2087325367 from "figma:asset/aa22ee141c47adc40b93dee89db917612452e751.png";
 import { ChartBarIcon, LightbulbIcon, UserIcon, RankingIcon, GiftIcon, BoltIcon, AffiliateIcon, NotificationBellIcon } from "./icons";
 import { EmojiIcon } from "./two-tone-icons";
+import { useT } from "../i18n/useT";
 
 const ss04 = { fontFeatureSettings: "'ss04'" };
 
-const navItems = [
-  { label: "Mga Market", icon: ChartBarIcon, route: "/markets" },
-  { label: "Fast Bet", icon: BoltIcon, route: "/fast-bet" },
-  { label: "Creator", icon: LightbulbIcon, route: "/creator" },
-  { label: "Portfolio", icon: UserIcon, route: "/portfolio" },
-  { label: "Leaderboard", icon: RankingIcon, route: "/leaderboard" },
-  { label: "Rewards", icon: GiftIcon, route: "/rewards" },
-  { label: "Affiliate", icon: AffiliateIcon, route: "/affiliate" },
-  { label: "Mga Notifications", icon: NotificationBellIcon, route: "/notifications" },
+const navItemsLocalized = [
+  { label: "sidebar.markets", icon: ChartBarIcon, route: "/markets" },
+  { label: "sidebar.fastBet", icon: BoltIcon, route: "/fast-bet" },
+  { label: "sidebar.creator", icon: LightbulbIcon, route: "/creator" },
+  { label: "sidebar.portfolio", icon: UserIcon, route: "/portfolio" },
+  { label: "sidebar.leaderboard", icon: RankingIcon, route: "/leaderboard" },
+  { label: "sidebar.rewards", icon: GiftIcon, route: "/rewards" },
+  { label: "sidebar.affiliate", icon: AffiliateIcon, route: "/affiliate" },
+  { label: "sidebar.notifications", icon: NotificationBellIcon, route: "/notifications" },
 ];
 
 const quickLinks = [
@@ -41,6 +42,7 @@ export function Sidebar({ onDeposit, isOpen, onClose }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
+  const t = useT();
 
   const handleNav = (route: string) => {
     navigate(route);
@@ -48,7 +50,7 @@ export function Sidebar({ onDeposit, isOpen, onClose }: SidebarProps) {
   };
 
   const sidebarContent = (
-    <div className="bg-white w-[210px] shrink-0 flex flex-col min-h-full border-r border-[#f5f6f7]" style={{ fontFamily: "'Poppins', sans-serif" }}>
+    <div className="bg-white dark:bg-[#181b24] w-[210px] shrink-0 flex flex-col min-h-full border-r border-[#f5f6f7] dark:border-[#2a2d3a]" style={{ fontFamily: "'Poppins', sans-serif" }}>
       {/* Logo */}
       <div className="px-5 pt-5 pb-5 flex items-center justify-between">
         <div className="flex flex-col gap-1">
@@ -66,7 +68,7 @@ export function Sidebar({ onDeposit, isOpen, onClose }: SidebarProps) {
             }}
           />
           <span className="text-[10px] text-[#84888c] leading-[1.5] tracking-wide" style={ss04}>
-            Lucky Taya Edition
+            PredictEx Edition
           </span>
         </div>
         {/* Close button - mobile only */}
@@ -79,11 +81,11 @@ export function Sidebar({ onDeposit, isOpen, onClose }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex flex-col gap-0.5 px-2">
-        {navItems.map((item) => {
+        {navItemsLocalized.map((item) => {
           const isActive = currentPath === item.route || currentPath.startsWith(item.route + "/");
           return (
             <button
-              key={item.label}
+              key={item.route}
               onClick={() => handleNav(item.route)}
               className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all cursor-pointer ${
                 isActive ? "bg-[#fff4ed]" : "hover:bg-[#f9f9fa]"
@@ -96,7 +98,7 @@ export function Sidebar({ onDeposit, isOpen, onClose }: SidebarProps) {
                 }`}
                 style={{ fontWeight: 500, ...ss04 }}
               >
-                {item.label}
+                {t(item.label)}
               </span>
             </button>
           );
@@ -106,7 +108,7 @@ export function Sidebar({ onDeposit, isOpen, onClose }: SidebarProps) {
       {/* Quick Links */}
       <div className="px-5 pt-5 pb-2">
         <span className="text-[10px] text-[#b0b3b8] uppercase tracking-wider" style={{ fontWeight: 600, ...ss04 }}>
-          Popular Games
+          {t("sidebar.quickLinks")}
         </span>
       </div>
       <div className="flex flex-col gap-0.5 px-2">
@@ -132,7 +134,7 @@ export function Sidebar({ onDeposit, isOpen, onClose }: SidebarProps) {
       {/* More Categories */}
       <div className="px-5 pt-4 pb-2">
         <span className="text-[10px] text-[#b0b3b8] uppercase tracking-wider" style={{ fontWeight: 600, ...ss04 }}>
-          More Markets
+          {t("sidebar.moreCategories")}
         </span>
       </div>
       <div className="flex flex-col gap-0.5 px-2">
@@ -153,10 +155,10 @@ export function Sidebar({ onDeposit, isOpen, onClose }: SidebarProps) {
       {/* Bottom CTA */}
       <div className="mt-auto px-4 pb-5">
         <div className="bg-gradient-to-br from-[#ff5222] to-[#ff7a4f] rounded-xl px-3.5 py-3 flex flex-col gap-1.5">
-          <span className="text-[11px] text-white" style={{ fontWeight: 600, ...ss04 }}>Mag-deposit na!</span>
+          <span className="text-[11px] text-white" style={{ fontWeight: 600, ...ss04 }}>{t("sidebar.depositNow")}</span>
           <span className="text-[10px] text-white/80 leading-[1.4]" style={ss04}>GCash, Maya, Bank Transfer</span>
           <button onClick={() => { onDeposit?.(); onClose?.(); }} className="bg-white text-[#ff5222] text-[11px] h-7 rounded-md mt-1 hover:bg-white/90 transition-colors cursor-pointer" style={{ fontWeight: 600, ...ss04 }}>
-            Deposit ₱
+            {t("header.deposit")} ₱
           </button>
         </div>
       </div>

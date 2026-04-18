@@ -215,7 +215,7 @@ export default function CVPayConfigPage() {
   const [config, setConfig] = useState<CVPayMerchantConfig>({
     ...DEFAULT_CONFIG,
     merchantId: "MCH_LKTAYA_001",
-    merchantName: activeMerchant?.name || "Lucky Taya",
+    merchantName: activeMerchant?.name || "PredictEx",
     apiKey: "cv_test_pk_1a2b3c4d5e6f7g8h9i0j",
     apiSecret: "cv_test_sk_z9y8x7w6v5u4t3s2r1q0p",
     webhookUrl: `https://api.${(activeMerchant?.name || "lucktaya").toLowerCase().replace(/\s/g, "")}.com/webhooks/cvpay`,

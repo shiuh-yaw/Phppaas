@@ -42,8 +42,8 @@ export function Filters() {
       </div>
 
       {/* Category Tabs (scrollable) + Filters */}
-      <div className="flex items-center justify-between pb-4 w-full gap-3">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 flex-1 min-w-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 w-full gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 flex-1 min-w-0" style={{ scrollbarWidth: "none" }}>
           {categories.map((cat) => (
             <button
               key={cat.label}
@@ -64,13 +64,13 @@ export function Filters() {
 
         <div className="flex items-center gap-2 shrink-0">
           {/* Filter Select */}
-          <div className="bg-[#f7f8f9] h-9 w-[130px] rounded-lg flex items-center px-3 gap-2 cursor-pointer hover:bg-[#eef0f2] transition-colors">
+          <div className="bg-[#f7f8f9] h-9 flex-1 sm:flex-initial sm:w-[130px] rounded-lg flex items-center px-3 gap-2 cursor-pointer hover:bg-[#eef0f2] transition-colors">
             <span className="flex-1 text-[12px] text-[#84888c] leading-[1.5]" style={ss04}>Lahat</span>
             <CaretDownIcon />
           </div>
 
           {/* Search */}
-          <div className="bg-[#f7f8f9] h-9 w-[180px] rounded-lg flex items-center px-3 gap-2 overflow-hidden">
+          <div className="bg-[#f7f8f9] h-9 flex-1 sm:flex-initial sm:w-[180px] rounded-lg flex items-center px-3 gap-2 overflow-hidden">
             <SearchIcon />
             <input
               type="text"

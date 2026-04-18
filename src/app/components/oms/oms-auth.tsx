@@ -71,7 +71,7 @@ export function generateVerificationCode(): string {
 
 /* ==================== MOCK MERCHANTS ==================== */
 export const MOCK_MERCHANTS: Merchant[] = [
-  { id: "MCH001", name: "Lucky Taya", slug: "lucky-taya", logo: "LT", primaryDomain: "luckytaya.ph", status: "active", plan: "enterprise", country: "Philippines", currency: "PHP", createdAt: "2025-06-01", ggr: 78400000, users: 485230, markets: 42 },
+  { id: "MCH001", name: "PredictEx", slug: "predictex", logo: "PX", primaryDomain: "predictex.ph", status: "active", plan: "enterprise", country: "Philippines", currency: "PHP", createdAt: "2025-06-01", ggr: 78400000, users: 485230, markets: 42 },
   { id: "MCH002", name: "BetManila", slug: "bet-manila", logo: "BM", primaryDomain: "betmanila.com", status: "active", plan: "growth", country: "Philippines", currency: "PHP", createdAt: "2025-09-15", ggr: 32100000, users: 128400, markets: 18 },
   { id: "MCH003", name: "Sugal PH", slug: "sugal-ph", logo: "SP", primaryDomain: "sugal.ph", status: "active", plan: "enterprise", country: "Philippines", currency: "PHP", createdAt: "2025-03-20", ggr: 56800000, users: 312000, markets: 35 },
   { id: "MCH004", name: "PinoyBets", slug: "pinoy-bets", logo: "PB", primaryDomain: "pinoybets.com", status: "onboarding", plan: "starter", country: "Philippines", currency: "PHP", createdAt: "2026-03-01", ggr: 0, users: 0, markets: 0 },
@@ -88,28 +88,28 @@ interface StoredAccount {
 }
 
 const INITIAL_ACCOUNTS: Record<string, StoredAccount> = {
-  "admin@foregate.ph": {
+  "admin@predictex.ph": {
     password: "admin123",
     user: {
-      id: "A001", name: "Carlos Reyes", email: "admin@foregate.ph",
+      id: "A001", name: "Carlos Reyes", email: "admin@predictex.ph",
       role: "platform_admin", avatar: "", lastLogin: "2026-03-13 08:45 PHT",
-      tenantName: "ForeGate Platform", status: "active", needsPasswordChange: false,
+      tenantName: "PredictEx Platform", status: "active", needsPasswordChange: false,
     },
   },
-  "ops@foregate.ph": {
+  "ops@predictex.ph": {
     password: "ops123",
     user: {
-      id: "A002", name: "Ana Dela Cruz", email: "ops@foregate.ph",
+      id: "A002", name: "Ana Dela Cruz", email: "ops@predictex.ph",
       role: "platform_ops", avatar: "", lastLogin: "2026-03-13 07:20 PHT",
-      tenantName: "ForeGate Platform", status: "active", needsPasswordChange: false,
+      tenantName: "PredictEx Platform", status: "active", needsPasswordChange: false,
     },
   },
-  "admin@luckytaya.ph": {
+  "admin@predictex.ph": {
     password: "lt123",
     user: {
-      id: "MA001", name: "Maria Santos", email: "admin@luckytaya.ph",
+      id: "MA001", name: "Maria Santos", email: "admin@predictex.ph",
       role: "merchant_admin", avatar: "", lastLogin: "2026-03-13 09:10 PHT",
-      merchantId: "MCH001", tenantName: "Lucky Taya", status: "active", needsPasswordChange: false,
+      merchantId: "MCH001", tenantName: "PredictEx", status: "active", needsPasswordChange: false,
     },
   },
   // First-time login demo account (auto-generated password sent via email)
@@ -122,12 +122,12 @@ const INITIAL_ACCOUNTS: Record<string, StoredAccount> = {
     },
   },
   // Disabled account demo
-  "disabled@luckytaya.ph": {
+  "disabled@predictex.ph": {
     password: "disabled123",
     user: {
-      id: "MA003", name: "Jenny Lim", email: "disabled@luckytaya.ph",
+      id: "MA003", name: "Jenny Lim", email: "disabled@predictex.ph",
       role: "merchant_ops", avatar: "", lastLogin: "2026-02-28 14:00 PHT",
-      merchantId: "MCH001", tenantName: "Lucky Taya", status: "disabled", needsPasswordChange: false,
+      merchantId: "MCH001", tenantName: "PredictEx", status: "disabled", needsPasswordChange: false,
     },
   },
 };

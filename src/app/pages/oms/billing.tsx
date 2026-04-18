@@ -39,11 +39,11 @@ const PLANS: PlanDef[] = [
 ];
 
 const MOCK_INVOICES: Invoice[] = [
-  { id: "INV-2026-03-001", merchantId: "MCH001", merchantName: "Lucky Taya", period: "Mar 2026", amount: 500000, platformFee: 2352000, status: "pending", dueDate: "2026-04-01" },
+  { id: "INV-2026-03-001", merchantId: "MCH001", merchantName: "PredictEx", period: "Mar 2026", amount: 500000, platformFee: 2352000, status: "pending", dueDate: "2026-04-01" },
   { id: "INV-2026-03-002", merchantId: "MCH002", merchantName: "BetManila", period: "Mar 2026", amount: 150000, platformFee: 1605000, status: "pending", dueDate: "2026-04-01" },
   { id: "INV-2026-03-003", merchantId: "MCH003", merchantName: "Sugal PH", period: "Mar 2026", amount: 500000, platformFee: 1704000, status: "pending", dueDate: "2026-04-01" },
   { id: "INV-2026-03-004", merchantId: "MCH006", merchantName: "Tongits Live", period: "Mar 2026", amount: 150000, platformFee: 945000, status: "pending", dueDate: "2026-04-01" },
-  { id: "INV-2026-02-001", merchantId: "MCH001", merchantName: "Lucky Taya", period: "Feb 2026", amount: 500000, platformFee: 2180000, status: "paid", dueDate: "2026-03-01", paidDate: "2026-02-28" },
+  { id: "INV-2026-02-001", merchantId: "MCH001", merchantName: "PredictEx", period: "Feb 2026", amount: 500000, platformFee: 2180000, status: "paid", dueDate: "2026-03-01", paidDate: "2026-02-28" },
   { id: "INV-2026-02-002", merchantId: "MCH002", merchantName: "BetManila", period: "Feb 2026", amount: 150000, platformFee: 1420000, status: "paid", dueDate: "2026-03-01", paidDate: "2026-02-27" },
   { id: "INV-2026-02-003", merchantId: "MCH003", merchantName: "Sugal PH", period: "Feb 2026", amount: 500000, platformFee: 1560000, status: "paid", dueDate: "2026-03-01", paidDate: "2026-02-28" },
   { id: "INV-2026-02-004", merchantId: "MCH005", merchantName: "WagerPH", period: "Feb 2026", amount: 150000, platformFee: 620000, status: "overdue", dueDate: "2026-03-01" },
@@ -320,7 +320,7 @@ export default function OmsBilling() {
                 </thead>
                 <tbody>
                   {[
-                    { name: "Lucky Taya", planRate: "3%", override: "2.5%", effective: "2.5%", notes: "Volume discount — flagship partner" },
+                    { name: "PredictEx", planRate: "3%", override: "2.5%", effective: "2.5%", notes: "Volume discount — flagship partner" },
                     { name: "BetManila", planRate: "5%", override: "—", effective: "5%", notes: "Standard rate" },
                     { name: "Sugal PH", planRate: "3%", override: "—", effective: "3%", notes: "Standard rate" },
                     { name: "Tongits Live", planRate: "5%", override: "4%", effective: "4%", notes: "Early adopter discount" },

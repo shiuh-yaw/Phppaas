@@ -110,7 +110,7 @@ export function ChatIcon() {
   );
 }
 
-export function ForeGateLogoIcon() {
+export function PredictExLogoIcon() {
   return (
     <svg className="size-6" fill="none" viewBox="0 0 24 24.0002">
       <path d={svgPaths.p3f45c600} fill="#FF5222" />

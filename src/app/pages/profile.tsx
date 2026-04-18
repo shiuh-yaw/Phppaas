@@ -9,6 +9,7 @@ import { DepositWithdrawModal, type ModalTheme } from "../components/deposit-wit
 import { AuthGate } from "../components/auth-gate";
 import { Footer } from "../components/footer";
 import { ProfileSkeleton } from "../components/page-skeleton";
+import { MfaManagerPanel } from "../components/mfa-manager";
 
 const pp = { fontFamily: "'Poppins', sans-serif" };
 const ss = { fontFeatureSettings: "'ss04'" };
@@ -29,10 +30,7 @@ interface ProfileData {
   referralCount: number;
   referralEarnings: number;
   twoFaEnabled: boolean;
-  biometricEnabled: boolean;
   emailNotifications: boolean;
-  pushNotifications: boolean;
-  smsNotifications: boolean;
   language: string;
   currency: string;
   totalBets: number;
@@ -56,10 +54,7 @@ const MOCK_PROFILE: ProfileData = {
   referralCount: 12,
   referralEarnings: 1200,
   twoFaEnabled: true,
-  biometricEnabled: false,
   emailNotifications: true,
-  pushNotifications: true,
-  smsNotifications: false,
   language: "Filipino",
   currency: "PHP (₱)",
   totalBets: 347,
@@ -137,7 +132,7 @@ function StatCard({ emoji, label, value, sub }: { emoji: string; label: string; 
 /* ==================== MAIN PAGE ==================== */
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const { user, isLoggedIn } = useAuth();
+  const { user, isLoggedIn, darkMode, toggleDarkMode } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"deposit" | "withdraw">("deposit");
@@ -473,20 +468,7 @@ export default function ProfilePage() {
             {/* ===== SECURITY TAB ===== */}
             {activeTab === "security" && (
               <div className="flex flex-col gap-5">
-                <SectionCard title="Security Settings" emoji="🔐">
-                  <ToggleRow
-                    label="Two-Factor Authentication (2FA)"
-                    description="Dagdagan ng extra layer ng security sa pag-login"
-                    enabled={profile.twoFaEnabled}
-                    onToggle={() => setProfile(p => ({ ...p, twoFaEnabled: !p.twoFaEnabled }))}
-                  />
-                  <ToggleRow
-                    label="Biometric Login"
-                    description="Gumamit ng fingerprint o face ID para mag-login"
-                    enabled={profile.biometricEnabled}
-                    onToggle={() => setProfile(p => ({ ...p, biometricEnabled: !p.biometricEnabled }))}
-                  />
-                </SectionCard>
+                <MfaManagerPanel userEmail={user?.email} />
 
                 <SectionCard title="Password" emoji="🔑">
                   <div className="flex items-center justify-between">
@@ -581,24 +563,21 @@ export default function ProfilePage() {
             {/* ===== PREFERENCES TAB ===== */}
             {activeTab === "preferences" && (
               <div className="flex flex-col gap-5">
+                <SectionCard title="Appearance" emoji="🎨">
+                  <ToggleRow
+                    label="Dark Mode"
+                    description="Gumamit ng madilim na tema para sa mas komportableng pagtingin"
+                    enabled={darkMode}
+                    onToggle={toggleDarkMode}
+                  />
+                </SectionCard>
+
                 <SectionCard title="Notification Preferences" emoji="🔔">
                   <ToggleRow
                     label="Email Notifications"
                     description="Makatanggap ng updates sa email"
                     enabled={profile.emailNotifications}
                     onToggle={() => setProfile(p => ({ ...p, emailNotifications: !p.emailNotifications }))}
-                  />
-                  <ToggleRow
-                    label="Push Notifications"
-                    description="Makatanggap ng browser push notifications"
-                    enabled={profile.pushNotifications}
-                    onToggle={() => setProfile(p => ({ ...p, pushNotifications: !p.pushNotifications }))}
-                  />
-                  <ToggleRow
-                    label="SMS Notifications"
-                    description="Makatanggap ng text messages (may bayad)"
-                    enabled={profile.smsNotifications}
-                    onToggle={() => setProfile(p => ({ ...p, smsNotifications: !p.smsNotifications }))}
                   />
                 </SectionCard>
 
