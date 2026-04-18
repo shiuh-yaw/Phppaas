@@ -401,6 +401,7 @@ export function generateCommandEntries(): CommandEntry[] {
     { id: "pg-content", label: "Content & CMS", category: "page", description: "Banners, announcements, pages", path: "/oms/content", keywords: ["content", "cms", "banners", "announcements"] },
     { id: "pg-notif", label: "Notifications", category: "page", description: "Push & system notifications", path: "/oms/notif-mgmt", keywords: ["notifications", "push", "alerts", "broadcast"] },
     { id: "pg-kyb", label: "Merchant KYB", category: "page", description: "Know Your Business verification", path: "/oms/kyb", keywords: ["kyb", "verification", "business", "compliance"] },
+    { id: "pg-kyc", label: "KYC Management", category: "page", description: "User identity verification & review", path: "/oms/kyc", keywords: ["kyc", "identity", "verification", "documents", "compliance"] },
     { id: "pg-admin-users", label: "Admin Users", category: "page", description: "OMS admin accounts & roles", path: "/oms/admin-users", keywords: ["admin", "users", "accounts", "roles", "rbac"] },
     { id: "pg-paas-merchant", label: "Merchant Config", category: "page", description: "Merchant-specific settings", path: "/oms/paas-merchant", keywords: ["merchant", "config", "settings", "tenant"] },
     { id: "pg-platform", label: "Platform Overview", category: "page", description: "Cross-merchant platform analytics", path: "/oms", keywords: ["platform", "overview", "global", "aggregate"] },
@@ -434,6 +435,183 @@ export function generateCommandEntries(): CommandEntry[] {
 
   return [...pages, ...users, ...markets, ...actions];
 }
+
+/* ==================== KYC APPLICATIONS ==================== */
+export type KycLevel = "basic" | "enhanced" | "full";
+export type KycStatus = "not_started" | "pending" | "in_review" | "verified" | "rejected" | "expired";
+export type KycDocType = "government_id" | "passport" | "drivers_license" | "utility_bill" | "selfie" | "proof_of_address";
+
+export interface OmsKycDocument {
+  id: string;
+  type: KycDocType;
+  fileName: string;
+  fileSize: string;
+  uploadedAt: string;
+  status: "pending" | "accepted" | "rejected";
+  rejectionReason?: string;
+}
+
+export interface OmsKycApplication {
+  id: string;
+  userId: string;
+  userName: string;
+  email: string;
+  level: KycLevel;
+  status: KycStatus;
+  submittedAt: string;
+  reviewedAt?: string;
+  reviewedBy?: string;
+  expiresAt?: string;
+  documents: OmsKycDocument[];
+  personalInfo: {
+    fullName: string;
+    dateOfBirth: string;
+    nationality: string;
+    address: string;
+    phoneNumber: string;
+  };
+  verificationScore?: number;
+  rejectionReason?: string;
+  notes: string[];
+}
+
+export const MOCK_KYC_APPLICATIONS: OmsKycApplication[] = [
+  {
+    id: "KYC001", userId: "U001", userName: "Maria Santos", email: "maria.s@gmail.com",
+    level: "enhanced", status: "verified", submittedAt: "2026-02-10", reviewedAt: "2026-02-12", reviewedBy: "Carlos Reyes",
+    expiresAt: "2027-02-12",
+    documents: [
+      { id: "KD001", type: "government_id", fileName: "maria_philid_front.jpg", fileSize: "2.1 MB", uploadedAt: "2026-02-10", status: "accepted" },
+      { id: "KD002", type: "selfie", fileName: "maria_selfie.jpg", fileSize: "1.8 MB", uploadedAt: "2026-02-10", status: "accepted" },
+      { id: "KD003", type: "proof_of_address", fileName: "maria_meralco_bill.pdf", fileSize: "420 KB", uploadedAt: "2026-02-10", status: "accepted" },
+    ],
+    personalInfo: { fullName: "Maria Isabel Santos", dateOfBirth: "1994-06-15", nationality: "Filipino", address: "123 Rizal St, Ermita, Manila", phoneNumber: "+63 917 123 4567" },
+    verificationScore: 95, notes: ["All documents clear. PhilID verified via QR code."],
+  },
+  {
+    id: "KYC002", userId: "U002", userName: "JM Reyes", email: "jm.reyes@yahoo.com",
+    level: "basic", status: "verified", submittedAt: "2026-01-20", reviewedAt: "2026-01-22", reviewedBy: "Ana Torres",
+    expiresAt: "2027-01-22",
+    documents: [
+      { id: "KD004", type: "government_id", fileName: "jm_drivers_license.jpg", fileSize: "1.6 MB", uploadedAt: "2026-01-20", status: "accepted" },
+      { id: "KD005", type: "selfie", fileName: "jm_selfie.jpg", fileSize: "2.0 MB", uploadedAt: "2026-01-20", status: "accepted" },
+    ],
+    personalInfo: { fullName: "Juan Miguel Reyes", dateOfBirth: "1998-03-22", nationality: "Filipino", address: "45 Mango Ave, Cebu City", phoneNumber: "+63 918 234 5678" },
+    verificationScore: 88, notes: [],
+  },
+  {
+    id: "KYC003", userId: "U003", userName: "Ken Villanueva", email: "ken.v@outlook.com",
+    level: "basic", status: "pending", submittedAt: "2026-03-12",
+    documents: [
+      { id: "KD006", type: "government_id", fileName: "ken_passport.jpg", fileSize: "3.2 MB", uploadedAt: "2026-03-12", status: "pending" },
+      { id: "KD007", type: "selfie", fileName: "ken_selfie.jpg", fileSize: "1.4 MB", uploadedAt: "2026-03-12", status: "pending" },
+    ],
+    personalInfo: { fullName: "Kenneth Reyes Villanueva", dateOfBirth: "2001-11-08", nationality: "Filipino", address: "78 Durian St, Davao City", phoneNumber: "+63 919 345 6789" },
+    notes: [],
+  },
+  {
+    id: "KYC004", userId: "U005", userName: "Rosa Lim", email: "rosa.lim@gmail.com",
+    level: "enhanced", status: "in_review", submittedAt: "2026-03-10", reviewedBy: "Carlos Reyes",
+    documents: [
+      { id: "KD008", type: "government_id", fileName: "rosa_philid.jpg", fileSize: "2.3 MB", uploadedAt: "2026-03-10", status: "accepted" },
+      { id: "KD009", type: "selfie", fileName: "rosa_selfie.jpg", fileSize: "1.9 MB", uploadedAt: "2026-03-10", status: "accepted" },
+      { id: "KD010", type: "utility_bill", fileName: "rosa_water_bill.pdf", fileSize: "380 KB", uploadedAt: "2026-03-10", status: "pending" },
+      { id: "KD011", type: "proof_of_address", fileName: "rosa_barangay_cert.pdf", fileSize: "520 KB", uploadedAt: "2026-03-10", status: "pending" },
+    ],
+    personalInfo: { fullName: "Rosa Marie Lim", dateOfBirth: "1990-09-30", nationality: "Filipino", address: "Unit 5B, Greenbelt Tower, Makati", phoneNumber: "+63 921 567 8901" },
+    verificationScore: 72, notes: ["Utility bill address does not match registration. Waiting for barangay clearance verification."],
+  },
+  {
+    id: "KYC005", userId: "U006", userName: "Mark Tan", email: "mark.t@yahoo.com",
+    level: "full", status: "verified", submittedAt: "2026-01-05", reviewedAt: "2026-01-08", reviewedBy: "Ana Torres",
+    expiresAt: "2027-01-08",
+    documents: [
+      { id: "KD012", type: "passport", fileName: "mark_passport.jpg", fileSize: "2.8 MB", uploadedAt: "2026-01-05", status: "accepted" },
+      { id: "KD013", type: "selfie", fileName: "mark_selfie.jpg", fileSize: "1.5 MB", uploadedAt: "2026-01-05", status: "accepted" },
+      { id: "KD014", type: "utility_bill", fileName: "mark_meralco.pdf", fileSize: "450 KB", uploadedAt: "2026-01-05", status: "accepted" },
+      { id: "KD015", type: "proof_of_address", fileName: "mark_bank_statement.pdf", fileSize: "680 KB", uploadedAt: "2026-01-05", status: "accepted" },
+    ],
+    personalInfo: { fullName: "Mark Andrew Tan", dateOfBirth: "1988-12-01", nationality: "Filipino", address: "22 BGC Lane, Taguig", phoneNumber: "+63 922 678 9012" },
+    verificationScore: 98, notes: ["High-volume trader. Full KYC approved for unlimited trading."],
+  },
+  {
+    id: "KYC006", userId: "U004", userName: "Ana Dela Cruz", email: "ana.dc@outlook.com",
+    level: "enhanced", status: "rejected", submittedAt: "2026-02-20", reviewedAt: "2026-02-22", reviewedBy: "Carlos Reyes",
+    documents: [
+      { id: "KD016", type: "government_id", fileName: "ana_id.jpg", fileSize: "1.2 MB", uploadedAt: "2026-02-20", status: "rejected", rejectionReason: "Image blurry, text unreadable" },
+      { id: "KD017", type: "selfie", fileName: "ana_selfie.jpg", fileSize: "1.1 MB", uploadedAt: "2026-02-20", status: "rejected", rejectionReason: "Face not clearly visible" },
+    ],
+    personalInfo: { fullName: "Ana Marie Dela Cruz", dateOfBirth: "1996-04-18", nationality: "Filipino", address: "56 Commonwealth Ave, Quezon City", phoneNumber: "+63 920 456 7890" },
+    verificationScore: 32, rejectionReason: "Documents unreadable. Please resubmit with clearer images.",
+    notes: ["Both documents are too blurry. Selfie appears to be a photo of a photo.", "Account frozen pending re-verification."],
+  },
+  {
+    id: "KYC007", userId: "U008", userName: "Bong Ramos", email: "bong.r@hotmail.com",
+    level: "basic", status: "expired", submittedAt: "2025-03-01", reviewedAt: "2025-03-03", reviewedBy: "Ana Torres",
+    expiresAt: "2026-03-03",
+    documents: [
+      { id: "KD018", type: "government_id", fileName: "bong_voters_id.jpg", fileSize: "1.8 MB", uploadedAt: "2025-03-01", status: "accepted" },
+      { id: "KD019", type: "selfie", fileName: "bong_selfie.jpg", fileSize: "1.3 MB", uploadedAt: "2025-03-01", status: "accepted" },
+    ],
+    personalInfo: { fullName: "Bong Alfonso Ramos", dateOfBirth: "1985-07-20", nationality: "Filipino", address: "89 Samson Rd, Caloocan", phoneNumber: "+63 924 890 1234" },
+    verificationScore: 82, notes: ["KYC expired on 2026-03-03. Account restricted until re-verification."],
+  },
+  {
+    id: "KYC008", userId: "U009", userName: "Cherry Aquino", email: "cherry.a@gmail.com",
+    level: "basic", status: "pending", submittedAt: "2026-03-14",
+    documents: [
+      { id: "KD020", type: "government_id", fileName: "cherry_philid.jpg", fileSize: "2.0 MB", uploadedAt: "2026-03-14", status: "pending" },
+      { id: "KD021", type: "selfie", fileName: "cherry_selfie.jpg", fileSize: "1.6 MB", uploadedAt: "2026-03-14", status: "pending" },
+    ],
+    personalInfo: { fullName: "Cherry Ann Aquino", dateOfBirth: "2000-01-15", nationality: "Filipino", address: "12 Jaro District, Iloilo City", phoneNumber: "+63 925 901 2345" },
+    notes: [],
+  },
+  {
+    id: "KYC009", userId: "U010", userName: "Dennis Cruz", email: "dennis.c@gmail.com",
+    level: "enhanced", status: "pending", submittedAt: "2026-03-13",
+    documents: [
+      { id: "KD022", type: "government_id", fileName: "dennis_philid.jpg", fileSize: "2.2 MB", uploadedAt: "2026-03-13", status: "pending" },
+      { id: "KD023", type: "selfie", fileName: "dennis_selfie.jpg", fileSize: "1.7 MB", uploadedAt: "2026-03-13", status: "pending" },
+      { id: "KD024", type: "proof_of_address", fileName: "dennis_pldt_bill.pdf", fileSize: "340 KB", uploadedAt: "2026-03-13", status: "pending" },
+    ],
+    personalInfo: { fullName: "Dennis James Cruz", dateOfBirth: "1997-02-14", nationality: "Filipino", address: "34 Tondo, Manila", phoneNumber: "+63 926 012 3456" },
+    notes: [],
+  },
+  {
+    id: "KYC010", userId: "U007", userName: "Patricia Go", email: "trish.go@gmail.com",
+    level: "basic", status: "not_started", submittedAt: "",
+    documents: [],
+    personalInfo: { fullName: "Patricia Mae Go", dateOfBirth: "2002-08-25", nationality: "Filipino", address: "15 Shaw Blvd, Pasig", phoneNumber: "+63 923 789 0123" },
+    notes: [],
+  },
+];
+
+export function getKycByUserId(userId: string): OmsKycApplication | undefined {
+  return MOCK_KYC_APPLICATIONS.find(k => k.userId === userId);
+}
+
+export function getKycById(id: string): OmsKycApplication | undefined {
+  return MOCK_KYC_APPLICATIONS.find(k => k.id === id);
+}
+
+export const MOCK_KYC_ANALYTICS = {
+  totalApplications: 10,
+  verified: 3,
+  pending: 3,
+  inReview: 1,
+  rejected: 1,
+  expired: 1,
+  notStarted: 1,
+  avgReviewTimeDays: 2.1,
+  approvalRate: 75,
+  rejectionRate: 12.5,
+  topRejectionReasons: [
+    { reason: "Blurry/unreadable documents", count: 4 },
+    { reason: "Address mismatch", count: 2 },
+    { reason: "Expired ID", count: 1 },
+    { reason: "Suspected fraud", count: 1 },
+  ],
+};
 
 /* ==================== FORMATTERS ==================== */
 export function formatPHP(amount: number): string {

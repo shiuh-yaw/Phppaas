@@ -80,6 +80,7 @@ const NAV_SECTIONS: NavSection[] = [
     items: [
       { label: "Dashboard", icon: OmsDashboardIcon, path: "/oms/dashboard" },
       { label: "User Management", icon: OmsUsersIcon, path: "/oms/users", badge: "12" },
+      { label: "KYC", icon: OmsKybIcon, path: "/oms/kyc", badge: "3" },
       { label: "Markets", icon: OmsMarketsIcon, path: "/oms/markets", badge: "3" },
       { label: "Bets & Wagers", icon: OmsBetsIcon, path: "/oms/bets" },
       { label: "Finance", icon: OmsFinanceIcon, path: "/oms/finance", badge: "5" },

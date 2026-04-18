@@ -97,6 +97,7 @@ export const router = createBrowserRouter([
           { path: "payment-providers", lazy: lazy(() => import("./pages/oms/payment-providers")) },
           { path: "admin-users", lazy: lazy(() => import("./pages/oms/oms-admin-users")) },
           { path: "kyb", lazy: lazy(() => import("./pages/oms/kyb")) },
+          { path: "kyc", lazy: lazy(() => import("./pages/oms/kyc-management")) },
           // Finance sub-routes (CVPay Fiat Gateway)
           { path: "finance/fiat-transactions", lazy: lazy(() => import("./pages/oms/fiat-transactions")) },
           { path: "finance/fiat-gateway-config", lazy: lazy(() => import("./pages/oms/fiat-gateway-config")) },

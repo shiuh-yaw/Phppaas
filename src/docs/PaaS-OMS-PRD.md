@@ -1,6 +1,6 @@
 # PredictEx PaaS OMS - Product Requirements Document
 
-**Version:** 1.0
+**Version:** 1.4
 **Date:** April 18, 2026
 **Author:** Product Management
 **Status:** Draft for Engineering Review
@@ -95,6 +95,16 @@
     - 18.31 [Webhook Event Schemas](#1831-webhook-event-schemas)
     - 18.32 [Error Code Reference](#1832-error-code-reference)
     - 18.33 [Rate Limiting](#1833-rate-limiting)
+19. [Sequence Diagrams](#19-sequence-diagrams)
+    - 19.1 [KYB Approval → Merchant Creation](#191-kyb-approval--merchant-creation)
+    - 19.2 [Market Settlement → Bet Payout](#192-market-settlement--bet-payout)
+    - 19.3 [Fiat Withdrawal Flow](#193-fiat-withdrawal-flow)
+    - 19.4 [Creator Application → Approval](#194-creator-application--approval)
+    - 19.5 [Risk Alert → Investigation → Resolution](#195-risk-alert--investigation--resolution)
+20. [KYC Module — Future Scope](#20-kyc-module--future-scope)
+21. [Test Case Matrix](#21-test-case-matrix)
+22. [Integration Dependency Graph](#22-integration-dependency-graph)
+23. [Changelog](#23-changelog)
 
 ---
 
@@ -105,7 +115,7 @@ PredictEx PaaS OMS is a **multi-tenant SaaS admin panel** that powers the operat
 - **Platform Operators** (PredictEx staff) who oversee all merchants, billing, compliance (KYB), payment infrastructure, and global configurations
 - **Merchant Operators** (B2B clients) who manage their own prediction market instances including users, markets, bets, finance, risk, content, and growth programs
 
-The system currently comprises **31+ pages** across **6 route groups**, with full RBAC authorization, 4-locale internationalization, client-side audit logging, tenant-scoped configuration management with schema versioning, and a comprehensive shared component library.
+The system currently comprises **35 pages** across **6 route groups**, with full RBAC authorization, 4-locale internationalization, client-side audit logging, tenant-scoped configuration management with schema versioning, and a comprehensive shared component library.
 
 **Target Markets:** Philippines (primary), Southeast Asia expansion
 **Currency:** PHP (Philippine Peso) primary, multi-currency capable
@@ -6833,4 +6843,806 @@ X-RateLimit-Reset: 1745001060
 
 ---
 
-*End of PRD - PredictEx PaaS OMS v1.1 (Updated: April 18, 2026 — Entity schema alignment, API gap closure, Programs module audit actions, Content Management expansion)*
+## 19. Sequence Diagrams
+
+> These diagrams use Mermaid syntax and document the multi-step flows that span multiple modules, API calls, and audit log entries. They serve as the canonical reference for engineering implementation and QA test-case derivation.
+
+---
+
+### 19.1 KYB Approval → Merchant Creation
+
+This flow covers the complete lifecycle from a merchant submitting a KYB application through platform review to full merchant tenant provisioning.
+
+```mermaid
+sequenceDiagram
+    participant MA as Merchant Applicant
+    participant KYB as KYB Form (6.6)
+    participant API as Backend API
+    participant PR as Platform Reviewer
+    participant KYBReview as KYB Management (6.5)
+    participant MerchMgmt as Merchant Management (6.2)
+    participant Audit as Audit Log
+
+    Note over MA,Audit: Phase 1 — Application Submission
+    MA->>KYB: Fill KYB form (business info, documents, beneficial owners)
+    KYB->>KYB: Client-side validation (all required fields, file size ≤5MB)
+    KYB->>API: POST /kyb/applications { businessName, registrationNumber, documents[], ... }
+    API-->>KYB: 201 { id: "KYB-001", status: "submitted" }
+    API->>Audit: log(kyb_submit, { applicationId: "KYB-001", merchantName })
+
+    Note over MA,Audit: Phase 2 — Platform Review
+    PR->>KYBReview: Navigate to /oms/kyb → sees KYB-001 in "submitted" queue
+    PR->>API: GET /kyb/applications/KYB-001
+    API-->>KYBReview: Full application with documents, beneficial owners, risk score
+    PR->>KYBReview: Review documents, verify business registration
+
+    alt Documents Incomplete
+        PR->>API: PATCH /kyb/applications/KYB-001 { status: "info_requested", reviewNotes: "..." }
+        API->>Audit: log(kyb_info_request, { applicationId: "KYB-001", notes })
+        API-->>MA: Notification: "Additional information required"
+        MA->>KYB: Re-submit missing documents
+        MA->>API: PATCH /kyb/applications/KYB-001 { documents[], status: "resubmitted" }
+        API->>Audit: log(kyb_resubmit, { applicationId: "KYB-001" })
+    end
+
+    PR->>API: PATCH /kyb/applications/KYB-001 { status: "approved", reviewNotes: "All verified" }
+    API->>Audit: log(kyb_approve, { applicationId: "KYB-001", reviewerId: PR.id })
+
+    Note over MA,Audit: Phase 3 — Merchant Tenant Provisioning
+    API->>API: Auto-provision tenant: generate tenantId, create TenantConfig (defaults)
+    API->>API: Create merchant record { id: "M-xxx", status: "active", plan: "starter" }
+    API->>API: Create default admin user for merchant (from KYB contact info)
+    API->>API: Initialize wallet with zero balances
+    API->>Audit: log(merchant_create, { merchantId: "M-xxx", fromKyb: "KYB-001" })
+    API-->>MerchMgmt: Merchant appears in merchant list with "active" status
+    API-->>MA: Email: "Your PredictEx merchant account is now active"
+
+    Note over MA,Audit: Phase 4 — Post-Provisioning
+    MA->>API: POST /auth/login (with provisioned credentials)
+    MA->>MerchMgmt: Redirected to /oms/dashboard (merchant-scoped)
+    MA->>API: GET /tenant-config (loads tenant-specific settings)
+```
+
+**Modules Involved:** KYB Form (6.6) → KYB Management (6.5) → Merchant Management (6.2) → Merchant Detail (6.3)
+
+**Audit Actions Generated:** `kyb_submit` → `kyb_info_request` (optional) → `kyb_resubmit` (optional) → `kyb_approve` → `merchant_create`
+
+**Error Scenarios:**
+- KYB rejection: `kyb_reject` logged, merchant not created, applicant notified
+- Duplicate business registration: API returns 409 Conflict
+- Document upload failure: Client retries with exponential backoff
+
+---
+
+### 19.2 Market Settlement → Bet Payout
+
+This flow covers market resolution, bet settlement, wallet crediting, and audit trail generation — the core financial loop of the prediction market.
+
+```mermaid
+sequenceDiagram
+    participant Admin as Merchant Ops Admin
+    participant MktPage as Markets Management (7.3)
+    participant API as Backend API
+    participant Settlement as Settlement Engine
+    participant Wallet as Wallet Service
+    participant BetPage as Bets Management (7.4)
+    participant Audit as Audit Log
+    participant Notif as Notification Service
+
+    Note over Admin,Notif: Phase 1 — Market Resolution
+    Admin->>MktPage: Select market M-001 → click "Settle"
+    MktPage->>MktPage: Show settlement modal: select winning outcome, enter resolution source
+    Admin->>API: PATCH /markets/M-001 { status: "settled", winningOutcome: "Yes", resolutionSource: "Official API" }
+    API->>API: Validate: market.status must be "locked" or "open"
+    API->>API: Set market.status = "settled", market.resolvedAt = now()
+    API->>Audit: log(market_settle, { marketId: "M-001", outcome: "Yes", admin: Admin.id })
+    API-->>MktPage: 200 { ...updatedMarket }
+
+    Note over Admin,Notif: Phase 2 — Bet Settlement (async)
+    API->>Settlement: Trigger settlement job for M-001
+    Settlement->>API: GET /bets?marketId=M-001&status=active
+    API-->>Settlement: [Bet-001 (Yes, qty:50), Bet-002 (No, qty:30), Bet-003 (Yes, qty:100), ...]
+
+    loop For each bet in market
+        alt Bet outcome matches winning outcome
+            Settlement->>Settlement: Calculate payout = quantity × price × payoutMultiplier
+            Settlement->>API: PATCH /bets/Bet-001 { status: "won", payout: 4500 }
+            Settlement->>Wallet: POST /wallets/{userId}/credit { amount: 4500, type: "bet_payout", ref: "Bet-001" }
+            Wallet-->>Settlement: 200 { newBalance: 28500 }
+            Settlement->>Audit: log(bet_settle, { betId: "Bet-001", result: "won", payout: 4500 })
+            Settlement->>Notif: Push notification to user: "You won PHP 4,500 on M-001!"
+        else Bet outcome does not match
+            Settlement->>API: PATCH /bets/Bet-002 { status: "lost", payout: 0 }
+            Settlement->>Audit: log(bet_settle, { betId: "Bet-002", result: "lost", payout: 0 })
+        end
+    end
+
+    Note over Admin,Notif: Phase 3 — Post-Settlement Verification
+    Settlement->>API: POST /markets/M-001/settlement-summary
+    API-->>Settlement: { totalPayout: 125000, winnersCount: 45, losersCount: 32, platformFee: 6250 }
+    Settlement->>Audit: log(settlement_complete, { marketId: "M-001", totalPayout: 125000 })
+
+    Admin->>BetPage: Navigate to /oms/bets → filter by market M-001
+    BetPage->>API: GET /bets?marketId=M-001
+    API-->>BetPage: All bets now show "won"/"lost" status with payout amounts
+```
+
+**Modules Involved:** Markets Management (7.3) → Settlement Engine → Bets Management (7.4) → Wallet Management (7.7) → Notifications (9.2)
+
+**Audit Actions Generated:** `market_settle` → `bet_settle` (per bet) → `wallet_credit` (per winning bet) → `settlement_complete`
+
+**Error Scenarios:**
+- Settlement engine failure mid-batch: Partial settlement, `settlement_error` logged, admin alerted, manual retry available
+- Market voided instead of settled: All bets refunded (`bet_void`), wallets credited with original stake
+- Dispute: Admin can `market_void` a settled market within 24h window, triggering payout reversal
+
+---
+
+### 19.3 Fiat Withdrawal Flow
+
+This flow covers a user-initiated fiat withdrawal through the CVPay gateway with OMS admin review.
+
+```mermaid
+sequenceDiagram
+    participant User as Platform User
+    participant App as PredictEx App
+    participant API as Backend API
+    participant Wallet as Wallet Service
+    participant Finance as Finance Page (7.5)
+    participant Admin as Merchant Finance Admin
+    participant CVPay as CVPay Gateway
+    participant FiatPage as Fiat Transactions (10.1)
+    participant Audit as Audit Log
+
+    Note over User,Audit: Phase 1 — Withdrawal Request
+    User->>App: Request withdrawal: PHP 10,000 via GCash
+    App->>API: POST /transactions { type: "withdraw", amount: 10000, method: "gcash", userId: "U001" }
+    API->>Wallet: Check balance: user.available ≥ 10000 + fee(150)
+    Wallet-->>API: OK (available: 28500)
+    API->>Wallet: POST /wallets/U001/hold { amount: 10150, ref: "TXN-500" }
+    Wallet->>Wallet: available -= 10150, holdBalance += 10150
+    API->>API: Create transaction { id: "TXN-500", status: "pending", needsReview: true }
+    API->>Audit: log(txn_create, { txnId: "TXN-500", type: "withdraw", amount: 10000 })
+
+    Note over User,Audit: Phase 2 — OMS Review
+    Admin->>Finance: Navigate to /oms/finance → sees TXN-500 in pending queue
+    Finance->>API: GET /transactions?status=pending&needsReview=true
+    API-->>Finance: [TXN-500, ...]
+    Admin->>Finance: Review TXN-500 (check user risk score, withdrawal patterns)
+
+    alt Approved
+        Admin->>API: PATCH /transactions/TXN-500 { status: "approved" }
+        API->>Audit: log(txn_approve, { txnId: "TXN-500", admin: Admin.id })
+
+        Note over User,Audit: Phase 3 — Gateway Processing
+        API->>CVPay: POST /payouts { amount: 10000, currency: "PHP", method: "gcash", recipient: "0917***4567" }
+        CVPay-->>API: { payoutId: "CVP-800", status: "processing" }
+        
+        Note over User,Audit: Phase 4 — Completion (webhook callback)
+        CVPay->>API: POST /webhooks/cvpay { payoutId: "CVP-800", status: "completed" }
+        API->>API: Update TXN-500.status = "completed"
+        API->>Wallet: POST /wallets/U001/release-hold { amount: 10150, ref: "TXN-500" }
+        Wallet->>Wallet: holdBalance -= 10150 (funds already deducted from available)
+        API->>Audit: log(txn_complete, { txnId: "TXN-500", gatewayRef: "CVP-800" })
+        API->>User: Push notification: "PHP 10,000 sent to your GCash"
+
+    else Rejected
+        Admin->>API: PATCH /transactions/TXN-500 { status: "rejected", reason: "Suspicious pattern" }
+        API->>Wallet: POST /wallets/U001/release-hold { amount: 10150, ref: "TXN-500", refund: true }
+        Wallet->>Wallet: holdBalance -= 10150, available += 10150
+        API->>Audit: log(txn_reject, { txnId: "TXN-500", reason: "Suspicious pattern" })
+        API->>User: Push notification: "Withdrawal declined. Contact support."
+    end
+```
+
+**Modules Involved:** Wallet (7.7) → Finance (7.5) → Fiat Transactions (10.1) → CVPay Config (10.3) → Notifications (9.2)
+
+**Audit Actions Generated:** `txn_create` → `txn_approve`/`txn_reject` → `txn_complete`/`txn_fail` + `wallet_hold` → `wallet_release`
+
+**Error Scenarios:**
+- CVPay timeout: Transaction stays in "processing", auto-retry after 5 min, `txn_gateway_timeout` logged
+- CVPay failure callback: Funds returned to user wallet, `txn_fail` logged, admin alerted
+- Balance insufficient at hold time: 400 error, no transaction created
+
+---
+
+### 19.4 Creator Application → Approval
+
+This flow covers a user applying for creator status through the Creator Management module.
+
+```mermaid
+sequenceDiagram
+    participant User as Platform User
+    participant App as PredictEx App
+    participant API as Backend API
+    participant Admin as Merchant Ops Admin
+    participant CreatorPage as Creator Management (7.10)
+    participant UserPage as User Management (7.2)
+    participant Audit as Audit Log
+
+    Note over User,Audit: Phase 1 — Application Submission
+    User->>App: Submit creator application (experience, categories, social links, sample markets)
+    App->>API: POST /creators/applications { userId: "U005", experience: "2 years crypto analysis", categories: ["crypto", "sports"], socialLinks: {...} }
+    API->>API: Create CreatorApp { id: "CA-001", status: "pending", applicantId: "U005" }
+    API->>Audit: log(creator_app_submit, { appId: "CA-001", userId: "U005" })
+    API-->>App: 201 { id: "CA-001", status: "pending" }
+
+    Note over User,Audit: Phase 2 — OMS Review
+    Admin->>CreatorPage: Navigate to /oms/creators → "Applications" tab
+    CreatorPage->>API: GET /creators/applications?status=pending
+    API-->>CreatorPage: [CA-001, ...]
+    Admin->>CreatorPage: Open CA-001, review experience, social presence, sample markets
+
+    alt Approved
+        Admin->>API: PATCH /creators/applications/CA-001 { status: "approved", tier: "standard", revShare: 5 }
+        API->>API: Update user U005: userType = "creator"
+        API->>API: Create Creator profile { id: "CR-005", tier: "standard", revShare: 5, status: "active" }
+        API->>Audit: log(creator_app_approve, { appId: "CA-001", userId: "U005", tier: "standard" })
+        API->>Audit: log(creator_create, { creatorId: "CR-005", fromApp: "CA-001" })
+        API-->>User: Notification: "Congratulations! Your creator application has been approved."
+        
+        Admin->>UserPage: User U005 now shows "creator" badge in User Management
+
+    else Rejected
+        Admin->>API: PATCH /creators/applications/CA-001 { status: "rejected", reviewNotes: "Insufficient track record" }
+        API->>Audit: log(creator_app_reject, { appId: "CA-001", reason: "Insufficient track record" })
+        API-->>User: Notification: "Your creator application was not approved. You may reapply in 30 days."
+    end
+```
+
+**Modules Involved:** Creator Management (7.10) → User Management (7.2)
+
+**Audit Actions Generated:** `creator_app_submit` → `creator_app_approve`/`creator_app_reject` → `creator_create` (on approval)
+
+---
+
+### 19.5 Risk Alert → Investigation → Resolution
+
+This flow covers the risk management lifecycle from automated detection through admin investigation to resolution.
+
+```mermaid
+sequenceDiagram
+    participant Engine as Risk Detection Engine
+    participant API as Backend API
+    participant RiskPage as Risk Management (7.6)
+    participant Admin as Merchant Ops Admin
+    participant UserPage as User Management (7.2)
+    participant WalletPage as Wallet Management (7.7)
+    participant Audit as Audit Log
+
+    Note over Engine,Audit: Phase 1 — Risk Detection (automated)
+    Engine->>Engine: Detect anomaly: User U008 placed 50 bets in 2 minutes, all on same market
+    Engine->>API: POST /risk/alerts { type: "suspicious_activity", userId: "U008", marketId: "M-001", riskLevel: "high", details: "Rapid-fire betting pattern" }
+    API->>API: Create risk alert { id: "RA-100", status: "open", riskLevel: "high" }
+    API->>Audit: log(risk_alert_create, { alertId: "RA-100", type: "suspicious_activity", auto: true })
+
+    Note over Engine,Audit: Phase 2 — Admin Investigation
+    Admin->>RiskPage: Navigate to /oms/risk → sees RA-100 flagged "high" in exposure table
+    Admin->>RiskPage: Click "Investigate" on RA-100
+    RiskPage->>API: PATCH /risk/alerts/RA-100 { status: "investigating" }
+    API->>Audit: log(risk_investigate, { alertId: "RA-100", admin: Admin.id })
+
+    Admin->>UserPage: Open user U008 profile → review trading history, IP logs
+    Admin->>WalletPage: Check wallet U008 → review transaction patterns
+    Admin->>RiskPage: Return to RA-100 with findings
+
+    alt Confirmed Threat — Freeze User
+        Admin->>API: PATCH /risk/alerts/RA-100 { status: "resolved", resolution: "user_frozen", notes: "Bot activity confirmed" }
+        API->>API: Freeze user U008: suspendTrading = true, suspendWithdraw = true
+        API->>API: Freeze wallet: hold all available balance
+        API->>Audit: log(risk_resolve, { alertId: "RA-100", action: "user_frozen" })
+        API->>Audit: log(user_freeze, { userId: "U008", reason: "Risk alert RA-100" })
+        API->>Audit: log(wallet_freeze, { userId: "U008", reason: "Risk alert RA-100" })
+
+    else False Positive — Dismiss
+        Admin->>API: PATCH /risk/alerts/RA-100 { status: "dismissed", notes: "Legitimate high-frequency trader" }
+        API->>Audit: log(risk_dismiss, { alertId: "RA-100", admin: Admin.id })
+
+    else Hedging Required
+        Admin->>API: POST /risk/hedge { alertId: "RA-100", marketId: "M-001", action: "reduce_limits" }
+        API->>API: Adjust market M-001: maxExposure reduced by 50%
+        API->>Audit: log(risk_hedge, { alertId: "RA-100", marketId: "M-001", action: "reduce_limits" })
+        API->>API: Resolve alert: status = "resolved"
+        API->>Audit: log(risk_resolve, { alertId: "RA-100", action: "hedge_applied" })
+    end
+```
+
+**Modules Involved:** Risk Management (7.6) → User Management (7.2) → Wallet Management (7.7) → Markets Management (7.3)
+
+**Audit Actions Generated:** `risk_alert_create` → `risk_investigate` → `risk_resolve`/`risk_dismiss`/`risk_hedge` + optional `user_freeze`, `wallet_freeze`
+
+---
+
+## 20. KYC Module — Future Scope
+
+> **Status:** Planned follow-up. The current system implements KYC as a **feature flag** (`tenantConfig.kycEnabled`) with a `kycStatus` field on user records. This section defines the full KYC module for future implementation.
+
+### 20.1 Overview
+
+The KYC (Know Your Customer) module will provide identity verification for end-users of merchant prediction market platforms. Unlike KYB (which verifies merchant businesses at the platform level), KYC operates at the **merchant-scoped level** — each merchant configures their own KYC requirements based on regulatory needs.
+
+### 20.2 Current State (Feature Flag)
+
+| Aspect | Current Implementation |
+|---|---|
+| **Toggle** | `tenantConfig.kycEnabled: boolean` |
+| **User field** | `kycStatus: string` on `OmsUser` (display only) |
+| **UI impact** | When enabled, User Management shows a "KYC Status" column |
+| **Verification** | No actual identity verification; status is manually set |
+| **Statuses shown** | `"pending"`, `"verified"`, `"rejected"`, `"not_started"` |
+
+### 20.3 Proposed KYC Module Design
+
+#### Route & File
+- **Route:** `/oms/kyc`
+- **File:** `kyc-management.tsx`
+- **Access:** `merchant_compliance`+ (new role) or `merchant_ops`+
+
+#### KYC Entity (Proposed)
+
+```typescript
+type KycLevel = "basic" | "enhanced" | "full";
+type KycStatus = "not_started" | "pending" | "in_review" | "verified" | "rejected" | "expired";
+type DocumentType = "government_id" | "passport" | "drivers_license" | "utility_bill" | "selfie" | "proof_of_address";
+
+interface KycApplication {
+  id: string;
+  userId: string;
+  merchantId: string;         // KYC is merchant-scoped
+  level: KycLevel;
+  status: KycStatus;
+  submittedAt: string;
+  reviewedAt?: string;
+  reviewedBy?: string;
+  expiresAt?: string;          // KYC expiration for periodic re-verification
+  documents: KycDocument[];
+  personalInfo: {
+    fullName: string;
+    dateOfBirth: string;
+    nationality: string;
+    address: string;
+    phoneNumber: string;
+  };
+  verificationResult?: {
+    provider: string;           // e.g. "Jumio", "Onfido", "manual"
+    score: number;              // 0-100
+    flags: string[];
+    matchDetails: Record<string, boolean>;
+  };
+  rejectionReason?: string;
+  notes: string[];
+}
+
+interface KycDocument {
+  id: string;
+  type: DocumentType;
+  fileUrl: string;
+  uploadedAt: string;
+  status: "pending" | "accepted" | "rejected";
+  rejectionReason?: string;
+}
+```
+
+#### KYC Tenant Configuration (Proposed Extension)
+
+```typescript
+// Extension to existing TenantConfig
+interface KycTenantConfig {
+  kycEnabled: boolean;                   // Existing flag
+  kycRequired: boolean;                  // NEW: Require KYC before trading
+  kycLevels: {
+    basic: { requiredDocs: DocumentType[]; tradingLimit: number };
+    enhanced: { requiredDocs: DocumentType[]; tradingLimit: number };
+    full: { requiredDocs: DocumentType[]; tradingLimit: number | null };  // null = unlimited
+  };
+  kycExpirationDays: number;             // Auto-expire KYC after N days (0 = never)
+  kycProvider: "manual" | "jumio" | "onfido";  // External provider integration
+  kycAutoApprove: boolean;               // Auto-approve if provider score > threshold
+  kycAutoApproveThreshold: number;       // Score threshold (0-100)
+}
+```
+
+#### Features (Proposed)
+
+| ID | Feature | Priority | Description |
+|---|---|---|---|
+| KYC-01 | KYC application list | P0 | Table of all KYC applications with status, level, user info |
+| KYC-02 | Document review interface | P0 | Side-by-side document viewer with approve/reject per document |
+| KYC-03 | Manual review workflow | P0 | Approve/reject applications with notes |
+| KYC-04 | Multi-level KYC tiers | P1 | Basic/Enhanced/Full with different requirements |
+| KYC-05 | Trading limits by KYC level | P1 | Enforce trading/withdrawal limits based on verification level |
+| KYC-06 | Expiration & re-verification | P2 | Auto-expire KYC, prompt re-verification |
+| KYC-07 | External provider integration | P2 | Jumio/Onfido API integration for automated verification |
+| KYC-08 | Auto-approval rules | P2 | Auto-approve if provider score exceeds threshold |
+| KYC-09 | KYC analytics dashboard | P2 | Approval rates, average review time, rejection reasons |
+| KYC-10 | Bulk review actions | P1 | Select multiple applications for batch approve/reject |
+| KYC-11 | PII encryption at rest | P0 | All personal data encrypted, masked in UI unless explicit reveal |
+
+#### Audit Actions (Proposed)
+
+- `kyc_submit`, `kyc_approve`, `kyc_reject`, `kyc_expire`, `kyc_resubmit`
+- `kyc_document_accept`, `kyc_document_reject`
+- `kyc_config_update` (tenant KYC settings changed)
+- `kyc_pii_reveal` (admin viewed unmasked PII — sensitive action)
+
+#### API Endpoints (Proposed)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/kyc/applications` | List KYC applications (filterable by status, level, userId) |
+| `GET` | `/kyc/applications/:id` | Get full KYC application with documents |
+| `POST` | `/kyc/applications` | Submit new KYC application (user-facing) |
+| `PATCH` | `/kyc/applications/:id` | Approve/reject application |
+| `PATCH` | `/kyc/applications/:id/documents/:docId` | Accept/reject individual document |
+| `GET` | `/kyc/analytics` | KYC review metrics |
+| `PUT` | `/tenant-config/kyc` | Update KYC-specific tenant config |
+
+#### Dependencies
+- [User Management](#72-user-management) — User `kycStatus` field, trading limit enforcement
+- [Wallet Management](#77-wallet-management) — Withdrawal limits by KYC level
+- [Tenant Configuration](#14-tenant-configuration-schema) — KYC config extension
+- [Settings](#96-settings) — KYC settings UI
+- External provider APIs (Jumio, Onfido) — future integration
+
+#### Implementation Phases
+
+| Phase | Scope | Timeline Estimate |
+|---|---|---|
+| **Phase 1** | Manual KYC review (KYC-01 to KYC-03, KYC-11) | 2-3 sprints |
+| **Phase 2** | Multi-level tiers + trading limits (KYC-04, KYC-05, KYC-10) | 2 sprints |
+| **Phase 3** | Provider integration + auto-approval (KYC-07, KYC-08) | 3-4 sprints |
+| **Phase 4** | Expiration, analytics, polish (KYC-06, KYC-09) | 1-2 sprints |
+
+> **Regulatory Note:** KYC requirements vary by Philippine jurisdiction and PAGCOR licensing terms. The multi-level approach allows merchants to comply with their specific regulatory obligations. PII handling must comply with the Philippine Data Privacy Act (RA 10173).
+
+---
+
+## 21. Test Case Matrix
+
+> Derived from the sequence diagram error scenarios (Section 19). Each test case maps to a specific flow phase, includes preconditions, expected behavior, and the audit actions that must be verified.
+
+### 21.1 KYB Approval → Merchant Creation (Diagram 19.1)
+
+| TC ID | Flow Phase | Scenario | Preconditions | Test Steps | Expected Result | Audit Actions Verified |
+|---|---|---|---|---|---|---|
+| KYB-TC-01 | Submission | Happy path: complete KYB submission | Unauthenticated merchant applicant | Fill all required fields, upload docs (< 5MB each), submit | 201 response, status = "submitted" | `kyb_submit` |
+| KYB-TC-02 | Submission | File too large (> 5MB) | Form partially filled | Upload a 6MB document | Client-side validation error, form not submitted | None |
+| KYB-TC-03 | Submission | Duplicate business registration | KYB with same registrationNumber exists | Submit KYB with duplicate reg number | 409 Conflict response | None |
+| KYB-TC-04 | Review | Info request loop | KYB in "submitted" status | Reviewer requests additional info | Status → "info_requested", applicant notified | `kyb_info_request` |
+| KYB-TC-05 | Review | Resubmission after info request | KYB in "info_requested" status | Applicant uploads missing docs, resubmits | Status → "resubmitted" | `kyb_resubmit` |
+| KYB-TC-06 | Review | Approval → auto-provisioning | KYB in "submitted"/"resubmitted" | Reviewer approves, enters review notes | Status → "approved", merchant created, wallet initialized | `kyb_approve` → `merchant_create` |
+| KYB-TC-07 | Review | Rejection | KYB in "submitted" status | Reviewer rejects with notes | Status → "rejected", applicant notified, no merchant created | `kyb_reject` |
+| KYB-TC-08 | Provisioning | Merchant tenant creation | KYB approved | System auto-provisions | TenantConfig created with defaults, admin user created, wallet with 0 balance | `merchant_create` |
+| KYB-TC-09 | Post-provision | First login | Merchant provisioned with credentials | Login with provisioned credentials | Redirect to /oms/dashboard, tenant config loaded | None |
+| KYB-TC-10 | RBAC | Unauthorized reviewer | Merchant-only admin (non-platform) | Attempt to access /oms/kyb | 403 Forbidden or redirect | None |
+
+### 21.2 Market Settlement → Bet Payout (Diagram 19.2)
+
+| TC ID | Flow Phase | Scenario | Preconditions | Test Steps | Expected Result | Audit Actions Verified |
+|---|---|---|---|---|---|---|
+| STL-TC-01 | Resolution | Happy path: settle open market | Market status = "open", has active bets | Select winning outcome, confirm settlement | Market status → "settled", resolvedAt set | `market_settle` |
+| STL-TC-02 | Resolution | Settle locked market | Market status = "locked" | Same as above | Same as above — locked markets are settleable | `market_settle` |
+| STL-TC-03 | Resolution | Settle already-settled market | Market status = "settled" | Attempt settlement | 400 error: "Market already settled" | None |
+| STL-TC-04 | Resolution | Settle pending market | Market status = "pending" | Attempt settlement | 400 error: "Cannot settle a pending market" | None |
+| STL-TC-05 | Bet payout | Winning bet credited | Market settled, bet matches outcome | Settlement engine processes bets | Bet status → "won", wallet credited with payout | `bet_settle` (won), `wallet_credit` |
+| STL-TC-06 | Bet payout | Losing bet zeroed | Market settled, bet doesn't match | Settlement engine processes bets | Bet status → "lost", payout = 0, no wallet change | `bet_settle` (lost) |
+| STL-TC-07 | Batch | Partial settlement failure | 100 bets, engine fails at bet #50 | Simulate engine crash mid-batch | 50 bets settled, 50 pending, `settlement_error` logged, admin alerted | `bet_settle` (×50), `settlement_error` |
+| STL-TC-08 | Void | Market voided (not settled) | Market open with active bets | Admin voids market | All bets → "void", original stakes refunded to wallets | `market_void`, `bet_void` (×N), `wallet_credit` (×N) |
+| STL-TC-09 | Dispute | Void settled market within 24h | Market settled < 24h ago | Admin triggers void on settled market | Payouts reversed, wallet debits issued | `market_void`, `wallet_debit` (×winning bets) |
+| STL-TC-10 | Dispute | Void settled market after 24h | Market settled > 24h ago | Attempt void | 400 error: "Void window expired" | None |
+| STL-TC-11 | Summary | Post-settlement summary | Settlement complete | Query settlement summary | Correct totalPayout, winnersCount, losersCount, platformFee | `settlement_complete` |
+
+### 21.3 Fiat Withdrawal Flow (Diagram 19.3)
+
+| TC ID | Flow Phase | Scenario | Preconditions | Test Steps | Expected Result | Audit Actions Verified |
+|---|---|---|---|---|---|---|
+| WDR-TC-01 | Request | Happy path: withdrawal request | User balance ≥ amount + fee | Submit PHP 10,000 GCash withdrawal | Transaction created (pending), wallet hold applied | `txn_create`, `wallet_hold` |
+| WDR-TC-02 | Request | Insufficient balance | User balance < amount + fee | Submit withdrawal exceeding balance | 400 error, no transaction created | None |
+| WDR-TC-03 | Review | Admin approves withdrawal | Transaction in "pending", needsReview=true | Admin reviews and approves | Status → "approved", sent to CVPay gateway | `txn_approve` |
+| WDR-TC-04 | Review | Admin rejects withdrawal | Transaction pending review | Admin rejects with reason | Status → "rejected", hold released, funds returned | `txn_reject`, `wallet_release` |
+| WDR-TC-05 | Gateway | CVPay success callback | Transaction approved, sent to CVPay | CVPay webhook: status=completed | Transaction → "completed", hold finalized | `txn_complete` |
+| WDR-TC-06 | Gateway | CVPay failure callback | Transaction sent to CVPay | CVPay webhook: status=failed | Transaction → "failed", funds returned to wallet | `txn_fail`, `wallet_release` |
+| WDR-TC-07 | Gateway | CVPay timeout (no callback) | Transaction sent to CVPay, 5 min elapsed | System auto-retry timer fires | Retry request sent, `txn_gateway_timeout` logged | `txn_gateway_timeout` |
+| WDR-TC-08 | Edge | Double-spend: two withdrawals for same funds | User has PHP 10K, submits two PHP 10K withdrawals simultaneously | Both requests hit API concurrently | First succeeds (hold applied), second fails (insufficient available) | `txn_create` (×1) |
+
+### 21.4 Creator Application → Approval (Diagram 19.4)
+
+| TC ID | Flow Phase | Scenario | Preconditions | Test Steps | Expected Result | Audit Actions Verified |
+|---|---|---|---|---|---|---|
+| CRT-TC-01 | Submission | Happy path application | User account active, not already a creator | Submit creator application with full details | Application created (pending) | `creator_app_submit` |
+| CRT-TC-02 | Submission | Already a creator | User.userType = "creator" | Attempt application | 400 error: "Already a creator" | None |
+| CRT-TC-03 | Review | Approve application | Application status = "pending" | Admin approves, sets tier=standard, revShare=5 | User → creator, Creator profile created | `creator_app_approve`, `creator_create` |
+| CRT-TC-04 | Review | Reject application | Application status = "pending" | Admin rejects with reason | Status → "rejected", user notified | `creator_app_reject` |
+| CRT-TC-05 | Review | Reapply after rejection | Application rejected, 30+ days elapsed | User submits new application | New application created (pending) | `creator_app_submit` |
+| CRT-TC-06 | Review | Reapply too soon | Application rejected < 30 days ago | User submits new application | 400 error: "Must wait 30 days before reapplying" | None |
+
+### 21.5 Risk Alert → Investigation → Resolution (Diagram 19.5)
+
+| TC ID | Flow Phase | Scenario | Preconditions | Test Steps | Expected Result | Audit Actions Verified |
+|---|---|---|---|---|---|---|
+| RSK-TC-01 | Detection | Auto-generated risk alert | User places 50 bets in 2 min | Risk engine detects anomaly | Alert created (open, riskLevel=high) | `risk_alert_create` |
+| RSK-TC-02 | Investigation | Start investigation | Alert status = "open" | Admin clicks "Investigate" | Status → "investigating" | `risk_investigate` |
+| RSK-TC-03 | Resolution | Confirm threat → freeze user | Alert investigating, evidence confirmed | Admin resolves as "user_frozen" | User trading/withdrawal suspended, wallet frozen | `risk_resolve`, `user_freeze`, `wallet_freeze` |
+| RSK-TC-04 | Resolution | False positive → dismiss | Alert investigating, no threat found | Admin dismisses with notes | Status → "dismissed" | `risk_dismiss` |
+| RSK-TC-05 | Resolution | Hedge → reduce market limits | Alert investigating, market exposure high | Admin applies hedge action | Market maxExposure reduced, alert resolved | `risk_hedge`, `risk_resolve` |
+| RSK-TC-06 | RBAC | Unauthorized resolution | Non-ops admin (e.g., content admin) | Attempt to resolve risk alert | 403 Forbidden | None |
+| RSK-TC-07 | Edge | Resolve already-resolved alert | Alert status = "resolved" | Attempt to resolve again | 400 error: "Alert already resolved" | None |
+
+### 21.6 Cross-Cutting Test Cases
+
+| TC ID | Category | Scenario | Expected Result | Audit Actions Verified |
+|---|---|---|---|---|
+| XC-TC-01 | Audit completeness | Every state transition logged | Run any happy-path flow end-to-end | Audit log contains all expected actions in correct chronological order | All flow-specific actions |
+| XC-TC-02 | RBAC enforcement | Platform-only actions blocked for merchant users | Merchant admin attempts KYB review | 403 or redirect, no state change | None |
+| XC-TC-03 | Tenant isolation | Merchant A cannot see Merchant B data | Admin for Merchant A queries users | Only Merchant A users returned | None |
+| XC-TC-04 | Concurrent operations | Two admins settle same market | Both click "Settle" simultaneously | First succeeds, second gets 409 Conflict | `market_settle` (×1) |
+| XC-TC-05 | Idempotency | Retry webhook delivery | CVPay sends same webhook twice | Transaction state unchanged on second call, no double-credit | `txn_complete` (×1) |
+| XC-TC-06 | i18n | All audit actions translated | Switch locale to FIL, trigger any action | Audit log UI shows Filipino labels, raw action type preserved | Any |
+
+### 21.7 TestRail / Zephyr Export Schema
+
+> All test cases use a consistent TC ID format (`{MODULE}-TC-{##}`) compatible with bulk import into TestRail, Zephyr Scale, or qTest. Use the following CSV mapping:
+
+| PRD Field | TestRail Field | Zephyr Field | Notes |
+|---|---|---|---|
+| TC ID | `custom_tc_id` | `Key` | Primary identifier, immutable |
+| Flow Phase | `section` | `Folder` | Maps to test suite sections |
+| Scenario | `title` | `Name` | Test case name |
+| Preconditions | `custom_preconds` | `Precondition` | State required before test |
+| Test Steps | `custom_steps` | `Test Script` | Concatenate into numbered steps |
+| Expected Result | `custom_expected` | `Expected Result` | Per-step or overall |
+| Audit Actions Verified | `custom_audit_actions` | `Labels` | Comma-separated action types |
+| Category | `suite_id` | `Test Cycle` | KYB, STL, WDR, CRT, RSK, XC |
+
+**CSV Export Template:**
+
+```csv
+tc_id,suite,section,title,preconditions,steps,expected,priority,automation_type,audit_actions
+KYB-TC-01,KYB Approval,Submission,"Happy path: complete KYB submission","Unauthenticated merchant applicant","1. Fill all required fields\n2. Upload docs (< 5MB each)\n3. Submit","201 response, status = submitted",High,Manual,kyb_submit
+KYB-TC-02,KYB Approval,Submission,"File too large (> 5MB)","Form partially filled","1. Upload a 6MB document","Client-side validation error, form not submitted",Medium,Automated,
+```
+
+**Automation Priority Tags:**
+
+| Priority | Count | Criteria |
+|---|---|---|
+| P0 — Critical | 12 | Happy paths + money-movement flows (STL-TC-01, WDR-TC-01, etc.) |
+| P1 — High | 18 | Error handling + RBAC enforcement |
+| P2 — Medium | 10 | Edge cases + concurrent operations |
+| P3 — Low | 5 | i18n, idempotency, cosmetic validations |
+
+### 21.8 API Rate-Limit Test Cases
+
+| TC ID | Endpoint Group | Scenario | Setup | Steps | Expected Result | Notes |
+|---|---|---|---|---|---|---|
+| RL-TC-01 | Standard (500/min) | Under limit | Fresh rate-limit window | Send 400 requests in 60s | All 200 OK, `X-RateLimit-Remaining` decrements correctly | Baseline |
+| RL-TC-02 | Standard (500/min) | At limit | 499 requests sent | Send request #500 | 200 OK, `X-RateLimit-Remaining: 0` | Edge |
+| RL-TC-03 | Standard (500/min) | Over limit | 500 requests sent | Send request #501 | 429 Too Many Requests, `Retry-After` header present | Core rate-limit |
+| RL-TC-04 | Standard (500/min) | Window reset | Over limit, wait 60s | Send request after window reset | 200 OK, `X-RateLimit-Remaining` = 499 | Recovery |
+| RL-TC-05 | Auth (20/min) | Login brute-force | Valid credentials | Send 21 login attempts in 60s | First 20: normal auth response; 21st: 429 | Security |
+| RL-TC-06 | Auth (20/min) | Lockout escalation | 20 failed logins | Continue attempting | Account temporarily locked (15 min), audit: `auth_lockout` | Anti-abuse |
+| RL-TC-07 | Export (5/5min) | CSV export spam | Fresh window | Request 6 CSV exports in 5 min | First 5 succeed; 6th: 429 with `Retry-After` | Resource protection |
+| RL-TC-08 | Webhook (100/s) | Burst delivery | 100 pending events | Deliver all in 1 second | All delivered, no drops | Throughput baseline |
+| RL-TC-09 | Webhook (100/s) | Over burst | 150 pending events | Attempt delivery | 100 delivered, 50 queued for next second | Backpressure |
+| RL-TC-10 | Cross-tenant | Tenant isolation | Tenant A at limit | Tenant B sends request | Tenant B: 200 OK (unaffected by A's limit) | Isolation |
+
+### 21.9 Settlement Engine Load Testing Scenarios
+
+| TC ID | Scenario | Volume | Concurrent Ops | Timeout | Expected | SLA Target |
+|---|---|---|---|---|---|---|
+| LOAD-TC-01 | Single market settlement | 100 bets | 1 market | 30s | All bets settled, wallets credited | < 5s |
+| LOAD-TC-02 | Single market settlement | 1,000 bets | 1 market | 60s | All bets settled, wallets credited | < 15s |
+| LOAD-TC-03 | Single market settlement | 10,000 bets | 1 market | 120s | All bets settled, wallets credited | < 60s |
+| LOAD-TC-04 | Multi-market concurrent | 500 bets each | 5 markets simultaneously | 120s | All 2,500 bets settled correctly, no cross-market contamination | < 30s |
+| LOAD-TC-05 | Multi-market concurrent | 1,000 bets each | 10 markets simultaneously | 300s | All 10,000 bets settled, no deadlocks | < 120s |
+| LOAD-TC-06 | Settlement + withdrawals | 1,000 bets + 200 withdrawals | 1 market + withdrawal queue | 120s | Bets settled first, withdrawals processed after, balances consistent | < 45s |
+| LOAD-TC-07 | Peak load simulation | 5,000 bets + 500 deposits + 300 withdrawals | 3 markets | 300s | All operations complete, no data loss, audit log complete | < 180s |
+| LOAD-TC-08 | Recovery after crash | 5,000 bets, engine killed at 2,500 | 1 market | N/A | On restart: 2,500 already-settled untouched, remaining 2,500 resume | Idempotent resume |
+| LOAD-TC-09 | Database connection pool exhaustion | 10,000 bets | 1 market, pool max=50 | 300s | Graceful degradation, no connection leaks, all eventually settled | < 120s (degraded) |
+| LOAD-TC-10 | Color Game rapid-fire | 100 rounds x 500 bets | 100 sequential Color Game rounds | 600s | Each round settled independently, no round leakage | < 3s per round |
+
+**Load Testing Tool Recommendations:**
+
+| Tool | Use Case | Notes |
+|---|---|---|
+| k6 | API endpoint load testing | JavaScript-based, good for rate-limit verification |
+| Artillery | Settlement engine throughput | YAML scenarios, good for multi-step flows |
+| Gatling | Peak load simulation | JVM-based, detailed HTML reports |
+| Custom script | Database consistency checks | Post-test verification of wallet balances, bet statuses |
+
+---
+
+## 22. Integration Dependency Graph
+
+> This Mermaid graph visualizes how all 35 modules (34 original + KYC) interconnect. Edge labels indicate the nature of the dependency. Use this as a reference for impact analysis when modifying any module.
+
+```mermaid
+graph TB
+    subgraph PLATFORM["Platform Level"]
+        PO[Platform Overview<br/>6.1]
+        MM[Merchant Management<br/>6.2]
+        MD[Merchant Detail<br/>6.3]
+        BIL[Billing & Subscription<br/>6.4]
+        KYB_R[KYB Review<br/>6.5]
+        KYB_F[KYB Form<br/>6.6]
+        PAAS[PaaS Admin Config<br/>6.7]
+        PM[PaaS Merchant View<br/>6.8]
+        AU[Admin Users<br/>6.9]
+        PP[Payment Providers<br/>6.10]
+        PME[Payment Methods<br/>6.11]
+    end
+
+    subgraph MERCHANT["Merchant Operations"]
+        DASH[Dashboard<br/>7.1]
+        UM[User Management<br/>7.2]
+        MKT[Markets<br/>7.3]
+        BET[Bets<br/>7.4]
+        FIN[Finance<br/>7.5]
+        RISK[Risk Management<br/>7.6]
+        WAL[Wallet Admin<br/>7.7]
+        ODDS[Odds Config<br/>7.8]
+        FB[Fast Bet Config<br/>7.9]
+        CR[Creator Mgmt<br/>7.10]
+    end
+
+    subgraph PROGRAMS["Programs & Growth"]
+        REW[Rewards<br/>8.1]
+        AFF[Affiliates<br/>8.2]
+        LB[Leaderboard<br/>8.3]
+        PROMO[Promotions<br/>8.4]
+    end
+
+    subgraph SYSTEM["System & Infrastructure"]
+        CMS[Content Mgmt<br/>9.1]
+        NOTIF[Notifications<br/>9.2]
+        RPT[Reports<br/>9.3]
+        AUDIT[Audit Trail<br/>9.4]
+        SUP[Support<br/>9.5]
+        SET[Settings<br/>9.6]
+    end
+
+    subgraph FINANCE_SUB["Finance Sub-Modules"]
+        FIAT[Fiat Transactions<br/>10.1]
+        FGW[Fiat Gateway Config<br/>10.2]
+        CVPAY[CVPay Config<br/>10.3]
+    end
+
+    subgraph FUTURE["Future Modules"]
+        KYC[KYC Management<br/>Phase 1]
+    end
+
+    %% Platform → Platform
+    KYB_F -->|submits to| KYB_R
+    KYB_R -->|provisions| MM
+    MM -->|detail view| MD
+    MD -->|billing link| BIL
+    MM -->|config from| PAAS
+    PM -->|reads| PAAS
+    AU -->|RBAC config| PAAS
+    PP -->|routing config| PME
+
+    %% Platform → Merchant
+    PO -->|aggregates| DASH
+    MM -->|scopes| DASH
+    PAAS -->|tenant config| SET
+
+    %% Merchant internal flows
+    DASH -->|stats from| UM
+    DASH -->|stats from| MKT
+    DASH -->|stats from| FIN
+    DASH -->|stats from| BET
+    MKT -->|settlement triggers| BET
+    BET -->|payouts| WAL
+    MKT -->|odds from| ODDS
+    MKT -->|fast games| FB
+    CR -->|creates markets| MKT
+    CR -->|user promotion| UM
+    UM -->|risk flags| RISK
+    WAL -->|suspicious txn| RISK
+    FIN -->|wallet ops| WAL
+    RISK -->|freezes| UM
+    RISK -->|freezes| WAL
+    RISK -->|limits| MKT
+
+    %% Finance sub-modules
+    FIN -->|fiat txns| FIAT
+    FIAT -->|gateway| CVPAY
+    CVPAY -->|config| FGW
+    FIN -->|methods| PME
+    FIN -->|providers| PP
+
+    %% Programs
+    REW -->|user eligibility| UM
+    REW -->|wallet credits| WAL
+    AFF -->|referral tracking| UM
+    AFF -->|commissions| WAL
+    LB -->|rankings from| BET
+    LB -->|rankings from| MKT
+    PROMO -->|applies to| WAL
+    PROMO -->|user targeting| UM
+
+    %% System cross-cutting
+    AUDIT -.->|logs all| UM
+    AUDIT -.->|logs all| MKT
+    AUDIT -.->|logs all| BET
+    AUDIT -.->|logs all| FIN
+    AUDIT -.->|logs all| WAL
+    AUDIT -.->|logs all| RISK
+    AUDIT -.->|logs all| KYB_R
+    NOTIF -->|alerts| RISK
+    NOTIF -->|settlement| MKT
+    NOTIF -->|txn updates| FIN
+    CMS -->|banners in| DASH
+    RPT -->|data from| FIN
+    RPT -->|data from| BET
+    RPT -->|data from| UM
+    SUP -->|user context| UM
+    SUP -->|txn context| FIN
+
+    %% KYC (future)
+    KYC -->|identity status| UM
+    KYC -->|trading limits| WAL
+    KYC -->|config from| SET
+    KYC -.->|audit logged| AUDIT
+    UM -.->|kycStatus| KYC
+
+    %% Styling
+    classDef platform fill:#1e3a5f,stroke:#3b82f6,color:#fff
+    classDef merchant fill:#1e3f1e,stroke:#22c55e,color:#fff
+    classDef programs fill:#3f1e3f,stroke:#a855f7,color:#fff
+    classDef system fill:#3f3f1e,stroke:#eab308,color:#fff
+    classDef finance fill:#1e3f3f,stroke:#06b6d4,color:#fff
+    classDef future fill:#3f2d1e,stroke:#f97316,color:#fff,stroke-dasharray: 5 5
+
+    class PO,MM,MD,BIL,KYB_R,KYB_F,PAAS,PM,AU,PP,PME platform
+    class DASH,UM,MKT,BET,FIN,RISK,WAL,ODDS,FB,CR merchant
+    class REW,AFF,LB,PROMO programs
+    class CMS,NOTIF,RPT,AUDIT,SUP,SET system
+    class FIAT,FGW,CVPAY finance
+    class KYC future
+```
+
+### 22.1 Dependency Summary Table
+
+| Module | Depends On | Depended On By | Critical Path? |
+|---|---|---|---|
+| **User Management (7.2)** | Tenant Config | Dashboard, Risk, Wallet, Creator, Affiliates, Rewards, Leaderboard, Reports, Support, KYC | Yes — most connected node |
+| **Wallet Admin (7.7)** | User Mgmt, Finance | Bets (payouts), Rewards, Affiliates, Promos, Risk, KYC | Yes — financial core |
+| **Markets (7.3)** | Odds, Fast Bet, Creators | Bets, Dashboard, Leaderboard, Risk | Yes — primary business object |
+| **Finance (7.5)** | Wallet, Payment Methods, Providers | Dashboard, Fiat Txns, Reports | Yes — money movement |
+| **Bets (7.4)** | Markets, Users | Dashboard, Leaderboard, Reports, Wallet | Yes — revenue generator |
+| **Risk (7.6)** | Users, Wallet, Markets | Notifications | Moderate — reactive module |
+| **Audit Trail (9.4)** | All modules (passive consumer) | Reports | Low — observability only |
+| **KYC (future)** | Users, Wallet, Settings | Users (kycStatus) | Moderate — compliance gating |
+| **KYB Review (6.5)** | KYB Form | Merchant Mgmt (provisioning) | Yes — merchant onboarding gate |
+| **PaaS Admin Config (6.7)** | None | Settings, Admin Users, Merchant View, Tenant Config | Yes — global config source |
+
+### 22.2 Impact Analysis Guide
+
+When modifying a module, check this table to identify downstream impacts:
+
+| If You Change... | Also Verify... |
+|---|---|
+| User entity schema | Dashboard stats, Risk alerts, Wallet display, Creator profiles, Affiliate referrals, KYC status, Reports |
+| Market settlement logic | Bet payout calculations, Wallet credits, Leaderboard rankings, Notification triggers |
+| Wallet balance operations | Finance transaction display, Risk threshold checks, Withdrawal limits, Reward credits |
+| Tenant configuration schema | All merchant-scoped pages (they read config), Settings UI, PaaS Merchant View |
+| RBAC role definitions | All pages with `RBACGuard`, Admin Users page, Audit trail (permission context) |
+| Audit action taxonomy | Audit Trail page filters, Reports (audit-based), All modules (logAudit calls) |
+| Payment provider routing | Finance transactions, Fiat withdrawals, CVPay callbacks |
+
+---
+
+## 23. Changelog
+
+| Version | Date | Changes |
+|---|---|---|
+| **1.0** | 2026-04-18 | Initial PRD with 34 modules, RBAC, i18n, audit logging, 18 API sections |
+| **1.1** | 2026-04-18 | Entity schema alignment (9 entities), 13 missing API endpoints, Programs module audit actions, Content Management expansion (banners), Glossary KYC note, data layer inventory. API sections 18.27–18.33 added. |
+| **1.2** | 2026-04-18 | Added 5 sequence diagrams (KYB→Merchant, Settlement→Payout, Fiat Withdrawal, Creator Application, Risk Alert lifecycle). Added KYC Module future scope (Section 20) with full entity design, tenant config extension, 11 features, phased implementation plan. OmsUserRecord dual-model documentation (list vs. detail). |
+| **1.3** | 2026-04-18 | Test case matrix (Section 21) with 45 test cases across 6 categories derived from sequence diagram error scenarios. Integration dependency graph (Section 22) with Mermaid visualization of all 35 modules, dependency summary table, and impact analysis guide. **KYC Phase 1 prototype implemented**: mock data (10 applications, 24 documents, analytics), KYC Management page at `/oms/kyc` with review workflow, PII masking, document status tracking, analytics dashboard. Total page count: 35. |
+| **1.4** | 2026-04-18 | KYC ↔ User Management wiring: KYC Status column + KYC action button added to User Management table with `KycBadge` component and navigation link to `/oms/kyc`. TestRail/Zephyr export schema (Section 21.7) with CSV mapping template and automation priority tags. API rate-limit test cases (Section 21.8) covering 10 scenarios across standard/auth/export/webhook endpoints with tenant isolation verification. Settlement engine load testing (Section 21.9) with 10 scenarios from 100→50,000 bets, crash recovery, connection pool exhaustion, and Color Game rapid-fire. Total test cases: 65. |
+
+---
+
+*End of PRD - PredictEx PaaS OMS v1.4 (Updated: April 18, 2026)*

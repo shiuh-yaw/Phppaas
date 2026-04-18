@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import { OmsModal, OmsField, OmsInput, OmsSelect, OmsBtn, OmsButtonRow, OmsConfirmContent, showOmsToast } from "../../components/oms/oms-modal";
 import { useOmsAuth, isPlatformUser } from "../../components/oms/oms-auth";
 import { useTenantConfig, mapAdminToTenantRole } from "../../components/oms/oms-tenant-config";
@@ -7,6 +8,7 @@ import { OmsPagination, paginate } from "../../components/oms/oms-pagination";
 import { OmsTableSkeleton } from "../../components/oms/oms-table-skeleton";
 import { logAudit } from "../../components/oms/oms-audit-log";
 import { MOCK_USER_RECORDS, type OmsUserRecord, type OmsUserType, type OmsChannel, type OmsSource, type OmsTradeRecord, type OmsAssetInfo } from "../../data/oms-mock";
+import { getKycByUserId, type KycStatus } from "../../data/oms-mock";
 
 const pp = { fontFamily: "'Poppins', sans-serif" };
 const ss04 = { fontFeatureSettings: "'ss04'" };
@@ -39,6 +41,25 @@ function ChannelBadge({ channel }: { channel: Channel }) {
       {channel.toUpperCase()}
     </span>
   );
+}
+
+/* ==================== KYC STATUS BADGE ==================== */
+function KycBadge({ userId }: { userId: string }) {
+  const kyc = getKycByUserId(userId);
+  if (!kyc) return <span className="text-[10px] text-[#d1d5db]" style={ss04}>--</span>;
+  const map: Record<KycStatus, string> = {
+    not_started: "bg-gray-100 text-gray-500",
+    pending: "bg-amber-50 text-amber-600",
+    in_review: "bg-blue-50 text-blue-600",
+    verified: "bg-emerald-50 text-emerald-600",
+    rejected: "bg-red-50 text-red-500",
+    expired: "bg-orange-50 text-orange-600",
+  };
+  const labels: Record<KycStatus, string> = {
+    not_started: "NONE", pending: "PENDING", in_review: "REVIEW",
+    verified: "VERIFIED", rejected: "REJECTED", expired: "EXPIRED",
+  };
+  return <span className={`text-[10px] px-1.5 py-0.5 rounded ${map[kyc.status]}`} style={{ fontWeight: 600, ...ss04 }}>{labels[kyc.status]}</span>;
 }
 
 /* ==================== COPY HELPER ==================== */
@@ -459,6 +480,7 @@ const ALL_COLUMNS: ColumnDef[] = [
   { key: "last_login", header: "Last Login", render: u => <span className="text-[#b0b3b8] text-[10px]" style={ss04}>{u.lastLoginTime}</span> },
   { key: "source", header: "Source", render: u => u.source === "agent" ? <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-600" style={{ fontWeight: 600, ...ss04 }}>Agent</span> : <span className="text-[#d1d5db] text-[10px]" style={ss04}>--</span> },
   { key: "agent_name", header: "Agent", render: u => <span className="text-[#84888c] text-[11px]" style={{ fontWeight: 500, ...ss04 }}>{u.agentName || "--"}</span> },
+  { key: "kyc_status", header: "KYC Status", render: u => <KycBadge userId={u.id} /> },
 ];
 
 /* ==================== MAIN PAGE ==================== */
@@ -487,7 +509,8 @@ export default function OmsUsers() {
   const canChangeRole = hasPermission("modify_role", role);
   const canEditContact = hasPermission("modify_contact", role);
   const canExport = hasPermission("export_users", role);
-  const hasAnyCTA = canViewTrading || canViewAssets || canViewRole;
+  const hasAnyCTA = canViewTrading || canViewAssets || canViewRole || true; // always show KYC link
+  const navigate = useNavigate();
 
   // Modal states
   const [tradingUser, setTradingUser] = useState<UserRecord | null>(null);
@@ -618,6 +641,7 @@ export default function OmsUsers() {
                         {canViewTrading && <button onClick={() => setTradingUser(u)} className="h-6 px-2 rounded-md text-[10px] cursor-pointer bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors" style={{ fontWeight: 600, ...ss04 }}>Trading</button>}
                         {canViewAssets && <button onClick={() => setAssetUser(u)} className="h-6 px-2 rounded-md text-[10px] cursor-pointer bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors" style={{ fontWeight: 600, ...ss04 }}>Asset</button>}
                         {canViewRole && <button onClick={() => setRoleUser(u)} className="h-6 px-2 rounded-md text-[10px] cursor-pointer bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors" style={{ fontWeight: 600, ...ss04 }}>Role</button>}
+                        {getKycByUserId(u.id) && <button onClick={() => navigate("/oms/kyc")} className="h-6 px-2 rounded-md text-[10px] cursor-pointer bg-teal-50 text-teal-600 hover:bg-teal-100 transition-colors" style={{ fontWeight: 600, ...ss04 }}>KYC</button>}
                       </div>
                     </td>
                   )}
