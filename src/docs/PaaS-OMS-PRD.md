@@ -88,6 +88,13 @@
     - 18.24 [Reports & Analytics APIs](#1824-reports--analytics-apis)
     - 18.25 [Settings APIs](#1825-settings-apis)
     - 18.26 [Platform Overview APIs](#1826-platform-overview-apis)
+    - 18.27 [Merchant Dashboard APIs](#1827-merchant-dashboard-apis)
+    - 18.28 [Admin Notification Feed APIs](#1828-admin-notification-feed-apis)
+    - 18.29 [Content Banner APIs](#1829-content-banner-apis)
+    - 18.30 [Search APIs](#1830-search-apis)
+    - 18.31 [Webhook Event Schemas](#1831-webhook-event-schemas)
+    - 18.32 [Error Code Reference](#1832-error-code-reference)
+    - 18.33 [Rate Limiting](#1833-rate-limiting)
 
 ---
 
@@ -235,9 +242,13 @@ Currently uses **mock data** in `/src/app/data/oms-mock.ts` with the following e
 - `OmsUserRecord` - End users (with wallet, PNL, trade history, KYC status)
 - `OmsTransaction` - Deposits/withdrawals
 - `OmsBet` - Bet records with type, status, odds
-- `OmsWallet` - User wallets with balances
-- `OmsWalletTx` - Wallet transaction history
+- `OmsWallet` - User wallets with balances, PNL, activity
+- `OmsWalletTx` - Wallet transaction history (9 transaction types)
 - `OmsCreator` / `OmsCreatorApp` - Creator profiles and applications
+- `OmsNotification` - Admin notification feed (bell icon)
+- `OmsUserFinancials` - Per-user financial summaries (balance, PNL, volume)
+- `OmsPlatformStats` - Aggregated platform statistics
+- `CommandEntry` - Command palette search entries
 - Mock daily flow data, payment breakdowns
 
 **Production Migration Notes:**
@@ -1094,6 +1105,10 @@ Each merchant gets different data derived from their profile:
 
 #### Dependencies
 - [Auth Context](#4-authentication--access-control) (active merchant)
+- [Finance & Transactions](#75-finance--transactions) (revenue, pending withdrawals)
+- [Markets Management](#73-markets-management) (market category distribution)
+- [Bets Management](#74-bets-management) (bet volume data)
+- [Wallet Management](#77-wallet-management) (wallet balances)
 
 ---
 
@@ -1108,28 +1123,89 @@ Core user management module with tenant-config-driven field visibility and permi
 
 #### User Entity (`OmsUserRecord`)
 
+There are **two user models** in the mock data layer:
+
+**List Model** (`OmsUser`) — used in user list table, wallet, and lightweight lookups:
+
 ```typescript
-interface OmsUserRecord {
-  uid: string;
-  nickname: string;
+interface OmsUser {
+  id: string;            // e.g. "U001"
+  name: string;
   email: string;
-  walletAddress: string;
+  nickname: string;
   userType: "user" | "creator";
   channel: "FG" | "organic" | "agent";
-  source: string;
-  agentName: string;
+  source: string;        // e.g. "Direct", "Google", "Agent Link"
+  agentName: string;     // e.g. "Tony (AG001)" or "-"
+  registeredAt: string;
+  lastLogin: string;
   recentIp: string;
   recentGeo: string;
-  lastLogin: string;
-  totalAsset: number;
-  totalVolume: number;
-  settledPnl: number;
-  socialChannel: string;
-  contactDetails: string;
-  kycStatus: string;
-  createdAt: string;
+  status: "active" | "suspended" | "frozen" | "restricted";
 }
 ```
+
+**Detail Model** (`OmsUserRecord`) — used in user detail modal with full asset, trade, and contact info:
+
+```typescript
+interface OmsUserRecord {
+  id: string;
+  uid: string;              // Numeric UID e.g. "1000001"
+  walletAddress: string;    // e.g. "0x7a3B...F2c9"
+  nickname: string;
+  email: string;
+  userType: "user" | "creator";
+  channel: "FG" | "organic" | "agent";
+  recentIP: string;
+  recentGeo: string;
+  lastLoginTime: string;
+  source: "" | "agent";
+  agentName: string;
+  totalTrades: number;
+  totalVolume: number;
+  settledPNL: number;
+  trades: OmsTradeRecord[];
+  asset: OmsAssetInfo;
+  socialChannel: string;         // e.g. "Twitter", "YouTube", "Twitch"
+  contactPhone: string;
+  contactTelegram: string;
+  contactWhatsApp: string;
+  language: string;              // e.g. "English", "Filipino"
+  timezone: string;              // e.g. "Asia/Manila (UTC+8)"
+  twoFactorEnabled: boolean;
+  emailNotifications: boolean;
+}
+
+interface OmsTradeRecord {
+  id: string;
+  marketName: string;
+  side: "Buy" | "Sell";
+  outcome: string;
+  quantity: number;
+  tradeVolume: number;
+  currency: "FGUSD" | "USDT" | "USDC";
+  tradeTime: string;
+}
+
+interface OmsAssetInfo {
+  totalAsset: number;
+  available: number;
+  positionValue: number;
+  lockedBalance: number;
+  withdrawFee: number;
+  suspendTrading: boolean;
+  suspendDeposit: boolean;
+  suspendWithdraw: boolean;
+  dailyWithdrawLimit: number;
+  singleWithdrawMin: number;
+  singleWithdrawMax: number;
+  totalAnnualWithdrawal: number;
+  whitelist: boolean;
+  transactions: { hash: string; amount: number; type: string; time: string; chain: string }[];
+}
+```
+
+> **Note:** The detail model `OmsUserRecord` is returned by `GET /users/:id`. The list model `OmsUser` is returned by `GET /users` (table rows). Fields like `walletAddress`, `kycStatus`, and contact details are only available in the detail view and are subject to `fieldVisibility` filtering.
 
 #### Features
 - **Dynamic column visibility** based on current user's tenant role (reads from `TenantConfig.fieldVisibility`)
@@ -1186,19 +1262,19 @@ Full lifecycle management of prediction markets from creation to resolution.
 #### Market Entity
 
 ```typescript
-type MarketStatus = "live" | "upcoming" | "resolved" | "cancelled" | "pending_review";
+type MarketStatus = "open" | "locked" | "settled" | "voided" | "pending";
+type MarketCategory = "basketball" | "boxing" | "esports" | "color_game" | "lottery" | "weather" | "economy" | "showbiz";
 
-interface MarketRecord {
-  id: string;
+interface OmsMarket {
+  id: string;          // e.g. "MKT001"
   title: string;
-  category: string;
+  category: MarketCategory;
   status: MarketStatus;
-  creator: string;
-  volume: number;
-  participants: number;
+  totalVolume: number;
+  betCount: number;
+  creatorId: string | null;  // null = platform-created, "CR001" = community-created
   createdAt: string;
-  expiresAt: string;
-  // ... additional fields
+  closesAt: string;    // e.g. "2026-03-15 19:00 PHT"
 }
 ```
 
@@ -1241,22 +1317,23 @@ Monitor and manage all bet records with void capability.
 #### Bet Entity
 
 ```typescript
-type BetStatus = "active" | "won" | "lost" | "voided" | "pending" | "cancelled";
-type BetType = "binary" | "multi" | "orderbook" | "fast_bet";
+type BetStatus = "active" | "won" | "lost" | "void" | "pending";
+type BetType = "standard" | "fast_bet" | "limit_order";
 
 interface OmsBet {
   id: string;
   userId: string;
+  user: string;          // Denormalized display name
   marketId: string;
-  marketTitle: string;
+  market: string;        // Denormalized market title
   type: BetType;
-  outcome: string;
+  selection: string;     // e.g. "Ginebra", "Pula", "ECHO"
   amount: number;
-  odds: number;
+  odds: string;          // e.g. "1.65", "x6"
   potentialPayout: number;
   status: BetStatus;
   placedAt: string;
-  resolvedAt?: string;
+  suspicious: boolean;   // Flagged by risk engine
 }
 ```
 
@@ -1297,19 +1374,22 @@ Transaction monitoring hub with deposit/withdrawal management, daily flow charts
 #### Transaction Entity
 
 ```typescript
+type TxnType = "deposit" | "withdrawal";
 type TxnStatus = "completed" | "processing" | "pending" | "failed" | "review";
+type PaymentMethod = "GCash" | "Maya" | "Bank Transfer" | "7-Eleven" | "Cebuana";
 
 interface OmsTransaction {
   id: string;
   userId: string;
-  type: "deposit" | "withdrawal";
+  user: string;          // Denormalized display name
+  type: TxnType;
+  method: PaymentMethod;
   amount: number;
-  currency: string;
-  method: string;
+  fee: number;
   status: TxnStatus;
+  reference: string;     // e.g. "MAYA-2026031345678"
   createdAt: string;
-  completedAt?: string;
-  reference: string;
+  needsReview: boolean;  // Flagged for manual review
 }
 ```
 
@@ -1410,23 +1490,31 @@ Manage user wallet balances with credit, debit, and freeze capabilities.
 
 ```typescript
 interface OmsWallet {
-  id: string;
-  userId: string;
-  nickname: string;
+  id: string;         // Same as userId
+  name: string;
+  email: string;
   balance: number;
-  lockedBalance: number;
+  holdBalance: number;      // Locked in active bets
+  totalDeposits: number;
+  totalWithdrawals: number;
+  totalWinnings: number;
+  totalLosses: number;
+  pnl: number;              // Profit and loss
+  activeBets: number;
+  lastTx: string;           // e.g. "2 min ago"
   status: "active" | "frozen" | "restricted";
-  lastActivity: string;
 }
+
+type WalletTxType = "credit" | "debit" | "deposit" | "withdrawal" | "bet_win" | "bet_loss" | "promo" | "refund" | "correction";
 
 interface OmsWalletTx {
   id: string;
-  walletId: string;
-  type: "credit" | "debit" | "freeze" | "unfreeze";
-  amount: number;
+  type: WalletTxType;
+  amount: number;      // Negative for debits/withdrawals/losses
+  balance: number;     // Resulting balance after this tx
   reason: string;
-  adminId: string;
-  createdAt: string;
+  admin: string;       // "System" or admin name
+  time: string;        // e.g. "2 min ago"
 }
 ```
 
@@ -1538,28 +1626,37 @@ Manage creator applications, profiles, and tier assignments.
 #### Data Models
 
 ```typescript
-type CreatorTier = "bronze" | "silver" | "gold" | "diamond";
-type CreatorAppStatus = "pending" | "approved" | "rejected" | "suspended";
+type CreatorTier = "standard" | "verified" | "premium" | "elite";
+type CreatorAppStatus = "pending" | "approved" | "rejected";
 
 interface OmsCreator {
   id: string;
-  nickname: string;
+  name: string;
+  email: string;
   tier: CreatorTier;
-  totalMarkets: number;
+  status: "active" | "suspended" | "revoked";
+  marketsCreated: number;
+  marketsLive: number;
   totalVolume: number;
-  followers: number;
-  status: string;
+  revShare: number;       // Revenue share percentage (e.g. 2.5)
+  earnings: number;       // Total earned (PHP)
+  rating: number;         // e.g. 4.7
+  joinDate: string;
+  lastActive: string;     // e.g. "1 hr ago"
 }
 
 interface OmsCreatorApp {
   id: string;
+  name: string;
+  email: string;
   userId: string;
-  nickname: string;
-  socialChannel: string;
-  followers: number;
-  reason: string;
+  appliedDate: string;
   status: CreatorAppStatus;
-  appliedAt: string;
+  reason: string;         // Applicant's motivation statement
+  experience: string;
+  categories: string[];   // e.g. ["Basketball", "Boxing"]
+  socialLinks: string;
+  followers: number;
 }
 ```
 
@@ -1627,6 +1724,17 @@ interface RewardProgram {
 | RW-03 | Pause/resume/expire programs | P0 |
 | RW-04 | Budget tracking (spent vs allocated) | P0 |
 | RW-05 | Participant tracking | P1 |
+| RW-06 | Search and filter by type, status | P1 |
+| RW-07 | CSV export of reward programs | P1 |
+| RW-08 | Audit log all reward actions | P0 |
+
+#### Audit Actions
+- `reward_create`, `reward_edit`, `reward_pause`, `reward_resume`, `reward_expire`
+
+#### Dependencies
+- [Promotions](#84-promotions-management) (promo-type rewards)
+- [User Management](#72-user-management) (participant data)
+- [Wallet Management](#77-wallet-management) (reward crediting)
 
 ---
 
@@ -1663,6 +1771,17 @@ interface AffiliateRecord {
 | AF-03 | Earnings and payout tracking | P0 |
 | AF-04 | Tier management | P1 |
 | AF-05 | Payout processing | P1 |
+| AF-06 | Search and filter by tier, status | P1 |
+| AF-07 | CSV export of affiliate list | P1 |
+| AF-08 | Pagination | P1 |
+| AF-09 | Audit log all affiliate actions | P0 |
+
+#### Audit Actions
+- `affiliate_create`, `affiliate_edit`, `affiliate_tier_change`, `affiliate_payout`, `affiliate_suspend`, `affiliate_activate`
+
+#### Dependencies
+- [User Management](#72-user-management) (referred user data)
+- [Finance & Transactions](#75-finance--transactions) (payout processing)
 
 ---
 
@@ -1697,6 +1816,17 @@ interface LeaderboardPeriod {
 | LB-02 | Period type configuration | P0 |
 | LB-03 | Prize pool management | P0 |
 | LB-04 | Participant tracking | P1 |
+| LB-05 | Ranking display per period | P0 |
+| LB-06 | CSV export of rankings | P1 |
+| LB-07 | Audit log all leaderboard actions | P0 |
+
+#### Audit Actions
+- `leaderboard_create`, `leaderboard_edit`, `leaderboard_close`, `leaderboard_payout`
+
+#### Dependencies
+- [User Management](#72-user-management) (participant user data)
+- [Markets Management](#73-markets-management) (volume/PNL calculation)
+- [Wallet Management](#77-wallet-management) (prize distribution)
 
 ---
 
@@ -1732,6 +1862,17 @@ interface PromoCode {
 | PR-02 | Usage tracking (used/max) | P0 |
 | PR-03 | Date-range activation | P0 |
 | PR-04 | Status management | P0 |
+| PR-05 | Search and filter by status, type | P1 |
+| PR-06 | CSV export of promo codes | P1 |
+| PR-07 | Audit log all promo actions | P0 |
+
+#### Audit Actions
+- `promo_create`, `promo_edit`, `promo_delete`, `promo_activate`, `promo_deactivate`
+
+#### Dependencies
+- [Rewards Management](#81-rewards-management) (promo-type reward linkage)
+- [User Management](#72-user-management) (usage tracking per user)
+- [Wallet Management](#77-wallet-management) (credit application)
 
 ---
 
@@ -1746,12 +1887,72 @@ interface PromoCode {
 **Access:** `merchant_admin` (manage_content)
 
 #### Purpose
-Manage market categories, banners, and content displayed on the user portal.
+Manage market categories, promotional banners, and push notification campaigns displayed on or sent to the user portal. This module has **3 tabs**: Categories, Banners, and Push Notifications.
+
+#### Tab Structure
+
+| Tab | Icon | Content |
+|---|---|---|
+| **Categories** | Grid | Market category CRUD with emoji, hot flags, sort order |
+| **Banners** | Image | Promotional banner CRUD with placement, scheduling, analytics |
+| **Push Notifications** | Bell | Push notification campaigns with audience targeting and delivery tracking |
+
+> **Note:** The Push Notifications tab provides a quick-access view of notification campaigns. For full notification management including drafts, scheduling, and detailed analytics, see [Notifications Management](#92-notifications-management).
+
+#### Category Entity
+
+```typescript
+interface Category {
+  slug: string;       // URL-safe identifier e.g. "basketball"
+  name: string;       // Display name e.g. "Basketball"
+  emoji: string;      // e.g. "🏀"
+  markets: number;    // Active market count
+  status: "active" | "hidden";
+  hot: boolean;       // Featured/trending flag
+  order: number;      // Sort order (1-based)
+}
+```
+
+#### Banner Entity
+
+```typescript
+interface BannerItem {
+  id: string;            // e.g. "BNR001"
+  title: string;
+  placement: "homepage" | "markets" | "sidebar";
+  status: "active" | "scheduled" | "expired" | "draft";
+  startDate: string;
+  endDate: string;
+  impressions: number;
+  clicks: number;
+  ctr: string;          // Click-through rate e.g. "5.0%"
+  targetUrl: string;    // Redirect URL e.g. "/rewards"
+}
+```
+
+#### Push Notification Entity (Content Tab)
+
+```typescript
+interface PushNotification {
+  id: string;          // e.g. "PUSH001"
+  title: string;
+  message: string;
+  audience: string;    // e.g. "All Users", "Active Users", "Market Participants"
+  sentAt: string;
+  recipients: number;
+  opened: number;
+  openRate: string;    // e.g. "30%"
+  status: "sent" | "scheduled" | "draft";
+}
+```
 
 #### Features
 - **Category management:** slug, name, emoji, market count, status (active/hidden), hot flag, sort order
-- **Banner management** for home page
-- **Content scheduling**
+- **Category CRUD** with inline editing
+- **Banner management:** CRUD with placement targeting (homepage/markets/sidebar), date-range scheduling, impression/click/CTR analytics
+- **Push notification management:** send, schedule, and track push campaigns
+- **CSV export** for categories
+- **Pagination** on all tabs
 
 #### Functional Requirements
 | ID | Requirement | Priority |
@@ -1760,7 +1961,24 @@ Manage market categories, banners, and content displayed on the user portal.
 | CT-02 | Category status toggle (active/hidden) | P0 |
 | CT-03 | Hot category flag | P1 |
 | CT-04 | Sort order management | P0 |
-| CT-05 | CSV export | P1 |
+| CT-05 | CSV export of categories | P1 |
+| CT-06 | Banner CRUD (title, placement, dates, target URL) | P0 |
+| CT-07 | Banner placement management (homepage/markets/sidebar) | P0 |
+| CT-08 | Banner scheduling with date range (start/end) | P0 |
+| CT-09 | Banner impression and click tracking with CTR display | P1 |
+| CT-10 | Banner status management (active/scheduled/expired/draft) | P0 |
+| CT-11 | Push notification create with audience targeting | P1 |
+| CT-12 | Push notification delivery tracking (recipients, opens, open rate) | P1 |
+| CT-13 | Push notification scheduling | P1 |
+
+#### Audit Actions
+- `category_create`, `category_edit`, `category_delete`, `category_reorder`
+- `banner_create`, `banner_edit`, `banner_delete`, `banner_status_change`
+- `push_notification_send`, `push_notification_schedule`
+
+#### Dependencies
+- [Notifications Management](#92-notifications-management) (full notification management)
+- [Markets Management](#73-markets-management) (category-market association)
 
 ---
 
@@ -2141,7 +2359,39 @@ Loading skeleton component with configurable rows/columns for table loading stat
 
 ### 11.7 Notification Center (`oms-notification-center.tsx`)
 
-Bell icon in header with dropdown showing recent notifications. Supports mark-as-read and mark-all-read.
+Bell icon in header with dropdown showing recent admin notifications. Supports mark-as-read and mark-all-read.
+
+> **Note:** These are *admin-facing* operational notifications (the bell icon), not outbound user notification campaigns managed in [Notifications Management](#92-notifications-management).
+
+#### OmsNotification Entity
+
+```typescript
+type NotifType = "alert" | "info" | "warning" | "success" | "system";
+type NotifPriority = "low" | "medium" | "high" | "critical";
+
+interface OmsNotification {
+  id: string;
+  type: NotifType;
+  priority: NotifPriority;
+  title: string;
+  message: string;
+  timestamp: string;       // e.g. "2 min ago"
+  read: boolean;
+  actionUrl?: string;      // e.g. "/oms/finance"
+  source: string;          // e.g. "Risk Engine", "Finance", "Creator Mgmt"
+}
+```
+
+#### Sources
+Notifications are generated by various OMS subsystems:
+- **Risk Engine** — Suspicious patterns, high-value transaction flags
+- **Finance** — Pending withdrawal queues, failed transactions
+- **Creator Mgmt** — New creator applications
+- **Settlement** — Market settlement results
+- **Reports** — Daily report generation
+- **Compliance** — Account freeze events
+- **Support** — New support tickets
+- **System** — Schema migrations, maintenance notices
 
 ### 11.8 Breadcrumb (`oms-breadcrumb.tsx`)
 
@@ -2369,6 +2619,34 @@ hasPermission("export_users", "merchant_finance"); // true/false
 | `payment_method_toggle` | Payment | Warning | Payment method toggled |
 | `payment_provider_update` | Payment | Warning | Provider updated |
 | `provider_status_change` | Payment | Warning | Provider status changed |
+| `reward_create` | Rewards | Info | Reward program created |
+| `reward_edit` | Rewards | Info | Reward program edited |
+| `reward_pause` | Rewards | Warning | Reward program paused |
+| `reward_resume` | Rewards | Warning | Reward program resumed |
+| `reward_expire` | Rewards | Info | Reward program expired |
+| `affiliate_create` | Affiliates | Info | Affiliate account created |
+| `affiliate_edit` | Affiliates | Info | Affiliate account edited |
+| `affiliate_tier_change` | Affiliates | Warning | Affiliate tier changed |
+| `affiliate_payout` | Affiliates | Warning | Affiliate payout processed |
+| `affiliate_suspend` | Affiliates | Critical | Affiliate suspended |
+| `affiliate_activate` | Affiliates | Warning | Affiliate activated |
+| `leaderboard_create` | Leaderboard | Info | Leaderboard period created |
+| `leaderboard_edit` | Leaderboard | Info | Leaderboard period edited |
+| `leaderboard_close` | Leaderboard | Warning | Leaderboard period closed |
+| `leaderboard_payout` | Leaderboard | Warning | Leaderboard prizes distributed |
+| `promo_create` | Promotions | Info | Promo code created |
+| `promo_edit` | Promotions | Info | Promo code edited |
+| `promo_delete` | Promotions | Warning | Promo code deleted |
+| `promo_activate` | Promotions | Info | Promo code activated |
+| `promo_deactivate` | Promotions | Warning | Promo code deactivated |
+| `category_create` | Content | Info | Market category created |
+| `category_edit` | Content | Info | Market category edited |
+| `category_delete` | Content | Warning | Market category deleted |
+| `category_reorder` | Content | Info | Category sort order changed |
+| `banner_create` | Content | Info | Banner created |
+| `banner_edit` | Content | Info | Banner edited |
+| `banner_delete` | Content | Warning | Banner deleted |
+| `banner_status_change` | Content | Warning | Banner status changed |
 
 ### 15.2 Audit Entry Schema
 
@@ -2464,7 +2742,7 @@ function getAuditSeverity(action: AuditAction): "info" | "warning" | "critical" 
 | **OMS** | Order Management System - the admin panel |
 | **GGR** | Gross Gaming Revenue |
 | **KYB** | Know Your Business - merchant verification process |
-| **KYC** | Know Your Customer - user verification process |
+| **KYC** | Know Your Customer - user verification process. **Note:** No dedicated KYC module exists in the OMS currently. User KYC status is tracked as a field on the `OmsUserRecord` entity and displayed in User Management. A full KYC workflow module (document upload, verification pipeline, identity provider integration) is planned for a future release. The Settings page exposes a `kycRequired` feature flag per merchant. |
 | **RBAC** | Role-Based Access Control |
 | **Tenant** | A merchant instance on the platform |
 | **FG** | ForeGate/PredictEx (legacy name, being rebranded) |
@@ -3393,6 +3671,33 @@ Update user contact details. **Requires:** `modify_contact` tenant permission.
 
 ---
 
+#### `GET /users/:id/financials`
+
+Get per-user financial summary. Used by Dashboard and Wallet modules.
+
+**Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "userId": "U001",
+    "balance": 45200,
+    "holdBalance": 12000,
+    "totalDeposits": 180000,
+    "totalWithdrawals": 92000,
+    "totalWinnings": 68000,
+    "totalLosses": 110800,
+    "pnl": -42800,
+    "activeBets": 5,
+    "totalVolume": 452000,
+    "settledPnl": -42800
+  }
+}
+```
+
+---
+
 #### `GET /users/export`
 
 Export user data as CSV. **Requires:** `export_users` tenant permission.
@@ -3447,6 +3752,54 @@ List markets for the current merchant.
   "meta": { ... }
 }
 ```
+
+---
+
+#### `GET /markets/:id`
+
+Get individual market detail.
+
+**Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "id": "MKT001",
+    "title": "PBA Finals: Ginebra vs San Miguel",
+    "category": "basketball",
+    "status": "open",
+    "totalVolume": 2450000,
+    "betCount": 1842,
+    "creatorId": null,
+    "createdAt": "2026-03-10",
+    "closesAt": "2026-03-15 19:00 PHT",
+    "outcomes": [
+      { "name": "Ginebra", "odds": 1.65, "volume": 1420000, "betCount": 1100 },
+      { "name": "San Miguel", "odds": 2.35, "volume": 1030000, "betCount": 742 }
+    ],
+    "resolutionSource": null,
+    "winningOutcome": null
+  }
+}
+```
+
+---
+
+#### `PATCH /markets/:id`
+
+Update market details (title, category, closesAt). **Requires:** `create_market`. Only allowed for `open` or `pending` status markets.
+
+**Request:**
+
+```json
+{
+  "title": "PBA Finals Game 5: Ginebra vs San Miguel",
+  "closesAt": "2026-03-22 19:00 PHT"
+}
+```
+
+**Response (200):** Updated market object.
 
 ---
 
@@ -3575,6 +3928,37 @@ List bets for the current merchant.
     }
   ],
   "meta": { ... }
+}
+```
+
+---
+
+#### `GET /bets/:id`
+
+Get individual bet detail for the bet detail modal.
+
+**Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "id": "BET001",
+    "userId": "U001",
+    "user": "Maria Santos",
+    "marketId": "MKT001",
+    "market": "PBA Finals: Ginebra vs San Miguel",
+    "type": "standard",
+    "selection": "Ginebra",
+    "amount": 5000,
+    "odds": "1.65",
+    "potentialPayout": 8250,
+    "status": "active",
+    "placedAt": "2026-03-13 08:42 PHT",
+    "suspicious": false,
+    "resolvedAt": null,
+    "payout": null
+  }
 }
 ```
 
@@ -5998,7 +6382,303 @@ Get merchant performance leaderboard.
 
 ---
 
-### 18.27 Webhook Event Schemas
+### 18.27 Merchant Dashboard APIs
+
+> Consumed by: [Merchant Dashboard](#71-merchant-dashboard)
+
+#### `GET /dashboard/stats`
+
+Get merchant-scoped dashboard KPIs for the current tenant.
+
+**Headers:** `X-Merchant-Id: MCH001`
+
+**Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "todayRevenue": 2620000,
+    "activeUsers": 8432,
+    "totalBets": 24180,
+    "pendingWithdrawals": 1295000,
+    "revenueChange": 12.5,
+    "userChange": 3.2,
+    "betChange": 8.1,
+    "withdrawalChange": -5.4
+  }
+}
+```
+
+---
+
+#### `GET /dashboard/revenue-chart`
+
+Get merchant revenue trend for dashboard chart.
+
+**Query Parameters:**
+
+| Param | Type | Description |
+|---|---|---|
+| `days` | integer | Number of days (default: 7) |
+
+**Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": [
+    { "day": "Mon", "revenue": 285000, "bets": 12400 },
+    { "day": "Tue", "revenue": 310000, "bets": 13800 },
+    { "day": "Wed", "revenue": 295000, "bets": 15200 },
+    { "day": "Thu", "revenue": 340000, "bets": 16600 },
+    { "day": "Fri", "revenue": 380000, "bets": 18000 },
+    { "day": "Sat", "revenue": 520000, "bets": 19400 },
+    { "day": "Sun", "revenue": 490000, "bets": 20800 }
+  ]
+}
+```
+
+---
+
+#### `GET /dashboard/category-distribution`
+
+Get market category distribution for pie chart.
+
+**Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": [
+    { "category": "Basketball", "value": 35, "markets": 12 },
+    { "category": "Esports", "value": 25, "markets": 8 },
+    { "category": "Color Game", "value": 15, "markets": 6 },
+    { "category": "Boxing", "value": 10, "markets": 4 },
+    { "category": "Others", "value": 15, "markets": 12 }
+  ]
+}
+```
+
+---
+
+### 18.28 Admin Notification Feed APIs
+
+> Consumed by: [Notification Center](#117-notification-center-oms-notification-centertsx)
+
+These endpoints power the admin notification bell (header dropdown), **not** the outbound user notification campaigns.
+
+#### `GET /admin/notifications`
+
+Get the current admin's notification feed.
+
+**Query Parameters:**
+
+| Param | Type | Description |
+|---|---|---|
+| `unreadOnly` | boolean | Only return unread notifications |
+| `limit` | integer | Max results (default: 20) |
+
+**Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": [
+    {
+      "id": "N001",
+      "type": "alert",
+      "priority": "critical",
+      "title": "High-value withdrawal flagged",
+      "message": "Mark Tan requested withdrawal of PHP 120,000 — exceeds single-txn threshold.",
+      "timestamp": "2026-03-14T08:50:00+08:00",
+      "read": false,
+      "actionUrl": "/oms/finance",
+      "source": "Risk Engine"
+    }
+  ],
+  "meta": {
+    "total": 10,
+    "unreadCount": 3
+  }
+}
+```
+
+---
+
+#### `PATCH /admin/notifications/:id/read`
+
+Mark a single notification as read.
+
+**Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": { "id": "N001", "read": true }
+}
+```
+
+---
+
+#### `POST /admin/notifications/mark-all-read`
+
+Mark all notifications as read for the current admin.
+
+**Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": { "markedCount": 3 }
+}
+```
+
+---
+
+### 18.29 Content Banner APIs
+
+> Consumed by: [Content Management](#91-content-management) — Banners tab
+
+#### `GET /content/banners`
+
+List banners.
+
+**Query Parameters:**
+
+| Param | Type | Description |
+|---|---|---|
+| `status` | `active` \| `scheduled` \| `expired` \| `draft` | Filter |
+| `placement` | `homepage` \| `markets` \| `sidebar` | Filter |
+
+**Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": [
+    {
+      "id": "BNR001",
+      "title": "March Madness Promo Banner",
+      "placement": "homepage",
+      "status": "active",
+      "startDate": "2026-03-01",
+      "endDate": "2026-03-31",
+      "impressions": 245000,
+      "clicks": 12250,
+      "ctr": "5.0%",
+      "targetUrl": "/rewards"
+    }
+  ],
+  "meta": { ... }
+}
+```
+
+---
+
+#### `POST /content/banners`
+
+Create a new banner. **Requires:** `manage_content`.
+
+**Request:**
+
+```json
+{
+  "title": "Summer Promo Teaser",
+  "placement": "homepage",
+  "startDate": "2026-04-01",
+  "endDate": "2026-05-31",
+  "targetUrl": "/rewards",
+  "imageUrl": "https://cdn.predictex.ph/banners/summer-promo.jpg"
+}
+```
+
+**Response (201):** Created banner object.
+
+---
+
+#### `PATCH /content/banners/:id`
+
+Update a banner. **Requires:** `manage_content`.
+
+**Request:**
+
+```json
+{
+  "title": "Updated Summer Promo",
+  "endDate": "2026-06-30",
+  "status": "active"
+}
+```
+
+**Response (200):** Updated banner object.
+
+---
+
+#### `DELETE /content/banners/:id`
+
+Delete a banner. **Requires:** `manage_content`. **Response (204).**
+
+---
+
+### 18.30 Search APIs
+
+> Consumed by: [Command Palette](#116-command-palette-oms-command-palettetsx)
+
+#### `GET /search`
+
+Global search across OMS entities for the command palette (Cmd+K).
+
+**Query Parameters:**
+
+| Param | Type | Description |
+|---|---|---|
+| `q` | string | Search query (min 2 chars) |
+| `categories` | string | Comma-separated: `page`, `user`, `market`, `action` |
+| `limit` | integer | Max results per category (default: 5) |
+
+**Response (200):**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "results": [
+      {
+        "id": "pg-dashboard",
+        "label": "Dashboard",
+        "category": "page",
+        "description": "Merchant overview",
+        "path": "/oms/dashboard",
+        "keywords": ["dashboard", "home", "overview"]
+      },
+      {
+        "id": "user-U001",
+        "label": "Maria Santos",
+        "category": "user",
+        "description": "U001 · maria.s@gmail.com",
+        "path": "/oms/users",
+        "keywords": ["maria santos", "maria.s@gmail.com", "u001"]
+      },
+      {
+        "id": "market-MKT001",
+        "label": "PBA Finals: Ginebra vs San Miguel",
+        "category": "market",
+        "description": "MKT001 · basketball · open",
+        "path": "/oms/markets",
+        "keywords": ["pba", "ginebra", "san miguel"]
+      }
+    ],
+    "totalResults": 3
+  }
+}
+```
+
+> **Note:** In the current mock implementation, search entries are generated client-side from `generateCommandEntries()` in `oms-mock.ts`. This API enables server-side search with broader coverage.
+
+---
+
+### 18.31 Webhook Event Schemas
 
 > These are outbound payloads sent to merchant-configured webhook endpoints.
 
@@ -6105,7 +6785,7 @@ Header: X-Predictex-Signature: sha256=<hex_digest>
 
 ---
 
-### 18.28 Error Code Reference
+### 18.32 Error Code Reference
 
 | Code | HTTP Status | Description |
 |---|---|---|
@@ -6133,7 +6813,7 @@ Header: X-Predictex-Signature: sha256=<hex_digest>
 
 ---
 
-### 18.29 Rate Limiting
+### 18.33 Rate Limiting
 
 | Scope | Limit | Window |
 |---|---|---|
@@ -6153,4 +6833,4 @@ X-RateLimit-Reset: 1745001060
 
 ---
 
-*End of PRD - PredictEx PaaS OMS v1.0*
+*End of PRD - PredictEx PaaS OMS v1.1 (Updated: April 18, 2026 — Entity schema alignment, API gap closure, Programs module audit actions, Content Management expansion)*
