@@ -10,6 +10,7 @@ import { DepositWithdrawModal, type ModalTheme } from "../components/deposit-wit
 import type { ComponentType } from "react";
 import { useAuth } from "../components/auth-context";
 import { Footer } from "../components/footer";
+import { usePageTheme, toModalTheme } from "../components/theme-utils";
 
 const pp = { fontFamily: "'Poppins', sans-serif" };
 const ss = { fontFeatureSettings: "'ss04'" };
@@ -398,13 +399,7 @@ export default function FastBetPage() {
 
   const openDeposit = () => { setModalMode("deposit"); setModalOpen(true); };
 
-  const modalTheme: ModalTheme = {
-    bg: "#ffffff", card: "#ffffff", cardBorder: "#f5f6f7",
-    text: "#070808", textSec: "#84888c", textMut: "#a0a3a7", textFaint: "#dfe0e2",
-    inputBg: "#fafafa", inputBorder: "#f5f6f7",
-    greenBg: "#e6fff3", greenText: "#00bf85", orangeBg: "#fff4ed", orangeText: "#ff5222",
-    isDark: false,
-  };
+  const modalTheme: ModalTheme = toModalTheme(usePageTheme());
 
   const selectGame = useCallback((g: GameConfig) => {
     setActiveGame(g);
@@ -442,7 +437,7 @@ export default function FastBetPage() {
   const isUp = currentValue >= prevValue;
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#f7f8fa]" style={pp}>
+    <div className="flex h-screen w-full overflow-hidden" style={{ ...pp, background: modalTheme.bg === "#16171a" ? "#0d0e10" : "#f7f8fa" }}>
       <Sidebar onDeposit={openDeposit} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex flex-col flex-1 min-w-0">

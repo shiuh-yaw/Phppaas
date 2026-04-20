@@ -990,7 +990,7 @@ function OrderbookMarketPage({ id, isDark, t, openDeposit }: { id: string; isDar
 /* ==================== PAGE ==================== */
 export default function MarketDetailPage() {
   const { id } = useParams();
-  const [isDark, setIsDark] = useState(false);
+  const { darkMode: isDark, toggleDarkMode } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -1012,7 +1012,7 @@ export default function MarketDetailPage() {
   };
 
   return (
-    <ThemeCtx.Provider value={{ t, isDark, toggle: () => setIsDark(!isDark) }}>
+    <ThemeCtx.Provider value={{ t, isDark, toggle: toggleDarkMode }}>
       <div className="flex h-screen w-full overflow-hidden" style={{ background: t.bg, ...pp }}>
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} onDeposit={openDeposit} />
         <div className="flex flex-col flex-1 min-w-0">

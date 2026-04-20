@@ -421,7 +421,7 @@ export function OmsLogin() {
           {[
             { badge: "PLATFORM", cls: "bg-red-50 text-red-500", txt: "admin@predictex.ph / admin123" },
             { badge: "PLATFORM", cls: "bg-orange-50 text-orange-500", txt: "ops@predictex.ph / ops123" },
-            { badge: "MERCHANT", cls: "bg-blue-50 text-blue-500", txt: "admin@predictex.ph / lt123" },
+            { badge: "MERCHANT", cls: "bg-blue-50 text-blue-500", txt: "merchant@predictex.ph / lt123" },
             { badge: "1ST LOGIN", cls: "bg-amber-50 text-amber-600", txt: "newadmin@betmanila.com / Bm$4xK9q2w" },
             { badge: "DISABLED", cls: "bg-red-50 text-red-500", txt: "disabled@predictex.ph / disabled123" },
           ].map(d => (

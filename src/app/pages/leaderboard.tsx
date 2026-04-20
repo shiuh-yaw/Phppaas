@@ -6,6 +6,7 @@ import { Footer } from "../components/footer";
 import { DepositWithdrawModal, type ModalTheme } from "../components/deposit-withdraw-modal";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { EmojiIcon } from "../components/two-tone-icons";
+import { usePageTheme, toModalTheme } from "../components/theme-utils";
 
 const pp = { fontFamily: "'Poppins', sans-serif" };
 const ss = { fontFeatureSettings: "'ss04'" };
@@ -460,13 +461,7 @@ export default function LeaderboardPage() {
   const [page, setPage] = useState(1);
   const PER_PAGE = 10;
 
-  const modalTheme: ModalTheme = {
-    bg: "#ffffff", card: "#ffffff", cardBorder: "#f5f6f7",
-    text: "#070808", textSec: "#84888c", textMut: "#a0a3a7", textFaint: "#dfe0e2",
-    inputBg: "#fafafa", inputBorder: "#f5f6f7",
-    greenBg: "#e6fff3", greenText: "#00bf85", orangeBg: "#fff4ed", orangeText: "#ff5222",
-    isDark: false,
-  };
+  const modalTheme: ModalTheme = toModalTheme(usePageTheme());
 
   // Filter by category
   const filtered = categoryFilter === "all"
@@ -477,7 +472,7 @@ export default function LeaderboardPage() {
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
   return (
-    <div className="bg-[#f7f8fa] flex flex-col min-h-screen w-full" style={pp}>
+    <div className="flex flex-col min-h-screen w-full" style={{ ...pp, background: modalTheme.isDark ? "#0d0e10" : "#f7f8fa" }}>
       <style>{keyframes}</style>
       <div className="flex items-stretch flex-1">
         <Sidebar onDeposit={openDeposit} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
@@ -490,14 +485,14 @@ export default function LeaderboardPage() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-3">
-                    <span className="text-[20px] sm:text-[22px] text-[#070808] inline-flex items-center gap-2" style={{ fontWeight: 700, ...ss }}><EmojiIcon emoji="🏆" size={22} /> Leaderboard</span>
+                    <span className="text-[20px] sm:text-[22px] inline-flex items-center gap-2" style={{ fontWeight: 700, color: modalTheme.text, ...ss }}><EmojiIcon emoji="🏆" size={22} /> Leaderboard</span>
                     <span className="text-[10px] bg-[#ff5222] text-white px-2 py-0.5 rounded-full" style={{ fontWeight: 700, ...ss }}>LIVE</span>
                   </div>
-                  <span className="text-[12px] text-[#84888c] hidden sm:block" style={ss}>Sino ang pinaka-magaling na bettor sa Lucky Taya? Tingnan ang rankings!</span>
+                  <span className="text-[12px] hidden sm:block" style={{ color: modalTheme.textSec, ...ss }}>Sino ang pinaka-magaling na bettor sa Lucky Taya? Tingnan ang rankings!</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-[#b0b3b8] hidden sm:inline" style={ss}>Last updated: 2 mins ago</span>
-                  <button className="bg-white border border-[#f0f1f3] text-[#070808] h-8 px-3 rounded-lg text-[11px] cursor-pointer hover:bg-[#f7f8f9] transition-colors" style={{ fontWeight: 500, ...ss }}>
+                  <span className="text-[10px] hidden sm:inline" style={{ color: modalTheme.textMut, ...ss }}>Last updated: 2 mins ago</span>
+                  <button className="h-8 px-3 rounded-lg text-[11px] cursor-pointer transition-colors" style={{ background: modalTheme.card, border: `1px solid ${modalTheme.cardBorder}`, color: modalTheme.text, fontWeight: 500, ...ss }}>
                     ↻ Refresh
                   </button>
                 </div>
@@ -520,7 +515,7 @@ export default function LeaderboardPage() {
                       key={t}
                       onClick={() => { setTimeFilter(t); setPage(1); }}
                       className="relative pb-2 text-[13px] sm:text-[14px] transition-colors cursor-pointer whitespace-nowrap shrink-0"
-                      style={{ color: timeFilter === t ? "#070808" : "#84888c", fontWeight: timeFilter === t ? 600 : 400, ...ss }}
+                      style={{ color: timeFilter === t ? modalTheme.text : modalTheme.textSec, fontWeight: timeFilter === t ? 600 : 400, ...ss }}
                     >
                       {t}
                       {timeFilter === t && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#ff5222] rounded-full" />}
@@ -529,13 +524,19 @@ export default function LeaderboardPage() {
                 </div>
 
                 <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-                  <span className="text-[10px] text-[#b0b3b8] shrink-0 hidden sm:inline" style={ss}>Sort by:</span>
+                  <span className="text-[10px] shrink-0 hidden sm:inline" style={{ color: modalTheme.textMut, ...ss }}>Sort by:</span>
                   {SORT_OPTIONS.map((s) => (
                     <button
                       key={s.key}
                       onClick={() => { setSortBy(s.key); setPage(1); }}
-                      className={`h-7 px-2.5 sm:px-3 rounded-md text-[11px] transition-all cursor-pointer border shrink-0 ${sortBy === s.key ? "bg-[#ff5222]/5 border-[#ff5222]/20 text-[#ff5222]" : "bg-white border-[#f0f1f3] text-[#84888c] hover:border-[#dfe0e2]"}`}
-                      style={{ fontWeight: sortBy === s.key ? 600 : 400, ...ss }}
+                      className="h-7 px-2.5 sm:px-3 rounded-md text-[11px] transition-all cursor-pointer shrink-0"
+                      style={{
+                        fontWeight: sortBy === s.key ? 600 : 400,
+                        background: sortBy === s.key ? "rgba(255,82,34,0.05)" : modalTheme.card,
+                        border: `1px solid ${sortBy === s.key ? "rgba(255,82,34,0.2)" : modalTheme.cardBorder}`,
+                        color: sortBy === s.key ? "#ff5222" : modalTheme.textSec,
+                        ...ss,
+                      }}
                     >
                       {s.label}
                     </button>
@@ -549,8 +550,14 @@ export default function LeaderboardPage() {
                   <button
                     key={c.key}
                     onClick={() => { setCategoryFilter(c.key); setPage(1); }}
-                    className={`shrink-0 flex items-center gap-1.5 h-9 px-4 rounded-full border transition-all cursor-pointer ${categoryFilter === c.key ? "bg-[#ff5222]/5 border-[#ff5222]/20 text-[#ff5222]" : "bg-white border-[#f0f1f3] text-[#070808] hover:border-[#dfe0e2]"}`}
-                    style={{ fontWeight: categoryFilter === c.key ? 600 : 400, ...ss }}
+                    className="shrink-0 flex items-center gap-1.5 h-9 px-4 rounded-full transition-all cursor-pointer"
+                    style={{
+                      fontWeight: categoryFilter === c.key ? 600 : 400,
+                      background: categoryFilter === c.key ? "rgba(255,82,34,0.05)" : modalTheme.card,
+                      border: `1px solid ${categoryFilter === c.key ? "rgba(255,82,34,0.2)" : modalTheme.cardBorder}`,
+                      color: categoryFilter === c.key ? "#ff5222" : modalTheme.text,
+                      ...ss,
+                    }}
                   >
                     <EmojiIcon emoji={c.emoji} size={16} />
                     <span className="text-[12px]">{c.label}</span>
@@ -572,8 +579,8 @@ export default function LeaderboardPage() {
                   <button
                     onClick={() => setPage(Math.max(1, page - 1))}
                     disabled={page === 1}
-                    className="h-8 px-3 rounded-lg border border-[#f0f1f3] text-[12px] text-[#84888c] bg-white hover:bg-[#f7f8f9] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-                    style={{ fontWeight: 500, ...ss }}
+                    className="h-8 px-3 rounded-lg text-[12px] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    style={{ background: modalTheme.card, border: `1px solid ${modalTheme.cardBorder}`, color: modalTheme.textSec, fontWeight: 500, ...ss }}
                   >
                     ← Nakaraan
                   </button>
@@ -581,8 +588,13 @@ export default function LeaderboardPage() {
                     <button
                       key={p}
                       onClick={() => setPage(p)}
-                      className={`size-8 rounded-lg text-[12px] transition-all cursor-pointer ${page === p ? "bg-[#ff5222] text-white" : "bg-white border border-[#f0f1f3] text-[#84888c] hover:bg-[#f7f8f9]"}`}
-                      style={{ fontWeight: page === p ? 700 : 400, ...ss }}
+                      className="size-8 rounded-lg text-[12px] transition-all cursor-pointer"
+                      style={{
+                        background: page === p ? "#ff5222" : modalTheme.card,
+                        border: page === p ? "none" : `1px solid ${modalTheme.cardBorder}`,
+                        color: page === p ? "#fff" : modalTheme.textSec,
+                        fontWeight: page === p ? 700 : 400, ...ss,
+                      }}
                     >
                       {p}
                     </button>
@@ -590,8 +602,8 @@ export default function LeaderboardPage() {
                   <button
                     onClick={() => setPage(Math.min(totalPages, page + 1))}
                     disabled={page === totalPages}
-                    className="h-8 px-3 rounded-lg border border-[#f0f1f3] text-[12px] text-[#84888c] bg-white hover:bg-[#f7f8f9] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-                    style={{ fontWeight: 500, ...ss }}
+                    className="h-8 px-3 rounded-lg text-[12px] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    style={{ background: modalTheme.card, border: `1px solid ${modalTheme.cardBorder}`, color: modalTheme.textSec, fontWeight: 500, ...ss }}
                   >
                     Susunod →
                   </button>
@@ -600,10 +612,10 @@ export default function LeaderboardPage() {
 
               {/* Empty state for filtered results */}
               {filtered.length === 0 && (
-                <div className="bg-white rounded-xl border border-[#f0f1f3] p-12 flex flex-col items-center gap-3">
+                <div className="rounded-xl p-12 flex flex-col items-center gap-3" style={{ background: modalTheme.card, border: `1px solid ${modalTheme.cardBorder}` }}>
                   <EmojiIcon emoji="🏆" size={32} />
-                  <span className="text-[14px] text-[#070808]" style={{ fontWeight: 600, ...ss }}>Wala pang entries!</span>
-                  <span className="text-[12px] text-[#84888c]" style={ss}>Walang bettor pa sa category na ito. Maging una ka!</span>
+                  <span className="text-[14px]" style={{ fontWeight: 600, color: modalTheme.text, ...ss }}>Wala pang entries!</span>
+                  <span className="text-[12px]" style={{ color: modalTheme.textSec, ...ss }}>Walang bettor pa sa category na ito. Maging una ka!</span>
                 </div>
               )}
 

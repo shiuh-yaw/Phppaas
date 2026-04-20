@@ -4,6 +4,7 @@ import { Header } from "../components/header";
 import { Footer } from "../components/footer";
 import { AuthGate } from "../components/auth-gate";
 import { EmojiIcon } from "../components/two-tone-icons";
+import { usePageTheme } from "../components/theme-utils";
 
 const pp = { fontFamily: "'Poppins', sans-serif" };
 const ss = { fontFeatureSettings: "'ss04'" };
@@ -49,6 +50,7 @@ const STATUS_STYLE: Record<TxStatus, string> = {
 
 export default function TransactionHistoryPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const theme = usePageTheme();
   const [filter, setFilter] = useState<"all" | TxType>("all");
   const [search, setSearch] = useState("");
 
@@ -58,17 +60,17 @@ export default function TransactionHistoryPage() {
   );
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-white" style={pp}>
+    <div className="flex h-screen w-full overflow-hidden" style={{ ...pp, background: theme.bg }}>
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex flex-col flex-1 min-w-0">
         <Header onMenuToggle={() => setSidebarOpen(true)} />
-        <div className="flex-1 overflow-y-auto bg-white">
+        <div className="flex-1 overflow-y-auto" style={{ background: theme.bg }}>
           <AuthGate pageName="Transaction History">
           <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h1 className="text-[22px] text-[#070808]" style={{ fontWeight: 700, ...ss }}>Transaction History</h1>
-                <p className="text-[13px] text-[#84888c] mt-0.5" style={ss}>{filtered.length} na transaksyon</p>
+                <h1 className="text-[22px]" style={{ fontWeight: 700, color: theme.text, ...ss }}>Transaction History</h1>
+                <p className="text-[13px] mt-0.5" style={{ color: theme.textSec, ...ss }}>{filtered.length} na transaksyon</p>
               </div>
             </div>
 
@@ -77,15 +79,15 @@ export default function TransactionHistoryPage() {
               <div className="relative flex-1">
                 <input value={search} onChange={e => setSearch(e.target.value)}
                   placeholder="Maghanap ng transaction..."
-                  className="w-full h-10 px-4 pl-10 rounded-xl border border-[#f0f1f3] bg-[#fafafa] text-[13px] outline-none focus:border-[#ff5222]/40 focus:bg-white transition-all"
-                  style={ss} />
-                <svg className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[#b0b3b8]" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="2"><circle cx="8" cy="8" r="6" /><path d="M18 18l-4-4" strokeLinecap="round" /></svg>
+                  className="w-full h-10 px-4 pl-10 rounded-xl text-[13px] outline-none focus:border-[#ff5222]/40 transition-all"
+                  style={{ background: theme.inputBg, border: `1px solid ${theme.inputBorder}`, color: theme.text, ...ss }} />
+                <svg className="absolute left-3 top-1/2 -translate-y-1/2 size-4" style={{ color: theme.textMut }} fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="2"><circle cx="8" cy="8" r="6" /><path d="M18 18l-4-4" strokeLinecap="round" /></svg>
               </div>
               <div className="flex items-center gap-1.5 overflow-x-auto">
                 {([{ key: "all" as const, label: "Lahat" }, ...Object.entries(TYPE_META).map(([key, v]) => ({ key: key as TxType, label: v.label }))] as { key: "all" | TxType; label: string }[]).map(f => (
                   <button key={f.key} onClick={() => setFilter(f.key)}
                     className="shrink-0 h-8 px-3 rounded-full text-[11px] cursor-pointer transition-all"
-                    style={{ background: filter === f.key ? "#070808" : "#f5f6f7", color: filter === f.key ? "#fff" : "#84888c", fontWeight: 500, ...ss }}>
+                    style={{ background: filter === f.key ? (theme.isDark ? "#f0f0f2" : "#070808") : theme.inputBg, color: filter === f.key ? (theme.isDark ? "#070808" : "#fff") : theme.textSec, fontWeight: 500, ...ss }}>
                     {f.label}
                   </button>
                 ))}
@@ -93,28 +95,31 @@ export default function TransactionHistoryPage() {
             </div>
 
             {/* Transaction list */}
-            <div className="border border-[#f0f1f3] rounded-2xl overflow-hidden">
+            <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${theme.cardBorder}` }}>
               {filtered.length === 0 ? (
                 <div className="flex flex-col items-center py-16 gap-2">
                   <EmojiIcon emoji="📭" size={32} />
-                  <p className="text-[13px] text-[#84888c]" style={ss}>Walang nahanap na transaksyon.</p>
+                  <p className="text-[13px]" style={{ color: theme.textSec, ...ss }}>Walang nahanap na transaksyon.</p>
                 </div>
               ) : filtered.map(tx => {
                 const meta = TYPE_META[tx.type];
+                const metaBg = theme.isDark ? `${meta.color}18` : meta.bg;
                 return (
-                  <div key={tx.id} className="flex items-center gap-3 px-4 py-3.5 border-b border-[#f9fafb] last:border-0 hover:bg-[#fafafa] transition-colors">
-                    <div className="size-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: meta.bg }}>
+                  <div key={tx.id} className="flex items-center gap-3 px-4 py-3.5 last:border-0 transition-colors" style={{ borderBottom: `1px solid ${theme.isDark ? theme.cardBorder : "#f9fafb"}` }}
+                    onMouseEnter={e => (e.currentTarget.style.background = theme.inputBg)}
+                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                    <div className="size-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: metaBg }}>
                       <EmojiIcon emoji={meta.emoji} size={20} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-[13px] text-[#070808] truncate" style={{ fontWeight: 500, ...ss }}>{tx.description}</span>
+                        <span className="text-[13px] truncate" style={{ fontWeight: 500, color: theme.text, ...ss }}>{tx.description}</span>
                         <span className={`text-[9px] px-1.5 py-0.5 rounded-full shrink-0 ${STATUS_STYLE[tx.status]}`} style={{ fontWeight: 600 }}>{tx.status}</span>
                       </div>
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[10px] text-[#b0b3b8]" style={ss}>{tx.id}</span>
-                        <span className="text-[10px] text-[#b0b3b8]" style={ss}>{tx.date}</span>
-                        {tx.method && <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#f5f6f7] text-[#84888c]" style={{ fontWeight: 500, ...ss }}>{tx.method}</span>}
+                        <span className="text-[10px]" style={{ color: theme.textMut, ...ss }}>{tx.id}</span>
+                        <span className="text-[10px]" style={{ color: theme.textMut, ...ss }}>{tx.date}</span>
+                        {tx.method && <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: theme.inputBg, color: theme.textSec, fontWeight: 500, ...ss }}>{tx.method}</span>}
                       </div>
                     </div>
                     <span className={`text-[14px] shrink-0 ${tx.amount >= 0 ? "text-[#00bf85]" : "text-[#ff5222]"}`} style={{ fontWeight: 600, ...ss }}>

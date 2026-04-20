@@ -551,7 +551,7 @@ function DisableConfirmModal({ method, onClose, onConfirm }: {
 }
 
 /* ==================== MFA MANAGER PANEL (for Profile) ==================== */
-export function MfaManagerPanel({ userEmail }: { userEmail?: string }) {
+export function MfaManagerPanel({ userEmail, phoneAuthPrimary = false }: { userEmail?: string; phoneAuthPrimary?: boolean }) {
   const [mfa, setMfa] = useState<MfaMethodStatus>(DEFAULT_MFA);
   const [setupModal, setSetupModal] = useState<MfaMethod | null>(null);
   const [disableModal, setDisableModal] = useState<MfaMethod | null>(null);
@@ -565,6 +565,7 @@ export function MfaManagerPanel({ userEmail }: { userEmail?: string }) {
   ];
 
   const handleToggle = (method: MfaMethod) => {
+    if (method === "phone" && phoneAuthPrimary) return;
     const isEnabled = method === "phone" ? mfa.phone.enabled : method === "authenticator" ? mfa.authenticator.enabled : mfa.email.enabled;
     if (isEnabled) {
       setDisableModal(method);
@@ -649,23 +650,32 @@ export function MfaManagerPanel({ userEmail }: { userEmail?: string }) {
                       {m.key === "phone" && mfa.phone.value && (
                         <span className="text-[10px] text-[#84888c] mt-0.5 block" style={{ fontWeight: 500, ...ss }}>{mfa.phone.value}</span>
                       )}
+                      {m.key === "phone" && phoneAuthPrimary && (
+                        <span className="text-[9px] text-[#f59e0b] mt-0.5 block" style={{ fontWeight: 500, ...ss }}>Phone OTP is your primary login method and cannot be disabled</span>
+                      )}
                       {m.key === "email" && mfa.email.value && (
                         <span className="text-[10px] text-[#84888c] mt-0.5 block" style={{ fontWeight: 500, ...ss }}>{mfa.email.value}</span>
                       )}
                     </div>
-                    <button
-                      onClick={() => handleToggle(m.key)}
-                      className="shrink-0 h-8 px-4 rounded-lg text-[11px] cursor-pointer transition-all hover:brightness-95"
-                      style={{
-                        background: isEnabled ? "#fef2f2" : m.bgColor,
-                        color: isEnabled ? "#dc2626" : m.color,
-                        fontWeight: 600,
-                        ...ss,
-                        ...pp,
-                      }}
-                    >
-                      {isEnabled ? "Disable" : "Set Up"}
-                    </button>
+                    {m.key === "phone" && phoneAuthPrimary ? (
+                      <span className="shrink-0 h-8 px-4 rounded-lg text-[11px] flex items-center" style={{ background: "#f0f1f3", color: "#a0a3a7", fontWeight: 600, ...ss, ...pp }}>
+                        Primary Login
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => handleToggle(m.key)}
+                        className="shrink-0 h-8 px-4 rounded-lg text-[11px] cursor-pointer transition-all hover:brightness-95"
+                        style={{
+                          background: isEnabled ? "#fef2f2" : m.bgColor,
+                          color: isEnabled ? "#dc2626" : m.color,
+                          fontWeight: 600,
+                          ...ss,
+                          ...pp,
+                        }}
+                      >
+                        {isEnabled ? "Disable" : "Set Up"}
+                      </button>
+                    )}
                   </div>
                 );
               })}

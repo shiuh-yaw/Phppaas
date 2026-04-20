@@ -9,6 +9,7 @@ import { AuthGate } from "../components/auth-gate";
 import { Footer } from "../components/footer";
 import { useAuth } from "../components/auth-context";
 import { PortfolioSkeleton } from "../components/page-skeleton";
+import { usePageTheme, toModalTheme } from "../components/theme-utils";
 
 const pp = { fontFamily: "'Poppins', sans-serif" };
 const ss = { fontFeatureSettings: "'ss04'" };
@@ -163,21 +164,21 @@ const TABS: { id: TabId; label: string; count: number }[] = [
 type SortKey = "newest" | "pnl-high" | "pnl-low" | "value-high" | "expiry-soon";
 
 /* ==================== STAT CARD ==================== */
-function StatCard({ emoji, label, value, sub, accent }: { emoji: string; label: string; value: string; sub?: string; accent?: string }) {
+function StatCard({ emoji, label, value, sub, accent, theme }: { emoji: string; label: string; value: string; sub?: string; accent?: string; theme: { card: string; cardBorder: string; text: string; textSec: string } }) {
   return (
-    <div className="bg-white rounded-xl p-4" style={{ border: "1px solid #f0f1f3" }}>
+    <div className="rounded-xl p-4" style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}>
       <div className="flex items-center gap-2 mb-2">
         <EmojiIcon emoji={emoji} size={18} />
-        <span className="text-[#84888c] text-[12px]" style={{ ...ss, fontWeight: 500 }}>{label}</span>
+        <span className="text-[12px]" style={{ color: theme.textSec, ...ss, fontWeight: 500 }}>{label}</span>
       </div>
-      <div className="text-[#070808] text-[22px]" style={{ ...pp, fontWeight: 700 }}>{value}</div>
-      {sub && <span className="text-[12px]" style={{ color: accent || "#84888c", fontWeight: 600, ...ss }}>{sub}</span>}
+      <div className="text-[22px]" style={{ color: theme.text, ...pp, fontWeight: 700 }}>{value}</div>
+      {sub && <span className="text-[12px]" style={{ color: accent || theme.textSec, fontWeight: 600, ...ss }}>{sub}</span>}
     </div>
   );
 }
 
 /* ==================== POSITION CARD ==================== */
-function PositionCard({ pos, onClick }: { pos: Position; onClick: () => void }) {
+function PositionCard({ pos, onClick, theme }: { pos: Position; onClick: () => void; theme: { card: string; cardBorder: string; text: string; textSec: string; textMut: string; textFaint: string; inputBg: string; isDark: boolean } }) {
   const profit = pnl(pos);
   const pct = pnlPct(pos);
   const cost = posCost(pos);
@@ -188,8 +189,8 @@ function PositionCard({ pos, onClick }: { pos: Position; onClick: () => void }) 
 
   return (
     <div
-      className="bg-white rounded-xl cursor-pointer hover:shadow-md transition-all group overflow-hidden"
-      style={{ border: "1px solid #f0f1f3" }}
+      className="rounded-xl cursor-pointer hover:shadow-md transition-all group overflow-hidden"
+      style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}
       onClick={onClick}
     >
       {/* Color top bar */}
@@ -209,14 +210,14 @@ function PositionCard({ pos, onClick }: { pos: Position; onClick: () => void }) 
           {/* Title & meta */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[#070808] text-[14px] md:text-[15px] truncate" style={{ ...pp, fontWeight: 600 }}>
+              <span className="text-[14px] md:text-[15px] truncate" style={{ color: theme.text, ...pp, fontWeight: 600 }}>
                 {pos.title}
               </span>
             </div>
             <div className="flex items-center gap-1.5 mt-1 flex-wrap">
               <span
                 className="text-[10px] px-2 py-0.5 rounded-full"
-                style={{ background: "#f5f6f7", color: "#84888c", fontWeight: 600, ...ss }}
+                style={{ background: theme.isDark ? "rgba(255,255,255,0.06)" : "#f5f6f7", color: theme.textSec, fontWeight: 600, ...ss }}
               >
                 {pos.category}
               </span>
@@ -226,7 +227,7 @@ function PositionCard({ pos, onClick }: { pos: Position; onClick: () => void }) 
               >
                 {cfg.label}
               </span>
-              <span className="text-[#b0b3b8] text-[10px]" style={ss}>
+              <span className="text-[10px]" style={{ color: theme.textMut, ...ss }}>
                 Expires {pos.expiresAt}
               </span>
             </div>
@@ -259,12 +260,12 @@ function PositionCard({ pos, onClick }: { pos: Position; onClick: () => void }) 
         <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
           {/* Your Pick */}
           <div>
-            <div className="text-[10px] text-[#b0b3b8] uppercase tracking-wider mb-1" style={{ fontWeight: 600, ...ss }}>
+            <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: theme.textMut, fontWeight: 600, ...ss }}>
               Your Pick
             </div>
             <div className="flex items-center gap-1.5">
               <div className="size-1.5 rounded-full" style={{ background: cfg.dot }} />
-              <span className="text-[#070808] text-[13px]" style={{ fontWeight: 600, ...ss }}>
+              <span className="text-[13px]" style={{ color: theme.text, fontWeight: 600, ...ss }}>
                 {pos.outcome}
               </span>
             </div>
@@ -272,27 +273,27 @@ function PositionCard({ pos, onClick }: { pos: Position; onClick: () => void }) 
 
           {/* Shares & Entry */}
           <div>
-            <div className="text-[10px] text-[#b0b3b8] uppercase tracking-wider mb-1" style={{ fontWeight: 600, ...ss }}>
+            <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: theme.textMut, fontWeight: 600, ...ss }}>
               Shares / Entry
             </div>
-            <span className="text-[#070808] text-[13px]" style={{ fontWeight: 600, ...ss }}>
-              {pos.shares} <span className="text-[#84888c]" style={{ fontWeight: 500 }}>@ ₱{pos.avgPrice.toFixed(2)}</span>
+            <span className="text-[13px]" style={{ color: theme.text, fontWeight: 600, ...ss }}>
+              {pos.shares} <span style={{ color: theme.textSec, fontWeight: 500 }}>@ ₱{pos.avgPrice.toFixed(2)}</span>
             </span>
           </div>
 
           {/* Invested */}
           <div>
-            <div className="text-[10px] text-[#b0b3b8] uppercase tracking-wider mb-1" style={{ fontWeight: 600, ...ss }}>
+            <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: theme.textMut, fontWeight: 600, ...ss }}>
               Invested
             </div>
-            <span className="text-[#070808] text-[13px]" style={{ fontWeight: 600, ...ss }}>
+            <span className="text-[13px]" style={{ color: theme.text, fontWeight: 600, ...ss }}>
               ₱{cost.toFixed(0)}
             </span>
           </div>
 
           {/* Current Value */}
           <div>
-            <div className="text-[10px] text-[#b0b3b8] uppercase tracking-wider mb-1" style={{ fontWeight: 600, ...ss }}>
+            <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: theme.textMut, fontWeight: 600, ...ss }}>
               Current Value
             </div>
             <span className="text-[13px]" style={{ color: isPositive ? "#00bf85" : "#e53e3e", fontWeight: 700, ...ss }}>
@@ -306,14 +307,14 @@ function PositionCard({ pos, onClick }: { pos: Position; onClick: () => void }) 
           {/* Probability bar */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] text-[#b0b3b8] uppercase tracking-wider" style={{ fontWeight: 600, ...ss }}>
+              <span className="text-[10px] uppercase tracking-wider" style={{ color: theme.textMut, fontWeight: 600, ...ss }}>
                 Probability
               </span>
-              <span className="text-[12px] text-[#070808]" style={{ fontWeight: 700, ...ss }}>
+              <span className="text-[12px]" style={{ color: theme.text, fontWeight: 700, ...ss }}>
                 {pos.probability}%
               </span>
             </div>
-            <div className="h-2 bg-[#f5f6f7] rounded-full overflow-hidden">
+            <div className="h-2 rounded-full overflow-hidden" style={{ background: theme.isDark ? "rgba(255,255,255,0.06)" : "#f5f6f7" }}>
               <div
                 className="h-full rounded-full transition-all"
                 style={{
@@ -323,15 +324,15 @@ function PositionCard({ pos, onClick }: { pos: Position; onClick: () => void }) 
               />
             </div>
             <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-              <span className="text-[10px] text-[#b0b3b8]" style={ss}>
+              <span className="text-[10px]" style={{ color: theme.textMut, ...ss }}>
                 {pos.volume} vol
               </span>
-              <span className="text-[10px] text-[#dfe0e2]">|</span>
-              <span className="text-[10px] text-[#b0b3b8]" style={ss}>
+              <span className="text-[10px]" style={{ color: theme.textFaint }}>|</span>
+              <span className="text-[10px]" style={{ color: theme.textMut, ...ss }}>
                 {pos.bettors.toLocaleString()} bettors
               </span>
-              <span className="text-[10px] text-[#dfe0e2]">|</span>
-              <span className="text-[10px] text-[#b0b3b8]" style={ss}>
+              <span className="text-[10px]" style={{ color: theme.textFaint }}>|</span>
+              <span className="text-[10px]" style={{ color: theme.textMut, ...ss }}>
                 Placed {pos.placedAt}
               </span>
             </div>
@@ -340,7 +341,7 @@ function PositionCard({ pos, onClick }: { pos: Position; onClick: () => void }) 
           {/* P&L mobile */}
           <div className="flex sm:hidden items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-[#b0b3b8] uppercase" style={{ fontWeight: 600, ...ss }}>P&L</span>
+              <span className="text-[10px] uppercase" style={{ color: theme.textMut, fontWeight: 600, ...ss }}>P&L</span>
               <span
                 className="text-[16px]"
                 style={{ color: isPositive ? "#00bf85" : "#e53e3e", fontWeight: 700, ...ss }}
@@ -376,7 +377,7 @@ function PositionCard({ pos, onClick }: { pos: Position; onClick: () => void }) 
               <button
                 className="h-8 px-4 rounded-lg text-[12px] transition-all cursor-pointer"
                 style={{
-                  background: "#e6fff3",
+                  background: theme.isDark ? "rgba(0,191,133,0.15)" : "#e6fff3",
                   color: "#00a36c",
                   fontWeight: 600,
                   ...ss,
@@ -387,12 +388,12 @@ function PositionCard({ pos, onClick }: { pos: Position; onClick: () => void }) 
               </button>
             )}
             <button
-              className="h-8 px-3 rounded-lg text-[12px] transition-all cursor-pointer hover:bg-[#f5f6f7]"
+              className="h-8 px-3 rounded-lg text-[12px] transition-all cursor-pointer"
               style={{
-                background: "#fafafa",
-                color: "#84888c",
+                background: theme.inputBg,
+                color: theme.textSec,
                 fontWeight: 500,
-                border: "1px solid #f0f1f3",
+                border: `1px solid ${theme.cardBorder}`,
                 ...ss,
               }}
               onClick={(e) => { e.stopPropagation(); }}
@@ -413,6 +414,7 @@ export default function PortfolioPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>("all");
   const [sortBy, setSortBy] = useState<SortKey>("newest");
+  const pt = usePageTheme();
 
   const openDeposit = () => setModalOpen(true);
 
@@ -431,13 +433,7 @@ export default function PortfolioPage() {
     }
   });
 
-  const modalTheme: ModalTheme = {
-    bg: "#ffffff", card: "#ffffff", cardBorder: "#f5f6f7",
-    text: "#070808", textSec: "#84888c", textMut: "#a0a3a7", textFaint: "#dfe0e2",
-    inputBg: "#fafafa", inputBorder: "#f5f6f7",
-    greenBg: "#e6fff3", greenText: "#00bf85", orangeBg: "#fff4ed", orangeText: "#ff5222",
-    isDark: false,
-  };
+  const modalTheme = toModalTheme(pt);
 
   const { user } = useAuth();
   const isLoggedIn = !!user;
@@ -448,7 +444,7 @@ export default function PortfolioPage() {
   const filteredCost = sorted.reduce((sum, p) => sum + posCost(p), 0);
 
   return (
-    <div className="bg-[#f7f8fa] flex flex-col min-h-screen w-full" style={pp}>
+    <div className="flex flex-col min-h-screen w-full" style={{ background: pt.bg, ...pp }}>
       <div className="flex items-stretch flex-1">
         <Sidebar onDeposit={openDeposit} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <div className="flex-1 min-w-0 flex flex-col">
@@ -464,27 +460,27 @@ export default function PortfolioPage() {
               {/* Page Title */}
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-[#070808] text-[22px] flex items-center gap-2" style={{ ...pp, fontWeight: 700 }}>
+                  <h1 className="text-[22px] flex items-center gap-2" style={{ color: pt.text, ...pp, fontWeight: 700 }}>
                     <EmojiIcon emoji="📊" size={24} /> My Portfolio
                   </h1>
-                  <p className="text-[#84888c] text-[13px] mt-0.5" style={ss}>Track your positions and performance</p>
+                  <p className="text-[13px] mt-0.5" style={{ color: pt.textSec, ...ss }}>Track your positions and performance</p>
                 </div>
               </div>
 
               {/* Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <StatCard emoji="💰" label="Portfolio Value" value={`₱${SUMMARY.totalValue.toLocaleString()}`} sub={`+${SUMMARY.pnlPercent}% all time`} accent="#00bf85" />
-                <StatCard emoji="📈" label="Total P&L" value={`+₱${SUMMARY.totalPnl.toLocaleString()}`} sub={`on ₱${SUMMARY.totalInvested.toLocaleString()} invested`} accent="#00bf85" />
-                <StatCard emoji="🎯" label="Win Rate" value={`${SUMMARY.winRate}%`} sub={`${SUMMARY.wonBets}W / ${SUMMARY.lostBets}L`} />
-                <StatCard emoji="🔥" label="Active Bets" value={String(SUMMARY.activeBets)} sub={`${MOCK_POSITIONS.length} total positions`} />
+                <StatCard emoji="💰" label="Portfolio Value" value={`₱${SUMMARY.totalValue.toLocaleString()}`} sub={`+${SUMMARY.pnlPercent}% all time`} accent="#00bf85" theme={pt} />
+                <StatCard emoji="📈" label="Total P&L" value={`+₱${SUMMARY.totalPnl.toLocaleString()}`} sub={`on ₱${SUMMARY.totalInvested.toLocaleString()} invested`} accent="#00bf85" theme={pt} />
+                <StatCard emoji="🎯" label="Win Rate" value={`${SUMMARY.winRate}%`} sub={`${SUMMARY.wonBets}W / ${SUMMARY.lostBets}L`} theme={pt} />
+                <StatCard emoji="🔥" label="Active Bets" value={String(SUMMARY.activeBets)} sub={`${MOCK_POSITIONS.length} total positions`} theme={pt} />
               </div>
 
               {/* Portfolio Chart */}
-              <div className="bg-white rounded-xl p-4 md:p-5" style={{ border: "1px solid #f0f1f3" }}>
+              <div className="rounded-xl p-4 md:p-5" style={{ background: pt.card, border: `1px solid ${pt.cardBorder}` }}>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <EmojiIcon emoji="📈" size={18} />
-                    <span className="text-[#070808] text-[15px]" style={{ ...pp, fontWeight: 600 }}>Portfolio Value (7 Days)</span>
+                    <span className="text-[15px]" style={{ color: pt.text, ...pp, fontWeight: 600 }}>Portfolio Value (7 Days)</span>
                   </div>
                   <span className="text-[#00bf85] text-[13px]" style={{ ...ss, fontWeight: 700 }}>+₱1,220 (+29.0%)</span>
                 </div>
@@ -496,11 +492,11 @@ export default function PortfolioPage() {
                         <stop offset="100%" stopColor="#ff5222" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <XAxis key="xaxis" dataKey="day" tick={{ fill: "#84888c", fontSize: 11 }} axisLine={false} tickLine={false} />
-                    <YAxis key="yaxis" tick={{ fill: "#84888c", fontSize: 11 }} axisLine={false} tickLine={false} domain={["dataMin - 200", "dataMax + 200"]} />
+                    <XAxis key="xaxis" dataKey="day" tick={{ fill: pt.textMut, fontSize: 11 }} axisLine={false} tickLine={false} />
+                    <YAxis key="yaxis" tick={{ fill: pt.textMut, fontSize: 11 }} axisLine={false} tickLine={false} domain={["dataMin - 200", "dataMax + 200"]} />
                     <Tooltip
                       key="tooltip"
-                      contentStyle={{ background: "#fff", border: "1px solid #f0f1f3", borderRadius: 10, fontSize: 12 }}
+                      contentStyle={{ background: pt.card, border: `1px solid ${pt.cardBorder}`, borderRadius: 10, fontSize: 12, color: pt.text }}
                       formatter={(val: number) => [`₱${val.toLocaleString()}`, "Value"]}
                     />
                     <Area key="area" type="monotone" dataKey="value" stroke="#ff5222" strokeWidth={2.5} fill="url(#portfolioGrad)" dot={false} />
@@ -509,23 +505,23 @@ export default function PortfolioPage() {
               </div>
 
               {/* Positions Section */}
-              <div className="bg-white rounded-xl overflow-hidden" style={{ border: "1px solid #f0f1f3" }}>
+              <div className="rounded-xl overflow-hidden" style={{ background: pt.card, border: `1px solid ${pt.cardBorder}` }}>
                 {/* Section header */}
                 <div className="px-4 md:px-5 pt-4 md:pt-5 pb-0">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <EmojiIcon emoji="📋" size={18} />
-                      <span className="text-[#070808] text-[15px]" style={{ ...pp, fontWeight: 600 }}>Positions</span>
-                      <span className="text-[#b0b3b8] text-[13px]" style={{ fontWeight: 500, ...ss }}>({sorted.length})</span>
+                      <span className="text-[15px]" style={{ color: pt.text, ...pp, fontWeight: 600 }}>Positions</span>
+                      <span className="text-[13px]" style={{ color: pt.textMut, fontWeight: 500, ...ss }}>({sorted.length})</span>
                     </div>
                     {/* Sort control */}
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] text-[#b0b3b8] hidden sm:inline" style={{ fontWeight: 500, ...ss }}>Sort by</span>
+                      <span className="text-[11px] hidden sm:inline" style={{ color: pt.textMut, fontWeight: 500, ...ss }}>Sort by</span>
                       <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as SortKey)}
-                        className="h-8 px-2.5 rounded-lg text-[12px] text-[#070808] bg-[#fafafa] border border-[#f0f1f3] cursor-pointer outline-none"
-                        style={{ fontWeight: 500, ...ss }}
+                        className="h-8 px-2.5 rounded-lg text-[12px] cursor-pointer outline-none"
+                        style={{ background: pt.inputBg, border: `1px solid ${pt.cardBorder}`, color: pt.text, fontWeight: 500, ...ss }}
                       >
                         <option value="newest">Newest First</option>
                         <option value="pnl-high">P&L High → Low</option>
@@ -544,7 +540,7 @@ export default function PortfolioPage() {
                         onClick={() => setActiveTab(tab.id)}
                         className="px-3 md:px-4 py-2.5 text-[13px] relative transition-colors whitespace-nowrap cursor-pointer shrink-0"
                         style={{
-                          color: activeTab === tab.id ? "#070808" : "#84888c",
+                          color: activeTab === tab.id ? pt.text : pt.textSec,
                           fontWeight: activeTab === tab.id ? 700 : 500,
                           ...ss,
                         }}
@@ -553,8 +549,8 @@ export default function PortfolioPage() {
                         <span
                           className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded-full"
                           style={{
-                            background: activeTab === tab.id ? "#ff5222" : "#f5f6f7",
-                            color: activeTab === tab.id ? "#fff" : "#b0b3b8",
+                            background: activeTab === tab.id ? "#ff5222" : (pt.isDark ? "rgba(255,255,255,0.06)" : "#f5f6f7"),
+                            color: activeTab === tab.id ? "#fff" : pt.textMut,
                             fontWeight: 700,
                             ...ss,
                           }}
@@ -569,15 +565,15 @@ export default function PortfolioPage() {
                   </div>
                 </div>
 
-                <div className="h-px bg-[#f0f1f3]" />
+                <div className="h-px" style={{ background: pt.cardBorder }} />
 
                 {/* Position Cards */}
                 <div className="p-3 md:p-4 space-y-3">
                   {sorted.length === 0 ? (
-                    <div className="text-center py-16 text-[#84888c] text-[14px]" style={ss}>
+                    <div className="text-center py-16 text-[14px]" style={{ color: pt.textSec, ...ss }}>
                       <div className="flex justify-center mb-3"><EmojiIcon emoji="📭" size={40} /></div>
                       <p style={{ fontWeight: 600 }}>No positions found</p>
-                      <p className="text-[12px] text-[#b0b3b8] mt-1">Try switching tabs or placing a new bet</p>
+                      <p className="text-[12px] mt-1" style={{ color: pt.textMut }}>Try switching tabs or placing a new bet</p>
                       <button
                         className="mt-4 h-9 px-5 bg-[#ff5222] text-white text-[13px] rounded-lg cursor-pointer hover:bg-[#e84a1e] transition-colors"
                         style={{ fontWeight: 600, ...ss }}
@@ -588,7 +584,7 @@ export default function PortfolioPage() {
                     </div>
                   ) : (
                     sorted.map(pos => (
-                      <PositionCard key={pos.id} pos={pos} onClick={() => navigate(`/market/${pos.id}`)} />
+                      <PositionCard key={pos.id} pos={pos} onClick={() => navigate(`/market/${pos.id}`)} theme={pt} />
                     ))
                   )}
                 </div>
@@ -596,19 +592,19 @@ export default function PortfolioPage() {
                 {/* Summary footer */}
                 {sorted.length > 0 && (
                   <>
-                    <div className="h-px bg-[#f0f1f3]" />
-                    <div className="px-4 md:px-5 py-3 flex items-center justify-between flex-wrap gap-2 bg-[#fafafa]">
+                    <div className="h-px" style={{ background: pt.cardBorder }} />
+                    <div className="px-4 md:px-5 py-3 flex items-center justify-between flex-wrap gap-2" style={{ background: pt.inputBg }}>
                       <div className="flex items-center gap-4 md:gap-6 flex-wrap">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[11px] text-[#b0b3b8]" style={{ fontWeight: 500, ...ss }}>Invested:</span>
-                          <span className="text-[12px] text-[#070808]" style={{ fontWeight: 700, ...ss }}>₱{filteredCost.toFixed(0)}</span>
+                          <span className="text-[11px]" style={{ color: pt.textMut, fontWeight: 500, ...ss }}>Invested:</span>
+                          <span className="text-[12px]" style={{ color: pt.text, fontWeight: 700, ...ss }}>₱{filteredCost.toFixed(0)}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[11px] text-[#b0b3b8]" style={{ fontWeight: 500, ...ss }}>Value:</span>
-                          <span className="text-[12px] text-[#070808]" style={{ fontWeight: 700, ...ss }}>₱{filteredValue.toFixed(0)}</span>
+                          <span className="text-[11px]" style={{ color: pt.textMut, fontWeight: 500, ...ss }}>Value:</span>
+                          <span className="text-[12px]" style={{ color: pt.text, fontWeight: 700, ...ss }}>₱{filteredValue.toFixed(0)}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[11px] text-[#b0b3b8]" style={{ fontWeight: 500, ...ss }}>P&L:</span>
+                          <span className="text-[11px]" style={{ color: pt.textMut, fontWeight: 500, ...ss }}>P&L:</span>
                           <span
                             className="text-[12px]"
                             style={{ color: filteredPnl >= 0 ? "#00bf85" : "#e53e3e", fontWeight: 700, ...ss }}
@@ -617,7 +613,7 @@ export default function PortfolioPage() {
                           </span>
                         </div>
                       </div>
-                      <span className="text-[11px] text-[#b0b3b8]" style={{ fontWeight: 500, ...ss }}>
+                      <span className="text-[11px]" style={{ color: pt.textMut, fontWeight: 500, ...ss }}>
                         Showing {sorted.length} of {MOCK_POSITIONS.length} positions
                       </span>
                     </div>

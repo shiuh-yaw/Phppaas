@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import { FireIcon, HeartIcon, ChatIcon } from "./icons";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { EmojiIcon } from "./two-tone-icons";
+import { usePageTheme } from "./theme-utils";
 
 const poppins = { fontFamily: "'Poppins', sans-serif" };
 const ss04 = { fontFeatureSettings: "'ss04'" };
@@ -41,26 +42,28 @@ function TierBadge({ tier }: { tier: 1 | 2 | 3 }) {
 }
 
 function CategoryTag({ label }: { label: string }) {
+  const t = usePageTheme();
   return (
-    <span className="text-[9px] text-[#84888c] bg-[#f0f1f3] px-1.5 py-0.5 rounded" style={{ fontWeight: 500, ...ss04 }}>
+    <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ fontWeight: 500, ...ss04, color: t.textSec, backgroundColor: t.isDark ? "rgba(255,255,255,0.08)" : "#f0f1f3" }}>
       {label}
     </span>
   );
 }
 
 function CardFooter({ volume = "₱64k Vol", likes = 23, bettors }: { volume?: string; likes?: number; bettors?: number }) {
+  const t = usePageTheme();
   return (
-    <div className="flex items-center justify-between w-full pt-2 border-t border-[#f5f6f7]">
+    <div className="flex items-center justify-between w-full pt-2 border-t" style={{ borderColor: t.isDark ? t.cardBorder : "#f5f6f7" }}>
       <div className="flex items-center gap-2">
-        <span className="text-[11px] text-[#84888c] leading-[1.5]" style={ss04}>{volume}</span>
+        <span className="text-[11px] leading-[1.5]" style={{ ...ss04, color: t.textSec }}>{volume}</span>
         {bettors != null && bettors > 0 && (
-          <span className="text-[10px] text-[#b0b3b8] leading-[1.5]" style={ss04}>{bettors} bettors</span>
+          <span className="text-[10px] leading-[1.5]" style={{ ...ss04, color: t.textMut }}>{bettors} bettors</span>
         )}
       </div>
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-1">
           <FireIcon />
-          <span className="text-[11px] text-[#84888c] leading-[1.5]" style={ss04}>{likes}</span>
+          <span className="text-[11px] leading-[1.5]" style={{ ...ss04, color: t.textSec }}>{likes}</span>
         </div>
         <button className="cursor-pointer"><HeartIcon /></button>
         <button className="cursor-pointer"><ChatIcon /></button>
@@ -84,13 +87,14 @@ function CardHeader({
   tier?: 1 | 2 | 3;
   category?: string;
 }) {
+  const t = usePageTheme();
   return (
     <div className="flex items-center justify-between w-full gap-2">
       <div className="flex items-center gap-1.5 min-w-0">
-        <div className="size-6 rounded-full overflow-hidden shrink-0 ring-1 ring-[#f0f1f3]">
+        <div className="size-6 rounded-full overflow-hidden shrink-0" style={{ boxShadow: `0 0 0 1px ${t.isDark ? t.cardBorder : "#f0f1f3"}` }}>
           <ImageWithFallback src={avatars[avatarIdx % avatars.length]} alt={author} className="size-full object-cover" />
         </div>
-        <span className="text-[12px] text-[#070808] leading-[1.5] truncate" style={{ fontWeight: 500, ...ss04 }}>
+        <span className="text-[12px] leading-[1.5] truncate" style={{ fontWeight: 500, ...ss04, color: t.text }}>
           {author}
         </span>
         {tier && <TierBadge tier={tier} />}
@@ -98,7 +102,7 @@ function CardHeader({
       </div>
       <div className="flex items-center gap-1.5 shrink-0">
         {isLive && <LiveBadge />}
-        <span className="text-[11px] text-[#84888c] leading-[1.5] whitespace-nowrap" style={ss04}>{endTime}</span>
+        <span className="text-[11px] leading-[1.5] whitespace-nowrap" style={{ ...ss04, color: t.textSec }}>{endTime}</span>
       </div>
     </div>
   );
@@ -132,8 +136,9 @@ export function YesNoCard({
   category?: string;
   bettors?: number;
 }) {
+  const t = usePageTheme();
   return (
-    <div className="bg-white rounded-xl shadow-[0px_2px_20px_0px_rgba(0,0,0,0.04)] border border-[#f5f6f7] flex-1 min-w-0 flex flex-col justify-between p-4 h-full hover:shadow-[0px_4px_24px_0px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer" style={poppins}>
+    <div className="rounded-xl shadow-[0px_2px_20px_0px_rgba(0,0,0,0.04)] flex-1 min-w-0 flex flex-col justify-between p-4 h-full hover:shadow-[0px_4px_24px_0px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer" style={{ ...poppins, backgroundColor: t.card, border: `1px solid ${t.cardBorder}` }}>
       <div className="flex flex-col gap-3 w-full">
         <CardHeader author={author} endTime={endTime} avatarIdx={avatarIdx} isLive={isLive} tier={tier} category={category} />
         <div className="flex gap-2.5 items-start w-full">
@@ -142,25 +147,25 @@ export function YesNoCard({
               <ImageWithFallback src={image} alt="" className="size-full object-cover" />
             </div>
           )}
-          <div className="flex-1 min-w-0 text-[13px] text-[#070808] leading-[1.45]" style={{ fontWeight: 500, ...ss04 }}>
+          <div className="flex-1 min-w-0 text-[13px] leading-[1.45]" style={{ fontWeight: 500, ...ss04, color: t.text }}>
             <p>{question}</p>
           </div>
           <div className="flex flex-col items-center shrink-0">
             <span className="text-[20px] text-[#00bf85] leading-[22px]" style={{ fontWeight: 700, ...ss04 }}>{chance}%</span>
-            <span className="text-[10px] text-[#070808] opacity-60 leading-[1.5]">Chance</span>
+            <span className="text-[10px] opacity-60 leading-[1.5]" style={{ color: t.text }}>Chance</span>
           </div>
         </div>
       </div>
       <div className="flex flex-col gap-3 w-full mt-3">
         <div className="flex gap-2.5 w-full">
-          <button className="bg-[#e6fff3] hover:bg-[#ccf5e4] flex-1 h-11 rounded-lg flex items-center justify-center transition-colors cursor-pointer">
+          <button className="flex-1 h-11 rounded-lg flex items-center justify-center transition-colors cursor-pointer" style={{ backgroundColor: t.greenBg }}>
             <span className="text-[15px] text-[#00bf85]" style={{ fontWeight: 600, ...ss04 }}>Oo</span>
           </button>
-          <button className="bg-[#fff4ed] hover:bg-[#ffe8da] flex-1 h-11 rounded-lg flex items-center justify-center transition-colors cursor-pointer">
+          <button className="flex-1 h-11 rounded-lg flex items-center justify-center transition-colors cursor-pointer" style={{ backgroundColor: t.orangeBg }}>
             <span className="text-[15px] text-[#ff5222]" style={{ fontWeight: 600, ...ss04 }}>Hindi</span>
           </button>
         </div>
-        <CardFooter volume={volume} />
+        <CardFooter volume={volume} bettors={bettors} />
       </div>
     </div>
   );
@@ -193,19 +198,19 @@ export function FastBetCard({
   category?: string;
 }) {
   const navigate = useNavigate();
+  const t = usePageTheme();
   return (
     <div
-      className="bg-white rounded-xl shadow-[0px_2px_20px_0px_rgba(0,0,0,0.04)] border border-[#f5f6f7] flex-1 min-w-0 flex flex-col gap-3 p-4 hover:shadow-[0px_4px_24px_0px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer"
-      style={poppins}
+      className="rounded-xl shadow-[0px_2px_20px_0px_rgba(0,0,0,0.04)] flex-1 min-w-0 flex flex-col gap-3 p-4 hover:shadow-[0px_4px_24px_0px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer"
+      style={{ ...poppins, backgroundColor: t.card, border: `1px solid ${t.cardBorder}` }}
       onClick={() => navigate("/fast-bet")}
     >
-      {/* Header with Fast Bets badge */}
       <div className="flex items-center justify-between w-full gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
-          <div className="size-6 rounded-full overflow-hidden shrink-0 ring-1 ring-[#f0f1f3]">
+          <div className="size-6 rounded-full overflow-hidden shrink-0" style={{ boxShadow: `0 0 0 1px ${t.isDark ? t.cardBorder : "#f0f1f3"}` }}>
             <ImageWithFallback src={avatars[avatarIdx % avatars.length]} alt={author} className="size-full object-cover" />
           </div>
-          <span className="text-[12px] text-[#070808] leading-[1.5] truncate" style={{ fontWeight: 500, ...ss04 }}>
+          <span className="text-[12px] leading-[1.5] truncate" style={{ fontWeight: 500, ...ss04, color: t.text }}>
             {author}
           </span>
           {tier && <TierBadge tier={tier} />}
@@ -215,7 +220,7 @@ export function FastBetCard({
           <span className="flex items-center gap-1 bg-[#ff5222]/10 text-[#ff5222] text-[9px] px-2 py-0.5 rounded-full" style={{ fontWeight: 700, ...ss04 }}>
             ⚡ Fast Bets
           </span>
-          <span className="text-[11px] text-[#84888c] leading-[1.5] whitespace-nowrap" style={ss04}>{endTime}</span>
+          <span className="text-[11px] leading-[1.5] whitespace-nowrap" style={{ ...ss04, color: t.textSec }}>{endTime}</span>
         </div>
       </div>
       <div className="flex gap-2.5 items-center w-full">
@@ -224,28 +229,27 @@ export function FastBetCard({
             <ImageWithFallback src={image} alt="" className="size-full object-cover" />
           </div>
         )}
-        <p className="flex-1 text-[13px] text-[#070808] leading-[1.45]" style={{ fontWeight: 500, ...ss04 }}>{question}</p>
+        <p className="flex-1 text-[13px] leading-[1.45]" style={{ fontWeight: 500, ...ss04, color: t.text }}>{question}</p>
       </div>
       <div className="flex flex-col gap-2 max-h-[78px] overflow-hidden w-full">
         {outcomes.map((o, i) => (
           <div key={i} className="flex items-center gap-2.5 w-full">
-            <span className="w-14 text-[12px] text-[#84888c] leading-[1.5]" style={ss04}>{o.label}</span>
-            <span className="w-10 text-[12px] text-[#84888c] leading-[1.5] text-right" style={ss04}>{o.pct}</span>
+            <span className="w-14 text-[12px] leading-[1.5]" style={{ ...ss04, color: t.textSec }}>{o.label}</span>
+            <span className="w-10 text-[12px] leading-[1.5] text-right" style={{ ...ss04, color: t.textSec }}>{o.pct}</span>
             <div className="flex gap-1 ml-auto">
-              <button className="bg-[#e6fff3] hover:bg-[#ccf5e4] h-6 w-14 rounded flex items-center justify-center transition-colors cursor-pointer">
+              <button className="h-6 w-14 rounded flex items-center justify-center transition-colors cursor-pointer" style={{ backgroundColor: t.greenBg }}>
                 <span className="text-[11px] text-[#00bf85]" style={{ fontWeight: 600, ...ss04 }}>Taas ▲</span>
               </button>
-              <button className="bg-[#fff4ed] hover:bg-[#ffe8da] h-6 w-14 rounded flex items-center justify-center transition-colors cursor-pointer">
+              <button className="h-6 w-14 rounded flex items-center justify-center transition-colors cursor-pointer" style={{ backgroundColor: t.orangeBg }}>
                 <span className="text-[11px] text-[#ff5222]" style={{ fontWeight: 600, ...ss04 }}>Baba ▼</span>
               </button>
             </div>
           </div>
         ))}
       </div>
-      {/* Footer with Fast Bet link */}
-      <div className="flex items-center justify-between w-full pt-2 border-t border-[#f5f6f7]">
+      <div className="flex items-center justify-between w-full pt-2 border-t" style={{ borderColor: t.isDark ? t.cardBorder : "#f5f6f7" }}>
         <div className="flex items-center gap-2">
-          <span className="text-[11px] text-[#84888c] leading-[1.5]" style={ss04}>{volume}</span>
+          <span className="text-[11px] leading-[1.5]" style={{ ...ss04, color: t.textSec }}>{volume}</span>
         </div>
         <span className="text-[11px] text-[#ff5222] leading-[1.5]" style={{ fontWeight: 600, ...ss04 }}>
           Tumaya sa Fast Bets →
@@ -277,8 +281,9 @@ export function BuyCard({
   tier?: 1 | 2 | 3;
   category?: string;
 }) {
+  const t = usePageTheme();
   return (
-    <div className="bg-white rounded-xl shadow-[0px_2px_20px_0px_rgba(0,0,0,0.04)] border border-[#f5f6f7] flex-1 min-w-0 flex flex-col justify-between p-4 h-full hover:shadow-[0px_4px_24px_0px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer" style={poppins}>
+    <div className="rounded-xl shadow-[0px_2px_20px_0px_rgba(0,0,0,0.04)] flex-1 min-w-0 flex flex-col justify-between p-4 h-full hover:shadow-[0px_4px_24px_0px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer" style={{ ...poppins, backgroundColor: t.card, border: `1px solid ${t.cardBorder}` }}>
       <div className="flex flex-col gap-3 w-full">
         <CardHeader author={author} endTime={endTime} avatarIdx={avatarIdx} tier={tier} category={category} />
         <div className="flex gap-2.5 items-center w-full">
@@ -287,14 +292,14 @@ export function BuyCard({
               <ImageWithFallback src={image} alt="" className="size-full object-cover" />
             </div>
           )}
-          <p className="flex-1 text-[13px] text-[#070808] leading-[1.45]" style={{ fontWeight: 500, ...ss04 }}>{question}</p>
+          <p className="flex-1 text-[13px] leading-[1.45]" style={{ fontWeight: 500, ...ss04, color: t.text }}>{question}</p>
         </div>
       </div>
       <div className="flex flex-col gap-2 max-h-[78px] overflow-hidden w-full">
         {options.map((o, i) => (
           <div key={i} className="flex items-center gap-2.5 w-full">
-            <span className="flex-1 text-[12px] text-[#84888c] leading-[1.5]" style={ss04}>{o.label}</span>
-              <button className="bg-[#e6fff3] hover:bg-[#ccf5e4] h-6 w-16 rounded flex items-center justify-center transition-colors cursor-pointer">
+            <span className="flex-1 text-[12px] leading-[1.5]" style={{ ...ss04, color: t.textSec }}>{o.label}</span>
+              <button className="h-6 w-16 rounded flex items-center justify-center transition-colors cursor-pointer" style={{ backgroundColor: t.greenBg }}>
                 <span className="text-[11px] text-[#00bf85]" style={{ fontWeight: 600, ...ss04 }}>Tumaya</span>
               </button>
           </div>
@@ -313,6 +318,15 @@ const tagColors = [
   { bg: "#e6fffb", text: "#13c2c2" },
   { bg: "#fff1f0", text: "#f5222d" },
   { bg: "#f3edff", text: "#3f1ff6" },
+];
+
+const tagColorsDark = [
+  { bg: "rgba(0,191,133,0.15)", text: "#00bf85" },
+  { bg: "rgba(255,82,34,0.15)", text: "#ff5222" },
+  { bg: "rgba(8,109,224,0.15)", text: "#4d9ff0" },
+  { bg: "rgba(19,194,194,0.15)", text: "#13c2c2" },
+  { bg: "rgba(245,34,45,0.15)", text: "#f5222d" },
+  { bg: "rgba(63,31,246,0.15)", text: "#7b6ff6" },
 ];
 
 export function MultiOptionCard({
@@ -336,8 +350,10 @@ export function MultiOptionCard({
   tier?: 1 | 2 | 3;
   category?: string;
 }) {
+  const t = usePageTheme();
+  const colors = t.isDark ? tagColorsDark : tagColors;
   return (
-    <div className="bg-white rounded-xl shadow-[0px_2px_20px_0px_rgba(0,0,0,0.04)] border border-[#f5f6f7] flex-1 min-w-0 flex flex-col gap-3 p-4 hover:shadow-[0px_4px_24px_0px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer" style={poppins}>
+    <div className="rounded-xl shadow-[0px_2px_20px_0px_rgba(0,0,0,0.04)] flex-1 min-w-0 flex flex-col gap-3 p-4 hover:shadow-[0px_4px_24px_0px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer" style={{ ...poppins, backgroundColor: t.card, border: `1px solid ${t.cardBorder}` }}>
       <CardHeader author={author} endTime={endTime} avatarIdx={avatarIdx} tier={tier} category={category} />
       <div className="flex gap-2.5 items-start w-full">
         {image && (
@@ -345,11 +361,11 @@ export function MultiOptionCard({
             <ImageWithFallback src={image} alt="" className="size-full object-cover" />
           </div>
         )}
-        <p className="flex-1 text-[13px] text-[#070808] leading-[1.45]" style={{ fontWeight: 500, ...ss04 }}>{question}</p>
+        <p className="flex-1 text-[13px] leading-[1.45]" style={{ fontWeight: 500, ...ss04, color: t.text }}>{question}</p>
       </div>
       <div className="flex flex-wrap gap-1.5 max-h-[56px] overflow-hidden w-full">
         {options.map((opt, i) => {
-          const color = tagColors[i % tagColors.length];
+          const color = colors[i % colors.length];
           return (
             <button
               key={i}
@@ -366,7 +382,7 @@ export function MultiOptionCard({
   );
 }
 
-/* ====== NEW: COLOR GAME (Perya) CARD ====== */
+/* ====== COLOR GAME (Perya) CARD ====== */
 const diceColors = [
   { name: "Pula", color: "#dc2626", bg: "#fef2f2" },
   { name: "Asul", color: "#2563eb", bg: "#eff6ff" },
@@ -391,13 +407,14 @@ export function ColorGameCard({
   bettors?: number;
   status?: "live" | "rolling" | "result";
 }) {
+  const t = usePageTheme();
   return (
-    <div className="bg-white rounded-xl shadow-[0px_2px_20px_0px_rgba(0,0,0,0.04)] border border-[#f5f6f7] flex-1 min-w-0 flex flex-col justify-between p-4 h-full hover:shadow-[0px_4px_24px_0px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer" style={poppins}>
+    <div className="rounded-xl shadow-[0px_2px_20px_0px_rgba(0,0,0,0.04)] flex-1 min-w-0 flex flex-col justify-between p-4 h-full hover:shadow-[0px_4px_24px_0px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer" style={{ ...poppins, backgroundColor: t.card, border: `1px solid ${t.cardBorder}` }}>
       {/* Header */}
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center gap-1.5">
           <EmojiIcon emoji="🎲" size={18} />
-          <span className="text-[12px] text-[#070808]" style={{ fontWeight: 600, ...ss04 }}>{roundId}</span>
+          <span className="text-[12px]" style={{ fontWeight: 600, ...ss04, color: t.text }}>{roundId}</span>
           <TierBadge tier={1} />
           <CategoryTag label="Color Game" />
         </div>
@@ -408,13 +425,13 @@ export function ColorGameCard({
               ROLLING...
             </span>
           )}
-          <span className="text-[11px] text-[#070808]" style={{ fontWeight: 600, ...ss04 }}>{timeLeft}</span>
+          <span className="text-[11px]" style={{ fontWeight: 600, ...ss04, color: t.text }}>{timeLeft}</span>
         </div>
       </div>
 
       {/* Last Results */}
       <div className="flex items-center gap-1.5 mt-2">
-        <span className="text-[10px] text-[#b0b3b8]" style={ss04}>Huling resulta:</span>
+        <span className="text-[10px]" style={{ ...ss04, color: t.textMut }}>Huling resulta:</span>
         {lastResults.map((r, i) => {
           const c = diceColors.find((d) => d.name === r);
           return (
@@ -429,7 +446,7 @@ export function ColorGameCard({
           <button
             key={dc.name}
             className="h-11 rounded-lg flex flex-col items-center justify-center gap-0.5 transition-all hover:scale-105 cursor-pointer border"
-            style={{ backgroundColor: dc.bg, borderColor: dc.color + "30" }}
+            style={{ backgroundColor: t.isDark ? `${dc.color}15` : dc.bg, borderColor: dc.color + "30" }}
           >
             <div className="size-3.5 rounded" style={{ backgroundColor: dc.color }} />
             <span className="text-[9px]" style={{ fontWeight: 600, color: dc.color, ...ss04 }}>{dc.name}</span>
@@ -440,31 +457,31 @@ export function ColorGameCard({
       {/* Payout info */}
       <div className="flex items-center gap-3 mt-2.5 w-full">
         <div className="flex-1 text-center">
-          <span className="text-[10px] text-[#b0b3b8] block" style={ss04}>1 kulay</span>
-          <span className="text-[12px] text-[#070808]" style={{ fontWeight: 600, ...ss04 }}>x2</span>
+          <span className="text-[10px] block" style={{ ...ss04, color: t.textMut }}>1 kulay</span>
+          <span className="text-[12px]" style={{ fontWeight: 600, ...ss04, color: t.text }}>x2</span>
         </div>
-        <div className="w-px h-5 bg-[#f0f1f3]" />
+        <div className="w-px h-5" style={{ backgroundColor: t.isDark ? t.cardBorder : "#f0f1f3" }} />
         <div className="flex-1 text-center">
-          <span className="text-[10px] text-[#b0b3b8] block" style={ss04}>2 kulay</span>
+          <span className="text-[10px] block" style={{ ...ss04, color: t.textMut }}>2 kulay</span>
           <span className="text-[12px] text-[#00bf85]" style={{ fontWeight: 600, ...ss04 }}>x3</span>
         </div>
-        <div className="w-px h-5 bg-[#f0f1f3]" />
+        <div className="w-px h-5" style={{ backgroundColor: t.isDark ? t.cardBorder : "#f0f1f3" }} />
         <div className="flex-1 text-center">
-          <span className="text-[10px] text-[#b0b3b8] block" style={ss04}>3 kulay</span>
+          <span className="text-[10px] block" style={{ ...ss04, color: t.textMut }}>3 kulay</span>
           <span className="text-[12px] text-[#ff5222]" style={{ fontWeight: 600, ...ss04 }}>x6</span>
         </div>
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between w-full pt-2 mt-1 border-t border-[#f5f6f7]">
-        <span className="text-[11px] text-[#84888c]" style={ss04}>Pool: {totalPool}</span>
-        <span className="text-[10px] text-[#b0b3b8]" style={ss04}>{bettors} players</span>
+      <div className="flex items-center justify-between w-full pt-2 mt-1 border-t" style={{ borderColor: t.isDark ? t.cardBorder : "#f5f6f7" }}>
+        <span className="text-[11px]" style={{ ...ss04, color: t.textSec }}>Pool: {totalPool}</span>
+        <span className="text-[10px]" style={{ ...ss04, color: t.textMut }}>{bettors} players</span>
       </div>
     </div>
   );
 }
 
-/* ====== NEW: SPORTS MATCHUP CARD (Basketball, Boxing) ====== */
+/* ====== SPORTS MATCHUP CARD (Basketball, Boxing) ====== */
 export function MatchupCard({
   sport = "Basketball",
   league = "PBA Philippine Cup",
@@ -499,54 +516,56 @@ export function MatchupCard({
   ouTotal?: string;
 }) {
   const emoji = sport === "Basketball" ? "🏀" : sport === "Boxing" ? "🥊" : "🏆";
+  const t = usePageTheme();
+  const subBg = t.isDark ? "rgba(255,255,255,0.06)" : "#f7f8f9";
   return (
-    <div className="bg-white rounded-xl shadow-[0px_2px_20px_0px_rgba(0,0,0,0.04)] border border-[#f5f6f7] flex-1 min-w-0 flex flex-col justify-between p-4 h-full hover:shadow-[0px_4px_24px_0px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer" style={poppins}>
+    <div className="rounded-xl shadow-[0px_2px_20px_0px_rgba(0,0,0,0.04)] flex-1 min-w-0 flex flex-col justify-between p-4 h-full hover:shadow-[0px_4px_24px_0px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer" style={{ ...poppins, backgroundColor: t.card, border: `1px solid ${t.cardBorder}` }}>
       {/* Header */}
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center gap-1.5">
           <EmojiIcon emoji={emoji} size={16} />
-          <span className="text-[11px] text-[#84888c]" style={{ fontWeight: 500, ...ss04 }}>{league}</span>
+          <span className="text-[11px]" style={{ fontWeight: 500, ...ss04, color: t.textSec }}>{league}</span>
           <TierBadge tier={sport === "Basketball" ? 1 : 2} />
           <CategoryTag label={sport} />
         </div>
         <div className="flex items-center gap-1.5">
           {isLive && <LiveBadge />}
-          <span className="text-[11px] text-[#84888c]" style={ss04}>{endTime}</span>
+          <span className="text-[11px]" style={{ ...ss04, color: t.textSec }}>{endTime}</span>
         </div>
       </div>
 
       {/* Teams */}
       <div className="flex items-center w-full mt-3 gap-3">
         <div className="flex-1 flex flex-col items-center gap-1">
-          <span className="text-[14px] text-[#070808]" style={{ fontWeight: 600, ...ss04 }}>{teamA}</span>
+          <span className="text-[14px]" style={{ fontWeight: 600, ...ss04, color: t.text }}>{teamA}</span>
           {scoreA !== undefined && (
-            <span className="text-[22px] text-[#070808]" style={{ fontWeight: 700, ...ss04 }}>{scoreA}</span>
+            <span className="text-[22px]" style={{ fontWeight: 700, ...ss04, color: t.text }}>{scoreA}</span>
           )}
         </div>
-        <span className="text-[12px] text-[#b0b3b8]" style={{ fontWeight: 600 }}>VS</span>
+        <span className="text-[12px]" style={{ fontWeight: 600, color: t.textMut }}>VS</span>
         <div className="flex-1 flex flex-col items-center gap-1">
-          <span className="text-[14px] text-[#070808]" style={{ fontWeight: 600, ...ss04 }}>{teamB}</span>
+          <span className="text-[14px]" style={{ fontWeight: 600, ...ss04, color: t.text }}>{teamB}</span>
           {scoreB !== undefined && (
-            <span className="text-[22px] text-[#070808]" style={{ fontWeight: 700, ...ss04 }}>{scoreB}</span>
+            <span className="text-[22px]" style={{ fontWeight: 700, ...ss04, color: t.text }}>{scoreB}</span>
           )}
         </div>
       </div>
 
       {/* Odds buttons */}
       <div className="flex gap-2 w-full mt-3">
-        <button className="bg-[#f7f8f9] hover:bg-[#eef0f2] flex-1 h-10 rounded-lg flex flex-col items-center justify-center transition-colors cursor-pointer">
-          <span className="text-[10px] text-[#84888c]" style={ss04}>{teamA}</span>
-          <span className="text-[13px] text-[#070808]" style={{ fontWeight: 600, ...ss04 }}>x{oddsA.toFixed(2)}</span>
+        <button className="flex-1 h-10 rounded-lg flex flex-col items-center justify-center transition-colors cursor-pointer" style={{ backgroundColor: subBg }}>
+          <span className="text-[10px]" style={{ ...ss04, color: t.textSec }}>{teamA}</span>
+          <span className="text-[13px]" style={{ fontWeight: 600, ...ss04, color: t.text }}>x{oddsA.toFixed(2)}</span>
         </button>
         {oddsDraw !== undefined && (
-          <button className="bg-[#f7f8f9] hover:bg-[#eef0f2] flex-1 h-10 rounded-lg flex flex-col items-center justify-center transition-colors cursor-pointer">
-            <span className="text-[10px] text-[#84888c]" style={ss04}>Draw</span>
-            <span className="text-[13px] text-[#070808]" style={{ fontWeight: 600, ...ss04 }}>x{oddsDraw.toFixed(2)}</span>
+          <button className="flex-1 h-10 rounded-lg flex flex-col items-center justify-center transition-colors cursor-pointer" style={{ backgroundColor: subBg }}>
+            <span className="text-[10px]" style={{ ...ss04, color: t.textSec }}>Draw</span>
+            <span className="text-[13px]" style={{ fontWeight: 600, ...ss04, color: t.text }}>x{oddsDraw.toFixed(2)}</span>
           </button>
         )}
-        <button className="bg-[#f7f8f9] hover:bg-[#eef0f2] flex-1 h-10 rounded-lg flex flex-col items-center justify-center transition-colors cursor-pointer">
-          <span className="text-[10px] text-[#84888c]" style={ss04}>{teamB}</span>
-          <span className="text-[13px] text-[#070808]" style={{ fontWeight: 600, ...ss04 }}>x{oddsB.toFixed(2)}</span>
+        <button className="flex-1 h-10 rounded-lg flex flex-col items-center justify-center transition-colors cursor-pointer" style={{ backgroundColor: subBg }}>
+          <span className="text-[10px]" style={{ ...ss04, color: t.textSec }}>{teamB}</span>
+          <span className="text-[13px]" style={{ fontWeight: 600, ...ss04, color: t.text }}>x{oddsB.toFixed(2)}</span>
         </button>
       </div>
 
@@ -554,15 +573,15 @@ export function MatchupCard({
       {(spreadLine || ouTotal) && (
         <div className="flex gap-2 w-full mt-1.5">
           {spreadLine && (
-            <div className="flex-1 bg-[#f7f8f9] rounded-md px-2 py-1.5 text-center">
-              <span className="text-[9px] text-[#b0b3b8] block" style={ss04}>Spread</span>
-              <span className="text-[11px] text-[#070808]" style={{ fontWeight: 500, ...ss04 }}>{spreadLine}</span>
+            <div className="flex-1 rounded-md px-2 py-1.5 text-center" style={{ backgroundColor: subBg }}>
+              <span className="text-[9px] block" style={{ ...ss04, color: t.textMut }}>Spread</span>
+              <span className="text-[11px]" style={{ fontWeight: 500, ...ss04, color: t.text }}>{spreadLine}</span>
             </div>
           )}
           {ouTotal && (
-            <div className="flex-1 bg-[#f7f8f9] rounded-md px-2 py-1.5 text-center">
-              <span className="text-[9px] text-[#b0b3b8] block" style={ss04}>O/U</span>
-              <span className="text-[11px] text-[#070808]" style={{ fontWeight: 500, ...ss04 }}>{ouTotal}</span>
+            <div className="flex-1 rounded-md px-2 py-1.5 text-center" style={{ backgroundColor: subBg }}>
+              <span className="text-[9px] block" style={{ ...ss04, color: t.textMut }}>O/U</span>
+              <span className="text-[11px]" style={{ fontWeight: 500, ...ss04, color: t.text }}>{ouTotal}</span>
             </div>
           )}
         </div>
@@ -573,7 +592,7 @@ export function MatchupCard({
   );
 }
 
-/* ====== NEW: BINGO / NUMBER PREDICTION CARD ====== */
+/* ====== BINGO / NUMBER PREDICTION CARD ====== */
 export function BingoCard({
   roundId = "Bingo Round #445",
   nextDraw = "0:15",
@@ -593,22 +612,23 @@ export function BingoCard({
   totalPool?: string;
   players?: number;
 }) {
+  const t = usePageTheme();
   return (
-    <div className="bg-white rounded-xl shadow-[0px_2px_20px_0px_rgba(0,0,0,0.04)] border border-[#f5f6f7] flex-1 min-w-0 flex flex-col justify-between p-4 h-full hover:shadow-[0px_4px_24px_0px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer" style={poppins}>
+    <div className="rounded-xl shadow-[0px_2px_20px_0px_rgba(0,0,0,0.04)] flex-1 min-w-0 flex flex-col justify-between p-4 h-full hover:shadow-[0px_4px_24px_0px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer" style={{ ...poppins, backgroundColor: t.card, border: `1px solid ${t.cardBorder}` }}>
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center gap-1.5">
           <EmojiIcon emoji="💯" size={16} />
-          <span className="text-[12px] text-[#070808]" style={{ fontWeight: 600, ...ss04 }}>{roundId}</span>
+          <span className="text-[12px]" style={{ fontWeight: 600, ...ss04, color: t.text }}>{roundId}</span>
           <TierBadge tier={2} />
           <CategoryTag label="Bingo" />
         </div>
         <div className="flex items-center gap-1.5">
           <LiveBadge />
-          <span className="text-[11px] text-[#070808]" style={{ fontWeight: 600, ...ss04 }}>{nextDraw}</span>
+          <span className="text-[11px]" style={{ fontWeight: 600, ...ss04, color: t.text }}>{nextDraw}</span>
         </div>
       </div>
 
-      <p className="text-[12px] text-[#84888c] mt-2" style={{ fontWeight: 500, ...ss04 }}>
+      <p className="text-[12px] mt-2" style={{ fontWeight: 500, ...ss04, color: t.textSec }}>
         Piliin ang number range — saan babagsak ang susunod na bola?
       </p>
 
@@ -616,26 +636,27 @@ export function BingoCard({
         {ranges.map((r, i) => (
           <button
             key={i}
-            className="flex items-center justify-between w-full h-8 px-3 rounded-lg bg-[#f7f8f9] hover:bg-[#eef0f2] transition-colors cursor-pointer"
+            className="flex items-center justify-between w-full h-8 px-3 rounded-lg transition-colors cursor-pointer"
+            style={{ backgroundColor: t.isDark ? "rgba(255,255,255,0.06)" : "#f7f8f9" }}
           >
-            <span className="text-[12px] text-[#070808]" style={{ fontWeight: 500, ...ss04 }}>{r.range}</span>
+            <span className="text-[12px]" style={{ fontWeight: 500, ...ss04, color: t.text }}>{r.range}</span>
             <div className="flex items-center gap-1.5">
-              {r.hot && <span className="text-[8px] text-[#ff5222] bg-[#fff4ed] px-1 rounded" style={{ fontWeight: 600 }}>HOT</span>}
+              {r.hot && <span className="text-[8px] text-[#ff5222] px-1 rounded" style={{ fontWeight: 600, backgroundColor: t.orangeBg }}>HOT</span>}
               <span className="text-[12px] text-[#00bf85]" style={{ fontWeight: 600, ...ss04 }}>{r.multiplier}</span>
             </div>
           </button>
         ))}
       </div>
 
-      <div className="flex items-center justify-between w-full pt-2 mt-2 border-t border-[#f5f6f7]">
-        <span className="text-[11px] text-[#84888c]" style={ss04}>Pool: {totalPool}</span>
-        <span className="text-[10px] text-[#b0b3b8]" style={ss04}>{players} players</span>
+      <div className="flex items-center justify-between w-full pt-2 mt-2 border-t" style={{ borderColor: t.isDark ? t.cardBorder : "#f5f6f7" }}>
+        <span className="text-[11px]" style={{ ...ss04, color: t.textSec }}>Pool: {totalPool}</span>
+        <span className="text-[10px]" style={{ ...ss04, color: t.textMut }}>{players} players</span>
       </div>
     </div>
   );
 }
 
-/* ====== NEW: FOREX CARD ====== */
+/* ====== FOREX CARD ====== */
 export function ForexCard({
   author = "Luis",
   question = "USD/PHP exchange rate sa Dec 2026?",
@@ -655,8 +676,9 @@ export function ForexCard({
   tier?: 1 | 2 | 3;
   category?: string;
 }) {
+  const t = usePageTheme();
   return (
-    <div className="bg-white rounded-xl shadow-[0px_2px_20px_0px_rgba(0,0,0,0.04)] border border-[#f5f6f7] flex-1 min-w-0 flex flex-col justify-between p-4 h-full hover:shadow-[0px_4px_24px_0px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer" style={poppins}>
+    <div className="rounded-xl shadow-[0px_2px_20px_0px_rgba(0,0,0,0.04)] flex-1 min-w-0 flex flex-col justify-between p-4 h-full hover:shadow-[0px_4px_24px_0px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer" style={{ ...poppins, backgroundColor: t.card, border: `1px solid ${t.cardBorder}` }}>
       <div className="flex flex-col gap-3 w-full">
         <CardHeader author={author} endTime={endTime} avatarIdx={avatarIdx} tier={tier} category={category} />
         <div className="flex gap-2.5 items-start w-full">
@@ -665,17 +687,17 @@ export function ForexCard({
               <ImageWithFallback src={image} alt="" className="size-full object-cover" />
             </div>
           )}
-          <div className="flex-1 min-w-0 text-[13px] text-[#070808] leading-[1.45]" style={{ fontWeight: 500, ...ss04 }}>
+          <div className="flex-1 min-w-0 text-[13px] leading-[1.45]" style={{ fontWeight: 500, ...ss04, color: t.text }}>
             <p>{question}</p>
           </div>
         </div>
       </div>
       <div className="flex flex-col gap-3 w-full mt-3">
         <div className="flex gap-2.5 w-full">
-          <button className="bg-[#e6fff3] hover:bg-[#ccf5e4] flex-1 h-11 rounded-lg flex items-center justify-center transition-colors cursor-pointer">
+          <button className="flex-1 h-11 rounded-lg flex items-center justify-center transition-colors cursor-pointer" style={{ backgroundColor: t.greenBg }}>
             <span className="text-[15px] text-[#00bf85]" style={{ fontWeight: 600, ...ss04 }}>Oo</span>
           </button>
-          <button className="bg-[#fff4ed] hover:bg-[#ffe8da] flex-1 h-11 rounded-lg flex items-center justify-center transition-colors cursor-pointer">
+          <button className="flex-1 h-11 rounded-lg flex items-center justify-center transition-colors cursor-pointer" style={{ backgroundColor: t.orangeBg }}>
             <span className="text-[15px] text-[#ff5222]" style={{ fontWeight: 600, ...ss04 }}>Hindi</span>
           </button>
         </div>

@@ -104,10 +104,10 @@ const INITIAL_ACCOUNTS: Record<string, StoredAccount> = {
       tenantName: "PredictEx Platform", status: "active", needsPasswordChange: false,
     },
   },
-  "admin@predictex.ph": {
+  "merchant@predictex.ph": {
     password: "lt123",
     user: {
-      id: "MA001", name: "Maria Santos", email: "admin@predictex.ph",
+      id: "MA001", name: "Maria Santos", email: "merchant@predictex.ph",
       role: "merchant_admin", avatar: "", lastLogin: "2026-03-13 09:10 PHT",
       merchantId: "MCH001", tenantName: "PredictEx", status: "active", needsPasswordChange: false,
     },

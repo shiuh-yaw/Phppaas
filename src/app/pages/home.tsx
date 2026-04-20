@@ -178,7 +178,7 @@ function HeroSection() {
   const t = useT();
 
   return (
-    <section className="relative w-full overflow-hidden bg-[#fafbfc]">
+    <section className="relative w-full overflow-hidden bg-[#fafbfc] dark:bg-[#0b0d14]">
       {/* Subtle geometric background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-24 -right-24 w-[500px] h-[500px] rounded-full opacity-[0.04]" style={{ background: "radial-gradient(circle, #ff5222, transparent 70%)" }} />
@@ -200,12 +200,12 @@ function HeroSection() {
               </span>
             </div>
 
-            <h1 className="text-[#070808] leading-[1.08] mb-5" style={{ fontWeight: 800, fontSize: "clamp(34px, 5vw, 54px)", ...ss, ...pp }}>
+            <h1 className="text-[#070808] dark:text-[#e4e6ea] leading-[1.08] mb-5" style={{ fontWeight: 800, fontSize: "clamp(34px, 5vw, 54px)", ...ss, ...pp }}>
               {t("home.hero.title1")}{" "}
               <span className="bg-gradient-to-r from-[#ff5222] to-[#ff8c42] bg-clip-text text-transparent">{t("home.hero.title2")}</span>
             </h1>
 
-            <p className="text-[15px] md:text-[16px] text-[#555] leading-[1.7] mb-7 max-w-[500px]" style={{ ...ss, ...pp }} dangerouslySetInnerHTML={{ __html: t("home.hero.desc") }} />
+            <p className="text-[15px] md:text-[16px] text-[#555] dark:text-[#8a8f98] leading-[1.7] mb-7 max-w-[500px]" style={{ ...ss, ...pp }} dangerouslySetInnerHTML={{ __html: t("home.hero.desc") }} />
 
             {/* CTAs */}
             <div className="flex items-center gap-3 mb-7">
@@ -219,7 +219,7 @@ function HeroSection() {
               </button>
               <button
                 onClick={() => navigate("/fast-bet")}
-                className="border border-[#e5e7eb] text-[#070808] h-[52px] px-6 rounded-xl cursor-pointer hover:border-[#ff5222]/40 hover:text-[#ff5222] transition-all"
+                className="border border-[#e5e7eb] dark:border-[#2a2d3a] text-[#070808] dark:text-[#e4e6ea] h-[52px] px-6 rounded-xl cursor-pointer hover:border-[#ff5222]/40 hover:text-[#ff5222] transition-all"
                 style={{ fontWeight: 600, fontSize: 14, ...ss, ...pp }}
               >
                 Fast Bet
@@ -227,12 +227,12 @@ function HeroSection() {
             </div>
 
             {/* Welcome bonus - cleaner */}
-            <div className="bg-white border border-[#f0f1f3] rounded-xl px-4 py-3.5 flex items-center gap-3 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
+            <div className="bg-white dark:bg-[#1a1d2e] border border-[#f0f1f3] dark:border-[#2a2d3a] rounded-xl px-4 py-3.5 flex items-center gap-3 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
               <div className="size-10 rounded-lg bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center shrink-0">
                 <EmojiIcon emoji="🎁" size={22} />
               </div>
               <div className="flex-1 min-w-0">
-                <span className="text-[13px] text-[#070808]" style={{ fontWeight: 700, ...pp }}>{t("home.hero.welcomeBonus")} <span className="text-[#ff5222]">₱600 {t("home.hero.free")}</span></span>
+                <span className="text-[13px] text-[#070808] dark:text-[#e4e6ea]" style={{ fontWeight: 700, ...pp }}>{t("home.hero.welcomeBonus")} <span className="text-[#ff5222]">₱600 {t("home.hero.free")}</span></span>
                 <p className="text-[11px] text-[#84888c]" style={pp}>{t("home.hero.welcomeDesc")}</p>
               </div>
               <button onClick={() => navigate("/signup")} className="bg-[#ff5222] text-white text-[11px] px-3 py-1.5 rounded-lg shrink-0 cursor-pointer hover:bg-[#e84a1e] transition-colors hidden sm:block" style={{ fontWeight: 600, ...pp }}>{t("home.hero.claim")}</button>
@@ -242,7 +242,7 @@ function HeroSection() {
             <div className="flex items-center gap-2 mt-5">
               <span className="text-[11px] text-[#b0b3b8]" style={{ fontWeight: 500, ...pp }}>{t("home.hero.depositVia")}</span>
               {["GCash", "Maya", "Bank"].map(m => (
-                <span key={m} className="text-[10px] text-[#84888c] border border-[#e5e7eb] px-2.5 py-1 rounded-md" style={{ fontWeight: 600, ...pp }}>{m}</span>
+                <span key={m} className="text-[10px] text-[#84888c] border border-[#e5e7eb] dark:border-[#2a2d3a] px-2.5 py-1 rounded-md" style={{ fontWeight: 600, ...pp }}>{m}</span>
               ))}
             </div>
           </div>
@@ -346,7 +346,7 @@ function LiveTicker() {
   ];
   const doubled = [...items, ...items];
   return (
-    <div className="bg-white border-y border-[#f0f1f3] overflow-hidden">
+    <div className="bg-white dark:bg-[#0f1117] border-y border-[#f0f1f3] dark:border-[#2a2d3a] overflow-hidden">
       <div className="flex items-center">
         <div className="shrink-0 flex items-center gap-1.5 px-4 py-2.5 bg-[#ff5222] z-10">
           <span className="size-[6px] bg-white rounded-full animate-pulse" />
@@ -372,31 +372,31 @@ function GameCategories() {
   const navigate = useNavigate();
   const t = useT();
   const categories = [
-    { Icon: BasketballIcon, name: "Basketball", sub: "PBA, NBA, UAAP", route: "/category/basketball", color: "#ea580c", bg: "bg-orange-50/60", hot: true, bettors: "8.2K", live: 5 },
-    { Icon: DiceIcon, name: "Color Game", sub: "Perya classic na digital!", route: "/category/color-game", color: "#dc2626", bg: "bg-red-50/60", hot: true, bettors: "6.1K", live: 8 },
-    { Icon: BoxingIcon, name: "Boxing", sub: "Donaire, Pacquiao legacy", route: "/category/boxing", color: "#b91c1c", bg: "bg-red-50/50", hot: true, bettors: "3.9K", live: 2 },
-    { Icon: EsportsIcon, name: "Esports", sub: "MLBB, Valorant, Dota 2", route: "/category/esports", color: "#6366f1", bg: "bg-indigo-50/60", hot: false, bettors: "5.7K", live: 6 },
-    { Icon: BingoIcon, name: "Bingo", sub: "Classic bingo, digital!", route: "/category/bingo", color: "#0891b2", bg: "bg-cyan-50/60", hot: false, bettors: "2.9K", live: 4 },
-    { Icon: LotteryIcon, name: "Lottery", sub: "6/45, 6/49, 6/58", route: "/category/lottery", color: "#7c3aed", bg: "bg-violet-50/60", hot: false, bettors: "4.2K", live: 3 },
-    { Icon: ShowbizIcon, name: "Showbiz", sub: "Celebrity predictions", route: "/category/showbiz", color: "#ec4899", bg: "bg-pink-50/60", hot: false, bettors: "3.5K", live: 4 },
-    { Icon: WeatherIcon, name: "Weather", sub: "Typhoon, temp forecasts", route: "/category/weather", color: "#0284c7", bg: "bg-sky-50/60", hot: false, bettors: "1.9K", live: 3 },
-    { Icon: EconomyIcon, name: "Economy", sub: "PSEi, USD/PHP, inflation", route: "/category/economy", color: "#059669", bg: "bg-emerald-50/60", hot: false, bettors: "2.1K", live: 2 },
+    { Icon: BasketballIcon, name: "Basketball", sub: "PBA, NBA, UAAP", route: "/category/basketball", color: "#ea580c", bg: "bg-orange-50/60 dark:bg-orange-950/40", hot: true, bettors: "8.2K", live: 5 },
+    { Icon: DiceIcon, name: "Color Game", sub: "Perya classic na digital!", route: "/category/color-game", color: "#dc2626", bg: "bg-red-50/60 dark:bg-red-950/40", hot: true, bettors: "6.1K", live: 8 },
+    { Icon: BoxingIcon, name: "Boxing", sub: "Donaire, Pacquiao legacy", route: "/category/boxing", color: "#b91c1c", bg: "bg-red-50/50 dark:bg-red-950/30", hot: true, bettors: "3.9K", live: 2 },
+    { Icon: EsportsIcon, name: "Esports", sub: "MLBB, Valorant, Dota 2", route: "/category/esports", color: "#6366f1", bg: "bg-indigo-50/60 dark:bg-indigo-950/40", hot: false, bettors: "5.7K", live: 6 },
+    { Icon: BingoIcon, name: "Bingo", sub: "Classic bingo, digital!", route: "/category/bingo", color: "#0891b2", bg: "bg-cyan-50/60 dark:bg-cyan-950/40", hot: false, bettors: "2.9K", live: 4 },
+    { Icon: LotteryIcon, name: "Lottery", sub: "6/45, 6/49, 6/58", route: "/category/lottery", color: "#7c3aed", bg: "bg-violet-50/60 dark:bg-violet-950/40", hot: false, bettors: "4.2K", live: 3 },
+    { Icon: ShowbizIcon, name: "Showbiz", sub: "Celebrity predictions", route: "/category/showbiz", color: "#ec4899", bg: "bg-pink-50/60 dark:bg-pink-950/40", hot: false, bettors: "3.5K", live: 4 },
+    { Icon: WeatherIcon, name: "Weather", sub: "Typhoon, temp forecasts", route: "/category/weather", color: "#0284c7", bg: "bg-sky-50/60 dark:bg-sky-950/40", hot: false, bettors: "1.9K", live: 3 },
+    { Icon: EconomyIcon, name: "Economy", sub: "PSEi, USD/PHP, inflation", route: "/category/economy", color: "#059669", bg: "bg-emerald-50/60 dark:bg-emerald-950/40", hot: false, bettors: "2.1K", live: 2 },
   ];
 
   return (
-    <section className="w-full py-12 md:py-16 bg-white">
+    <section className="w-full py-12 md:py-16 bg-white dark:bg-[#0f1117]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-8 md:mb-10">
           <SectionLabel emoji="🎮" text={t("home.categories.label")} />
-          <h2 className="text-[26px] md:text-[32px] text-[#070808] mt-3 mb-2" style={{ fontWeight: 800, ...ss, ...pp }}>{t("home.categories.title")}</h2>
-          <p className="text-[14px] text-[#84888c]" style={{ ...ss, ...pp }}>{t("home.categories.subtitle")}</p>
+          <h2 className="text-[26px] md:text-[32px] text-[#070808] dark:text-[#e4e6ea] mt-3 mb-2" style={{ fontWeight: 800, ...ss, ...pp }}>{t("home.categories.title")}</h2>
+          <p className="text-[14px] text-[#84888c] dark:text-[#8a8f98]" style={{ ...ss, ...pp }}>{t("home.categories.subtitle")}</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {categories.map((cat, i) => (
             <button
               key={cat.route}
               onClick={() => navigate(cat.route)}
-              className={`${cat.bg} border border-[#f0f1f3] rounded-2xl p-5 text-left cursor-pointer transition-all hover:shadow-[0_8px_28px_rgba(0,0,0,0.07)] hover:-translate-y-0.5 group`}
+              className={`${cat.bg} border border-[#f0f1f3] dark:border-[#2a2d3a] rounded-2xl p-5 text-left cursor-pointer transition-all hover:shadow-[0_8px_28px_rgba(0,0,0,0.07)] dark:hover:shadow-[0_8px_28px_rgba(0,0,0,0.3)] hover:-translate-y-0.5 group`}
               style={{ animation: `slide-up 0.35s ease-out ${i * 0.04}s both` }}
             >
               <div className="flex items-start justify-between mb-3">
@@ -408,10 +408,10 @@ function GameCategories() {
                   </span>
                 </div>
               </div>
-              <h3 className="text-[17px] text-[#070808] mb-0.5 group-hover:text-[#ff5222] transition-colors" style={{ fontWeight: 700, ...ss, ...pp }}>{cat.name}</h3>
-              <p className="text-[12px] text-[#84888c] mb-3" style={pp}>{cat.sub}</p>
+              <h3 className="text-[17px] text-[#070808] dark:text-[#e4e6ea] mb-0.5 group-hover:text-[#ff5222] transition-colors" style={{ fontWeight: 700, ...ss, ...pp }}>{cat.name}</h3>
+              <p className="text-[12px] text-[#84888c] dark:text-[#6b7280] mb-3" style={pp}>{cat.sub}</p>
               <div className="flex items-center justify-between">
-                <span className="text-[11px] text-[#b0b3b8]" style={pp}>{cat.bettors} {t("home.categories.bettors")}</span>
+                <span className="text-[11px] text-[#b0b3b8] dark:text-[#6b7280]" style={pp}>{cat.bettors} {t("home.categories.bettors")}</span>
                 <span className="text-[11px] text-[#ff5222] group-hover:translate-x-0.5 transition-transform" style={{ fontWeight: 600, ...pp }}>{t("home.categories.betNow")}</span>
               </div>
             </button>
@@ -436,14 +436,14 @@ function TrendingMarkets() {
   ];
 
   return (
-    <section className="w-full py-12 md:py-16 bg-[#fafbfc]">
+    <section className="w-full py-12 md:py-16 bg-[#fafbfc] dark:bg-[#0b0d14]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-8">
           <div>
             <SectionLabel emoji="🔥" text={t("home.trending.label")} />
-            <h2 className="text-[26px] md:text-[30px] text-[#070808] mt-3" style={{ fontWeight: 800, ...ss, ...pp }}>{t("home.trending.title")}</h2>
+            <h2 className="text-[26px] md:text-[30px] text-[#070808] dark:text-[#e4e6ea] mt-3" style={{ fontWeight: 800, ...ss, ...pp }}>{t("home.trending.title")}</h2>
           </div>
-          <button onClick={() => navigate("/markets")} className="border border-[#e5e7eb] text-[#070808] text-[13px] h-10 px-5 rounded-lg cursor-pointer hover:border-[#ff5222]/40 hover:text-[#ff5222] transition-colors" style={{ fontWeight: 500, ...ss, ...pp }}>
+          <button onClick={() => navigate("/markets")} className="border border-[#e5e7eb] dark:border-[#2a2d3a] text-[#070808] dark:text-[#e4e6ea] text-[13px] h-10 px-5 rounded-lg cursor-pointer hover:border-[#ff5222]/40 hover:text-[#ff5222] transition-colors" style={{ fontWeight: 500, ...ss, ...pp }}>
             {t("home.trending.viewAll")}
           </button>
         </div>
@@ -452,12 +452,12 @@ function TrendingMarkets() {
             <div
               key={i}
               onClick={() => m.slug && navigate(`/market/${m.slug}`)}
-              className="bg-white border border-[#f0f1f3] rounded-xl overflow-hidden cursor-pointer transition-all hover:shadow-[0_8px_28px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 group"
+              className="bg-white dark:bg-[#1a1d2e] border border-[#f0f1f3] dark:border-[#2a2d3a] rounded-xl overflow-hidden cursor-pointer transition-all hover:shadow-[0_8px_28px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_8px_28px_rgba(0,0,0,0.3)] hover:-translate-y-0.5 group"
               style={{ animation: `slide-up 0.35s ease-out ${i * 0.06}s both` }}
             >
               <div className="relative h-[120px] overflow-hidden">
                 <ImageWithFallback src={m.image} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-white/80 dark:from-[#1a1d2e]/90 via-transparent to-transparent" />
                 <div className="absolute top-3 left-3 flex items-center gap-1.5">
                   <span className="text-[10px] px-2 py-0.5 rounded bg-white/90 backdrop-blur-sm shadow-sm" style={{ fontWeight: 600, color: m.tagColor, ...pp }}>{m.tag}</span>
                   {m.isLive && (
@@ -468,7 +468,7 @@ function TrendingMarkets() {
                 </div>
               </div>
               <div className="p-4">
-                <p className="text-[13px] text-[#070808] leading-[1.4] mb-3 line-clamp-2" style={{ fontWeight: 600, ...ss, ...pp }}>{m.title}</p>
+                <p className="text-[13px] text-[#070808] dark:text-[#e4e6ea] leading-[1.4] mb-3 line-clamp-2" style={{ fontWeight: 600, ...ss, ...pp }}>{m.title}</p>
                 <div className="flex gap-1.5 mb-3">
                   {m.odds.map((o, j) => (
                     <button key={j} className="flex-1 h-9 rounded-lg flex flex-col items-center justify-center transition-colors cursor-pointer hover:opacity-80" style={{ backgroundColor: `${o.color}06`, border: `1px solid ${o.color}12` }}>
@@ -477,7 +477,7 @@ function TrendingMarkets() {
                     </button>
                   ))}
                 </div>
-                <div className="flex items-center justify-between pt-2.5 border-t border-[#f5f6f7]">
+                <div className="flex items-center justify-between pt-2.5 border-t border-[#f5f6f7] dark:border-[#2a2d3a]">
                   <span className="text-[10px] text-[#b0b3b8]" style={{ fontWeight: 500, ...pp }}>{m.volume} vol</span>
                   <span className="text-[10px] text-[#b0b3b8]" style={pp}>{m.bettors} bettors</span>
                 </div>
@@ -495,7 +495,7 @@ function PromoBanners() {
   const navigate = useNavigate();
   const t = useT();
   return (
-    <section className="w-full py-10 md:py-12 bg-white">
+    <section className="w-full py-10 md:py-12 bg-white dark:bg-[#0f1117]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Color Game */}
@@ -541,24 +541,24 @@ function HowItWorks() {
   ];
 
   return (
-    <section className="w-full py-14 md:py-20 bg-[#fafbfc]">
+    <section className="w-full py-14 md:py-20 bg-[#fafbfc] dark:bg-[#0b0d14]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-10 md:mb-12">
           <SectionLabel emoji="📖" text={t("home.howItWorks.label")} />
-          <h2 className="text-[26px] md:text-[32px] text-[#070808] mt-3 mb-2" style={{ fontWeight: 800, ...ss, ...pp }}>{t("home.howItWorks.title")}</h2>
-          <p className="text-[14px] text-[#84888c]" style={{ ...ss, ...pp }}>{t("home.howItWorks.subtitle")}</p>
+          <h2 className="text-[26px] md:text-[32px] text-[#070808] dark:text-[#e4e6ea] mt-3 mb-2" style={{ fontWeight: 800, ...ss, ...pp }}>{t("home.howItWorks.title")}</h2>
+          <p className="text-[14px] text-[#84888c] dark:text-[#8a8f98]" style={{ ...ss, ...pp }}>{t("home.howItWorks.subtitle")}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {steps.map((s, i) => (
-            <div key={s.step} className="bg-white border border-[#f0f1f3] rounded-2xl p-8 text-center hover:shadow-[0_8px_28px_rgba(0,0,0,0.06)] transition-all relative" style={{ animation: `slide-up 0.35s ease-out ${i * 0.08}s both` }}>
+            <div key={s.step} className="bg-white dark:bg-[#1a1d2e] border border-[#f0f1f3] dark:border-[#2a2d3a] rounded-2xl p-8 text-center hover:shadow-[0_8px_28px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_8px_28px_rgba(0,0,0,0.3)] transition-all relative" style={{ animation: `slide-up 0.35s ease-out ${i * 0.08}s both` }}>
               {/* Step connector line (desktop only) */}
-              {i < 2 && <div className="hidden md:block absolute top-1/2 -right-3 w-6 border-t-2 border-dashed border-[#e5e7eb]" />}
+              {i < 2 && <div className="hidden md:block absolute top-1/2 -right-3 w-6 border-t-2 border-dashed border-[#e5e7eb] dark:border-[#2a2d3a]" />}
               <div className="mb-5 flex justify-center"><EmojiIcon emoji={s.emoji} size={44} /></div>
               <div className="inline-flex items-center justify-center size-8 rounded-full mb-3" style={{ background: `${s.color}10` }}>
                 <span className="text-[14px]" style={{ fontWeight: 800, color: s.color, ...pp }}>{s.step}</span>
               </div>
-              <h3 className="text-[17px] text-[#070808] mb-2" style={{ fontWeight: 700, ...ss, ...pp }}>{s.title}</h3>
-              <p className="text-[13px] text-[#84888c] leading-[1.6]" style={{ ...ss, ...pp }}>{s.desc}</p>
+              <h3 className="text-[17px] text-[#070808] dark:text-[#e4e6ea] mb-2" style={{ fontWeight: 700, ...ss, ...pp }}>{s.title}</h3>
+              <p className="text-[13px] text-[#84888c] dark:text-[#8a8f98] leading-[1.6]" style={{ ...ss, ...pp }}>{s.desc}</p>
             </div>
           ))}
         </div>
@@ -571,9 +571,9 @@ function HowItWorks() {
 function TrustSection() {
   const t = useT();
   return (
-    <section className="w-full py-10 bg-white">
+    <section className="w-full py-10 bg-white dark:bg-[#0f1117]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 bg-[#fafbfc] rounded-2xl border border-[#f0f1f3] px-5 md:px-8 py-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 bg-[#fafbfc] dark:bg-[#1a1d2e] rounded-2xl border border-[#f0f1f3] dark:border-[#2a2d3a] px-5 md:px-8 py-6">
           {[
             { emoji: "🛡️", label: t("home.trust.pagcor"), sub: t("home.trust.pagcorSub") },
             { emoji: "💳", label: t("home.trust.gcash"), sub: t("home.trust.gcashSub") },
@@ -584,7 +584,7 @@ function TrustSection() {
             <div key={i} className="flex items-center gap-3">
               <EmojiIcon emoji={item.emoji} size={26} />
               <div>
-                <p className="text-[12px] md:text-[13px] text-[#070808]" style={{ fontWeight: 700, ...pp }}>{item.label}</p>
+                <p className="text-[12px] md:text-[13px] text-[#070808] dark:text-[#e4e6ea]" style={{ fontWeight: 700, ...pp }}>{item.label}</p>
                 <p className="text-[10px] md:text-[11px] text-[#b0b3b8]" style={pp}>{item.sub}</p>
               </div>
             </div>
@@ -600,20 +600,20 @@ function CreatorSection() {
   const navigate = useNavigate();
   const t = useT();
   return (
-    <section className="w-full py-14 md:py-20 bg-white">
+    <section className="w-full py-14 md:py-20 bg-white dark:bg-[#0f1117]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 flex flex-col md:flex-row gap-8 md:gap-14 items-center">
         <div className="flex-1 flex flex-col gap-4">
           <SectionLabel emoji="💡" text={t("home.creator.label")} />
-          <h2 className="text-[28px] md:text-[36px] text-[#070808] leading-[1.12]" style={{ fontWeight: 800, ...ss, ...pp }}>
+          <h2 className="text-[28px] md:text-[36px] text-[#070808] dark:text-[#e4e6ea] leading-[1.12]" style={{ fontWeight: 800, ...ss, ...pp }}>
             {t("home.creator.title1")}{" "}
             <span className="text-[#ff5222]">{t("home.creator.title2")}</span>
           </h2>
-          <p className="text-[14px] text-[#555] leading-[1.7] max-w-[460px]" style={{ ...ss, ...pp }} dangerouslySetInnerHTML={{ __html: t("home.creator.desc") }} />
+          <p className="text-[14px] text-[#555] dark:text-[#8a8f98] leading-[1.7] max-w-[460px]" style={{ ...ss, ...pp }} dangerouslySetInnerHTML={{ __html: t("home.creator.desc") }} />
           <div className="flex gap-3 mt-3">
             <button onClick={() => navigate("/creator")} className="bg-[#ff5222] text-white text-[14px] h-11 px-6 rounded-xl cursor-pointer hover:bg-[#e84a1e] transition-colors" style={{ fontWeight: 700, ...ss, ...pp }}>
               {t("home.creator.cta")}
             </button>
-            <button onClick={() => navigate("/creator")} className="border border-[#e5e7eb] text-[#070808] text-[14px] h-11 px-6 rounded-xl cursor-pointer hover:border-[#ff5222]/30 transition-colors" style={{ fontWeight: 500, ...ss, ...pp }}>
+            <button onClick={() => navigate("/creator")} className="border border-[#e5e7eb] dark:border-[#2a2d3a] text-[#070808] dark:text-[#e4e6ea] text-[14px] h-11 px-6 rounded-xl cursor-pointer hover:border-[#ff5222]/30 transition-colors" style={{ fontWeight: 500, ...ss, ...pp }}>
               {t("home.creator.learnMore")}
             </button>
           </div>
@@ -645,19 +645,19 @@ function RewardsSection() {
   ];
 
   return (
-    <section className="w-full py-14 md:py-20 bg-[#fafbfc]">
+    <section className="w-full py-14 md:py-20 bg-[#fafbfc] dark:bg-[#0b0d14]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="flex flex-col-reverse md:flex-row gap-8 md:gap-14 items-center">
           {/* Reward cards */}
           <div className="flex-1 w-full">
             <div className="flex flex-col gap-3 max-w-[480px]">
               {rewards.map((r, i) => (
-                <div key={i} className="flex items-center gap-4 px-4 py-3.5 rounded-xl border border-[#f0f1f3] bg-white shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-shadow" style={{ animation: `slide-right 0.35s ease-out ${i * 0.08}s both` }}>
-                  <div className="size-10 rounded-lg bg-[#fafbfc] border border-[#f0f1f3] flex items-center justify-center shrink-0">
+                <div key={i} className="flex items-center gap-4 px-4 py-3.5 rounded-xl border border-[#f0f1f3] dark:border-[#2a2d3a] bg-white dark:bg-[#1a1d2e] shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_4px_16px_rgba(0,0,0,0.3)] transition-shadow" style={{ animation: `slide-right 0.35s ease-out ${i * 0.08}s both` }}>
+                  <div className="size-10 rounded-lg bg-[#fafbfc] dark:bg-[#252836] border border-[#f0f1f3] dark:border-[#2a2d3a] flex items-center justify-center shrink-0">
                     <r.Icon size={24} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <span className="text-[13px] text-[#070808] block" style={{ fontWeight: 600, ...ss, ...pp }}>{r.title}</span>
+                    <span className="text-[13px] text-[#070808] dark:text-[#e4e6ea] block" style={{ fontWeight: 600, ...ss, ...pp }}>{r.title}</span>
                     <span className="text-[11px] text-[#ff5222]" style={{ fontWeight: 600, ...pp }}>{r.amount}</span>
                   </div>
                   <span className="text-[10px] px-2.5 py-1 rounded-full shrink-0" style={{ background: r.statusBg, color: r.statusColor, fontWeight: 600, ...pp }}>{r.status}</span>
@@ -669,16 +669,16 @@ function RewardsSection() {
           {/* CTA */}
           <div className="flex-1 flex flex-col gap-4">
             <SectionLabel emoji="🎁" text={t("home.rewards.label")} />
-            <h2 className="text-[28px] md:text-[36px] text-[#070808] leading-[1.12]" style={{ fontWeight: 800, ...ss, ...pp }}>
+            <h2 className="text-[28px] md:text-[36px] text-[#070808] dark:text-[#e4e6ea] leading-[1.12]" style={{ fontWeight: 800, ...ss, ...pp }}>
               {t("home.rewards.title1")}{" "}
               <span className="text-[#ff5222]">{t("home.rewards.title2")}</span>
             </h2>
-            <p className="text-[14px] text-[#555] leading-[1.7] max-w-[460px]" style={{ ...ss, ...pp }} dangerouslySetInnerHTML={{ __html: t("home.rewards.desc") }} />
+            <p className="text-[14px] text-[#555] dark:text-[#8a8f98] leading-[1.7] max-w-[460px]" style={{ ...ss, ...pp }} dangerouslySetInnerHTML={{ __html: t("home.rewards.desc") }} />
             <div className="flex items-center gap-3 mt-2">
               <button onClick={() => navigate("/rewards")} className="bg-[#ff5222] text-white text-[14px] h-11 px-6 rounded-xl cursor-pointer hover:bg-[#e84a1e] transition-colors" style={{ fontWeight: 700, ...ss, ...pp }}>
                 {t("home.rewards.cta")}
               </button>
-              <span className="text-[11px] text-[#b0b3b8] border border-[#e5e7eb] rounded-lg px-3 py-2 hidden sm:flex items-center gap-1.5" style={{ fontWeight: 500, ...pp }}>
+              <span className="text-[11px] text-[#b0b3b8] border border-[#e5e7eb] dark:border-[#2a2d3a] rounded-lg px-3 py-2 hidden sm:flex items-center gap-1.5" style={{ fontWeight: 500, ...pp }}>
                 PHP Only — GCash & Maya
               </span>
             </div>
@@ -699,26 +699,26 @@ function Testimonials() {
   ];
 
   return (
-    <section className="w-full py-12 md:py-16 bg-white">
+    <section className="w-full py-12 md:py-16 bg-white dark:bg-[#0f1117]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-8 md:mb-10">
           <SectionLabel emoji="💬" text={t("home.testimonials.label")} />
-          <h2 className="text-[26px] md:text-[30px] text-[#070808] mt-3" style={{ fontWeight: 800, ...ss, ...pp }}>{t("home.testimonials.title")}</h2>
+          <h2 className="text-[26px] md:text-[30px] text-[#070808] dark:text-[#e4e6ea] mt-3" style={{ fontWeight: 800, ...ss, ...pp }}>{t("home.testimonials.title")}</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {testimonials.map((item, i) => (
-            <div key={i} className="bg-white border border-[#f0f1f3] rounded-2xl p-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-shadow" style={{ animation: `slide-up 0.35s ease-out ${i * 0.08}s both` }}>
+            <div key={i} className="bg-white dark:bg-[#1a1d2e] border border-[#f0f1f3] dark:border-[#2a2d3a] rounded-2xl p-5 shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] dark:hover:shadow-[0_4px_16px_rgba(0,0,0,0.3)] transition-shadow" style={{ animation: `slide-up 0.35s ease-out ${i * 0.08}s both` }}>
               <div className="flex items-center gap-3 mb-4">
                 <div className="size-10 rounded-full overflow-hidden ring-2 ring-[#ff5222]/8">
                   <ImageWithFallback src={item.avatar} alt="" className="size-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <span className="text-[13px] text-[#070808] block" style={{ fontWeight: 600, ...ss }}>{item.name}</span>
+                  <span className="text-[13px] text-[#070808] dark:text-[#e4e6ea] block" style={{ fontWeight: 600, ...ss }}>{item.name}</span>
                   <span className="text-[11px] text-[#b0b3b8]" style={ss}>{item.handle}</span>
                 </div>
-                <span className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full shrink-0" style={{ fontWeight: 600, ...pp }}>{t("home.testimonials.won")} {item.won}</span>
+                <span className="text-[10px] bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full shrink-0" style={{ fontWeight: 600, ...pp }}>{t("home.testimonials.won")} {item.won}</span>
               </div>
-              <p className="text-[13px] text-[#555] leading-[1.6] mb-3" style={{ ...ss, ...pp }}>{item.text}</p>
+              <p className="text-[13px] text-[#555] dark:text-[#8a8f98] leading-[1.6] mb-3" style={{ ...ss, ...pp }}>{item.text}</p>
               <div className="flex gap-0.5">
                 {[1, 2, 3, 4, 5].map(s => <span key={s} className="text-[13px]">⭐</span>)}
               </div>
@@ -742,24 +742,24 @@ function FAQSection() {
     { q: t("home.faq.q5"), a: t("home.faq.a5") },
   ];
   return (
-    <section className="w-full py-14 md:py-20 bg-[#fafbfc]">
+    <section className="w-full py-14 md:py-20 bg-[#fafbfc] dark:bg-[#0b0d14]">
       <div className="max-w-[760px] mx-auto px-4 md:px-6">
         <div className="text-center mb-8 md:mb-10">
           <SectionLabel emoji="❓" text="FAQ" />
-          <h2 className="text-[26px] md:text-[30px] text-[#070808] mt-3" style={{ fontWeight: 800, ...ss, ...pp }}>{t("home.faq.title")}</h2>
+          <h2 className="text-[26px] md:text-[30px] text-[#070808] dark:text-[#e4e6ea] mt-3" style={{ fontWeight: 800, ...ss, ...pp }}>{t("home.faq.title")}</h2>
         </div>
-        <div className="bg-white rounded-2xl border border-[#f0f1f3] overflow-hidden">
+        <div className="bg-white dark:bg-[#1a1d2e] rounded-2xl border border-[#f0f1f3] dark:border-[#2a2d3a] overflow-hidden">
           {faqLocalized.map((item, i) => (
-            <div key={i} className={i < faqLocalized.length - 1 ? "border-b border-[#f5f6f7]" : ""}>
-              <button className="flex items-center justify-between py-4 px-5 w-full cursor-pointer group hover:bg-[#fafbfc] transition-colors" onClick={() => setOpenIdx(openIdx === i ? null : i)}>
-                <span className="text-[14px] text-[#333] text-left group-hover:text-[#070808] transition-colors" style={{ fontWeight: 500, ...ss, ...pp }}>{item.q}</span>
-                <div className={`size-5 shrink-0 ml-4 transition-transform flex items-center justify-center rounded-full ${openIdx === i ? "rotate-180 bg-[#ff5222]/8" : "bg-[#f5f6f7]"}`}>
+            <div key={i} className={i < faqLocalized.length - 1 ? "border-b border-[#f5f6f7] dark:border-[#2a2d3a]" : ""}>
+              <button className="flex items-center justify-between py-4 px-5 w-full cursor-pointer group hover:bg-[#fafbfc] dark:hover:bg-[#252836] transition-colors" onClick={() => setOpenIdx(openIdx === i ? null : i)}>
+                <span className="text-[14px] text-[#333] dark:text-[#c8cad0] text-left group-hover:text-[#070808] dark:group-hover:text-[#e4e6ea] transition-colors" style={{ fontWeight: 500, ...ss, ...pp }}>{item.q}</span>
+                <div className={`size-5 shrink-0 ml-4 transition-transform flex items-center justify-center rounded-full ${openIdx === i ? "rotate-180 bg-[#ff5222]/8" : "bg-[#f5f6f7] dark:bg-[#252836]"}`}>
                   <svg className="size-3" fill="none" viewBox="0 0 12 8"><path d="M1 1.5L6 6.5L11 1.5" stroke={openIdx === i ? "#ff5222" : "#b0b3b8"} strokeWidth="2" strokeLinecap="round" /></svg>
                 </div>
               </button>
               {openIdx === i && (
                 <div className="px-5 pb-4">
-                  <p className="text-[13px] text-[#84888c] leading-[1.7]" style={{ ...ss, ...pp }}>{item.a}</p>
+                  <p className="text-[13px] text-[#84888c] dark:text-[#8a8f98] leading-[1.7]" style={{ ...ss, ...pp }}>{item.a}</p>
                 </div>
               )}
             </div>
@@ -811,7 +811,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="bg-white flex flex-col min-h-screen w-full pb-16 md:pb-0" style={pp}>
+    <div className="bg-white dark:bg-[#0f1117] flex flex-col min-h-screen w-full pb-16 md:pb-0" style={pp}>
       <style>{keyframes}</style>
       <HomeHeader onDeposit={openDeposit} />
       <HeroSection />

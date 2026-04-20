@@ -19,6 +19,7 @@ import { Footer } from "../components/footer";
 import { DepositWithdrawModal, type ModalTheme } from "../components/deposit-withdraw-modal";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { EmojiIcon } from "../components/two-tone-icons";
+import { usePageTheme, toModalTheme } from "../components/theme-utils";
 
 const ss04 = { fontFeatureSettings: "'ss04'" };
 const pp = { fontFamily: "'Poppins', sans-serif" };
@@ -46,10 +47,12 @@ const keyframes = `
 function FeaturedHeroCard() {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
+  const theme = usePageTheme();
+  const dk = theme.isDark;
   return (
     <div
-      className="relative w-full rounded-2xl overflow-hidden cursor-pointer bg-white"
-      style={{ minHeight: 220, animation: "pulse-glow 3s ease-in-out infinite", border: "1px solid #f0f1f3" }}
+      className="relative w-full rounded-2xl overflow-hidden cursor-pointer"
+      style={{ minHeight: 220, animation: "pulse-glow 3s ease-in-out infinite", border: `1px solid ${dk ? theme.cardBorder : "#f0f1f3"}`, backgroundColor: dk ? theme.card : "#fff" }}
       onClick={() => navigate("/market/pba-finals")}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -60,47 +63,44 @@ function FeaturedHeroCard() {
         className="absolute inset-0 w-full h-full object-cover"
         style={{ transform: hovered ? "scale(1.03)" : "scale(1)", transition: "transform 0.6s ease" }}
       />
-      <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.78) 40%, rgba(255,82,34,0.06) 100%)" }} />
+      <div className="absolute inset-0" style={{ background: dk ? "linear-gradient(135deg, rgba(22,23,26,0.94) 0%, rgba(22,23,26,0.82) 40%, rgba(255,82,34,0.08) 100%)" : "linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.78) 40%, rgba(255,82,34,0.06) 100%)" }} />
 
       <div className="relative z-10 h-full flex flex-col justify-between p-4 sm:p-6 gap-3">
-        {/* Top badges */}
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <span className="flex items-center gap-1.5 bg-[#ff5222] text-white text-[10px] px-2.5 py-1 rounded-full" style={{ fontWeight: 700, animation: "live-ring 1.5s ease-out infinite", ...ss04 }}>
             <span className="size-1.5 bg-white rounded-full animate-pulse" /> LIVE NOW
           </span>
-          <span className="bg-[#070808]/6 backdrop-blur-sm text-[#070808] text-[10px] px-2 py-1 rounded-full inline-flex items-center gap-1" style={{ fontWeight: 600, ...ss04 }}><EmojiIcon emoji="🏀" size={12} /> PBA Philippine Cup</span>
+          <span className="backdrop-blur-sm text-[10px] px-2 py-1 rounded-full inline-flex items-center gap-1" style={{ fontWeight: 600, ...ss04, backgroundColor: dk ? "rgba(255,255,255,0.1)" : "rgba(7,8,8,0.06)", color: theme.text }}><EmojiIcon emoji="🏀" size={12} /> PBA Philippine Cup</span>
           <span className="bg-[#ff5222]/10 text-[#ff5222] text-[10px] px-2 py-1 rounded-full inline-flex items-center gap-1" style={{ fontWeight: 700, ...ss04 }}><EmojiIcon emoji="🔥" size={12} /> TRENDING #1</span>
           <div className="hidden sm:flex items-center gap-2 ml-auto">
-            <span className="text-[#84888c] text-[11px]" style={ss04}>Q3 · 4:23</span>
-            <span className="bg-[#070808]/5 text-[#84888c] text-[10px] px-2 py-1 rounded" style={ss04}>1,240 bettors</span>
+            <span className="text-[11px]" style={{ ...ss04, color: theme.textSec }}>Q3 · 4:23</span>
+            <span className="text-[10px] px-2 py-1 rounded" style={{ ...ss04, backgroundColor: dk ? "rgba(255,255,255,0.06)" : "rgba(7,8,8,0.05)", color: theme.textSec }}>1,240 bettors</span>
           </div>
         </div>
 
-        {/* Middle - VS Section */}
         <div className="flex items-center justify-center gap-4 sm:gap-6">
           <div className="flex flex-col items-center gap-1" style={{ animation: "float-up 0.5s ease-out" }}>
             <div className="size-12 sm:size-16 rounded-2xl bg-gradient-to-br from-[#f97316] to-[#dc2626] flex items-center justify-center shadow-lg" style={{ boxShadow: "0 4px 20px rgba(249,115,22,0.4)" }}>
               <EmojiIcon emoji="🏀" size={22} />
             </div>
-            <span className="text-[#070808] text-[15px] sm:text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp }}>Ginebra</span>
+            <span className="text-[15px] sm:text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp, color: theme.text }}>Ginebra</span>
             <span className="text-[#dc2626] text-[24px] sm:text-[32px]" style={{ fontWeight: 800, ...ss04, ...pp, animation: "count-pulse 2s ease-in-out infinite" }}>78</span>
           </div>
           <div className="flex flex-col items-center gap-1">
             <div className="size-10 sm:size-12 rounded-full bg-gradient-to-br from-[#ff5222] to-[#ff8c00] flex items-center justify-center shadow-xl" style={{ boxShadow: "0 0 30px rgba(255,82,34,0.4)" }}>
               <span className="text-white text-[12px] sm:text-[14px]" style={{ fontWeight: 800, ...pp }}>VS</span>
             </div>
-            <span className="text-[#b0b3b8] text-[10px]" style={{ fontWeight: 500, ...ss04 }}>GAME 7</span>
+            <span className="text-[10px]" style={{ fontWeight: 500, ...ss04, color: theme.textMut }}>GAME 7</span>
           </div>
           <div className="flex flex-col items-center gap-1" style={{ animation: "float-up 0.5s ease-out 0.1s both" }}>
             <div className="size-12 sm:size-16 rounded-2xl bg-gradient-to-br from-[#3b82f6] to-[#1d4ed8] flex items-center justify-center shadow-lg" style={{ boxShadow: "0 4px 20px rgba(59,130,246,0.4)" }}>
               <EmojiIcon emoji="🏀" size={22} />
             </div>
-            <span className="text-[#070808] text-[15px] sm:text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp }}>San Miguel</span>
+            <span className="text-[15px] sm:text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp, color: theme.text }}>San Miguel</span>
             <span className="text-[#1d4ed8] text-[24px] sm:text-[32px]" style={{ fontWeight: 800, ...ss04, ...pp, animation: "count-pulse 2s ease-in-out infinite 0.5s" }}>72</span>
           </div>
         </div>
 
-        {/* Bottom - Odds + CTA */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-2 sm:gap-3">
             <button className="bg-gradient-to-r from-[#f97316] to-[#dc2626] hover:from-[#ea580c] hover:to-[#b91c1c] text-white h-9 sm:h-11 px-4 sm:px-6 rounded-xl flex items-center gap-2 transition-all cursor-pointer flex-1 sm:flex-initial justify-center" style={{ fontWeight: 600, ...ss04, ...pp, boxShadow: "0 4px 15px rgba(249,115,22,0.4)" }}>
@@ -113,8 +113,8 @@ function FeaturedHeroCard() {
             </button>
           </div>
           <div className="flex items-center sm:items-end sm:flex-col gap-1.5 justify-between">
-            <span className="text-[#b0b3b8] text-[10px]" style={ss04}>Total Pool</span>
-            <span className="text-[#070808] text-[18px] sm:text-[22px]" style={{ fontWeight: 700, ...ss04, ...pp }}>₱320,000</span>
+            <span className="text-[10px]" style={{ ...ss04, color: theme.textMut }}>Total Pool</span>
+            <span className="text-[18px] sm:text-[22px]" style={{ fontWeight: 700, ...ss04, ...pp, color: theme.text }}>₱320,000</span>
             <span className="text-[#ff5222] text-[10px] hidden sm:inline" style={{ fontWeight: 600, ...ss04 }}>+₱18,500 sa huling 5 min</span>
           </div>
         </div>
@@ -125,6 +125,8 @@ function FeaturedHeroCard() {
 
 /* ============ HOT TICKER ============ */
 function HotTicker() {
+  const theme = usePageTheme();
+  const dk = theme.isDark;
   const items = [
     { emoji: "💰", text: "JuanBet123 nanalo ng ₱45,200 sa PBA!", hot: true },
     { emoji: "🎲", text: "Color Game Round #8832 — 128 players!", hot: false },
@@ -135,12 +137,12 @@ function HotTicker() {
   ];
   const doubled = [...items, ...items];
   return (
-    <div className="w-full overflow-hidden rounded-xl border border-[#f0f1f3]" style={{ background: "linear-gradient(90deg, #fff8f5 0%, #ffffff 50%, #f5f8ff 100%)" }}>
+    <div className="w-full overflow-hidden rounded-xl" style={{ border: `1px solid ${theme.cardBorder}`, background: dk ? theme.card : "linear-gradient(90deg, #fff8f5 0%, #ffffff 50%, #f5f8ff 100%)" }}>
       <div className="flex items-center h-10 whitespace-nowrap" style={{ animation: "marquee-scroll 30s linear infinite" }}>
         {doubled.map((item, i) => (
-          <span key={i} className="inline-flex items-center gap-1.5 px-4 text-[12px]" style={{ color: item.hot ? "#d97706" : "#84888c", fontWeight: item.hot ? 600 : 400, ...ss04, ...pp }}>
+          <span key={i} className="inline-flex items-center gap-1.5 px-4 text-[12px]" style={{ color: item.hot ? "#d97706" : theme.textSec, fontWeight: item.hot ? 600 : 400, ...ss04, ...pp }}>
             <EmojiIcon emoji={item.emoji} size={14} /> {item.text}
-            <span className="text-[#f0f1f3] mx-2">|</span>
+            <span style={{ color: theme.cardBorder }} className="mx-2">|</span>
           </span>
         ))}
       </div>
@@ -161,10 +163,12 @@ const DICE_COLORS = [
 function ColorGamePremiumCard() {
   const navigate = useNavigate();
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
+  const theme = usePageTheme();
+  const dk = theme.isDark;
   return (
     <div
-      className="flex-1 min-w-0 rounded-2xl overflow-hidden cursor-pointer relative bg-white"
-      style={{ border: "1px solid #f0f1f3", boxShadow: "0 2px 20px rgba(139,92,246,0.06)" }}
+      className="flex-1 min-w-0 rounded-2xl overflow-hidden cursor-pointer relative"
+      style={{ border: `1px solid ${theme.cardBorder}`, boxShadow: "0 2px 20px rgba(139,92,246,0.06)", backgroundColor: dk ? theme.card : "#fff" }}
       onClick={() => navigate("/fast-bet")}
     >
       {/* Animated BG particles */}
@@ -184,11 +188,11 @@ function ColorGamePremiumCard() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <EmojiIcon emoji="🎲" size={20} />
-            <span className="text-[#070808] text-[14px]" style={{ fontWeight: 700, ...ss04, ...pp }}>Color Game</span>
+            <span className="text-[14px]" style={{ fontWeight: 700, ...ss04, ...pp, color: theme.text }}>Color Game</span>
             <span className="bg-[#8b5cf6]/10 text-[#7c3aed] text-[9px] px-2 py-0.5 rounded-full" style={{ fontWeight: 700, ...ss04 }}>LIVE</span>
           </div>
           <div className="flex items-center gap-1">
-            <span className="text-[#b0b3b8] text-[11px]" style={ss04}>Round #8832</span>
+            <span className="text-[11px]" style={{ ...ss04, color: theme.textMut }}>Round #8832</span>
             <span className="bg-[#ff5222]/10 text-[#ff5222] text-[11px] px-2 py-0.5 rounded-full animate-pulse" style={{ fontWeight: 700, ...ss04 }}>0:42</span>
           </div>
         </div>
@@ -207,7 +211,7 @@ function ColorGamePremiumCard() {
                 style={{
                   background: c.color,
                   boxShadow: selectedColor === i ? `0 0 14px ${c.glow}, 0 4px 10px ${c.glow}` : "0 2px 6px rgba(0,0,0,0.08)",
-                  border: selectedColor === i ? "2.5px solid #070808" : "2.5px solid transparent",
+                  border: selectedColor === i ? `2.5px solid ${theme.text}` : "2.5px solid transparent",
                 }}
               >
                 <span className="text-[10px]" style={{ fontWeight: 700, color: "#fff", ...ss04 }}>x6</span>
@@ -219,7 +223,7 @@ function ColorGamePremiumCard() {
 
         {/* Last Results */}
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-[#b0b3b8] text-[10px]" style={ss04}>Huling resulta:</span>
+          <span className="text-[10px]" style={{ ...ss04, color: theme.textMut }}>Huling resulta:</span>
           {["Pula", "Asul", "Berde"].map((r, i) => {
             const c = DICE_COLORS.find(d => d.name === r)!;
             return <span key={i} className="size-4 rounded" style={{ background: c.color }} />;
@@ -229,8 +233,8 @@ function ColorGamePremiumCard() {
         {/* Footer */}
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
-            <span className="text-[#b0b3b8] text-[10px]" style={ss04}>Prize Pool</span>
-            <span className="text-[#070808] text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp }}>₱48,200</span>
+            <span className="text-[10px]" style={{ ...ss04, color: theme.textMut }}>Prize Pool</span>
+            <span className="text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp, color: theme.text }}>₱48,200</span>
           </div>
           <button
             className="bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] hover:from-[#7c3aed] hover:to-[#6d28d9] text-white h-9 px-5 rounded-xl text-[13px] transition-all cursor-pointer"
@@ -248,10 +252,12 @@ function ColorGamePremiumCard() {
 /* ============ JACKPOT PROMO CARD ============ */
 function JackpotPromoCard() {
   const navigate = useNavigate();
+  const theme = usePageTheme();
+  const dk = theme.isDark;
   return (
     <div
-      className="flex-1 min-w-0 rounded-2xl overflow-hidden cursor-pointer relative bg-white"
-      style={{ border: "1px solid #f0f1f3", boxShadow: "0 2px 20px rgba(217,119,6,0.06)" }}
+      className="flex-1 min-w-0 rounded-2xl overflow-hidden cursor-pointer relative"
+      style={{ border: `1px solid ${theme.cardBorder}`, boxShadow: "0 2px 20px rgba(217,119,6,0.06)", backgroundColor: dk ? theme.card : "#fff" }}
       onClick={() => navigate("/fast-bet")}
     >
       <div className="relative z-10 h-full flex flex-col justify-between p-5">
@@ -259,17 +265,17 @@ function JackpotPromoCard() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <EmojiIcon emoji="⚡" size={20} />
-            <span className="text-[#070808] text-[14px]" style={{ fontWeight: 700, ...ss04, ...pp }}>Fast Bet</span>
+            <span className="text-[14px]" style={{ fontWeight: 700, ...ss04, ...pp, color: theme.text }}>Fast Bet</span>
             <span className="text-[9px] px-2 py-0.5 rounded-full" style={{ background: "linear-gradient(90deg, #fbbf24, #f59e0b)", color: "#fff", fontWeight: 700, ...ss04 }}>HOT</span>
           </div>
-          <span className="text-[#b0b3b8] text-[11px]" style={ss04}>Every 5 min</span>
+          <span className="text-[11px]" style={{ ...ss04, color: theme.textMut }}>Every 5 min</span>
         </div>
 
         {/* Jackpot */}
         <div className="flex flex-col items-center gap-1 my-2">
           <span className="text-[#d97706] text-[10px]" style={{ fontWeight: 600, ...ss04, letterSpacing: "0.1em" }}>JACKPOT PRIZE</span>
           <span className="text-[28px] sm:text-[36px]" style={{ fontWeight: 800, animation: "jackpot-flash 2s ease-in-out infinite", ...ss04, ...pp }}>₱500,000</span>
-          <span className="text-[#b0b3b8] text-[11px]" style={ss04}>Susunod na draw: 4:23 PM</span>
+          <span className="text-[11px]" style={{ ...ss04, color: theme.textMut }}>Susunod na draw: 4:23 PM</span>
         </div>
 
         {/* Mini games row */}
@@ -279,9 +285,9 @@ function JackpotPromoCard() {
             { emoji: "🎲", label: "Color", pool: "₱48K" },
             { emoji: "🥊", label: "Boxing", pool: "₱540K" },
           ].map((g, i) => (
-            <div key={i} className="flex-1 bg-[#fef9f0] rounded-lg px-2.5 py-2 flex flex-col items-center gap-0.5 hover:bg-[#fef3e0] transition-colors border border-[#fef3e0]">
+            <div key={i} className="flex-1 rounded-lg px-2.5 py-2 flex flex-col items-center gap-0.5 transition-colors border" style={{ backgroundColor: dk ? "rgba(217,119,6,0.08)" : "#fef9f0", borderColor: dk ? "rgba(217,119,6,0.15)" : "#fef3e0" }}>
               <EmojiIcon emoji={g.emoji} size={18} />
-              <span className="text-[#84888c] text-[9px]" style={{ fontWeight: 500, ...ss04 }}>{g.label}</span>
+              <span className="text-[9px]" style={{ fontWeight: 500, ...ss04, color: theme.textSec }}>{g.label}</span>
               <span className="text-[#d97706] text-[10px]" style={{ fontWeight: 700, ...ss04 }}>{g.pool}</span>
             </div>
           ))}
@@ -302,10 +308,12 @@ function JackpotPromoCard() {
 /* ============ NBA LIVE CARD ============ */
 function NBALiveCard() {
   const navigate = useNavigate();
+  const theme = usePageTheme();
+  const dk = theme.isDark;
   return (
     <div
-      className="flex-1 min-w-0 rounded-2xl overflow-hidden cursor-pointer relative bg-white"
-      style={{ border: "1px solid #f0f1f3", boxShadow: "0 2px 20px rgba(59,130,246,0.06)" }}
+      className="flex-1 min-w-0 rounded-2xl overflow-hidden cursor-pointer relative"
+      style={{ border: `1px solid ${theme.cardBorder}`, boxShadow: "0 2px 20px rgba(59,130,246,0.06)", backgroundColor: dk ? theme.card : "#fff" }}
       onClick={() => navigate("/market/nba-finals")}
     >
       <div className="relative z-10 h-full flex flex-col justify-between p-5">
@@ -313,12 +321,12 @@ function NBALiveCard() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <EmojiIcon emoji="🏀" size={16} />
-            <span className="text-[#070808] text-[13px]" style={{ fontWeight: 700, ...ss04, ...pp }}>NBA 2025-26</span>
+            <span className="text-[13px]" style={{ fontWeight: 700, ...ss04, ...pp, color: theme.text }}>NBA 2025-26</span>
             <span className="flex items-center gap-1 bg-[#ff5222]/10 text-[#ff5222] text-[9px] px-2 py-0.5 rounded-full" style={{ fontWeight: 700, ...ss04 }}>
               <span className="size-1.5 bg-[#ff5222] rounded-full animate-pulse" /> LIVE
             </span>
           </div>
-          <span className="text-[#b0b3b8] text-[11px]" style={ss04}>Q4 · 2:11</span>
+          <span className="text-[11px]" style={{ ...ss04, color: theme.textMut }}>Q4 · 2:11</span>
         </div>
 
         {/* Score */}
@@ -327,34 +335,34 @@ function NBALiveCard() {
             <div className="size-12 rounded-xl bg-gradient-to-br from-[#fbbf24] to-[#7c3aed] flex items-center justify-center">
               <EmojiIcon emoji="🏀" size={22} />
             </div>
-            <span className="text-[#070808] text-[13px]" style={{ fontWeight: 600, ...ss04, ...pp }}>Lakers</span>
+            <span className="text-[13px]" style={{ fontWeight: 600, ...ss04, ...pp, color: theme.text }}>Lakers</span>
             <span className="text-[#d97706] text-[26px]" style={{ fontWeight: 800, ...ss04, ...pp }}>98</span>
           </div>
           <div className="flex flex-col items-center">
-            <span className="text-[#dfe0e2] text-[12px]" style={{ fontWeight: 700, ...pp }}>VS</span>
+            <span className="text-[12px]" style={{ fontWeight: 700, ...pp, color: theme.textFaint }}>VS</span>
           </div>
           <div className="flex flex-col items-center gap-1">
             <div className="size-12 rounded-xl bg-gradient-to-br from-[#16a34a] to-[#166534] flex items-center justify-center">
               <EmojiIcon emoji="🏀" size={22} />
             </div>
-            <span className="text-[#070808] text-[13px]" style={{ fontWeight: 600, ...ss04, ...pp }}>Celtics</span>
+            <span className="text-[13px]" style={{ fontWeight: 600, ...ss04, ...pp, color: theme.text }}>Celtics</span>
             <span className="text-[#16a34a] text-[26px]" style={{ fontWeight: 800, ...ss04, ...pp }}>101</span>
           </div>
         </div>
 
         {/* Odds */}
         <div className="flex items-center gap-2">
-          <button className="flex-1 bg-[#fefce8] border border-[#fde68a] hover:border-[#fbbf24] text-[#070808] h-9 rounded-lg flex items-center justify-center gap-1.5 text-[12px] transition-all cursor-pointer" style={{ fontWeight: 600, ...ss04, ...pp }}>
+          <button className="flex-1 h-9 rounded-lg flex items-center justify-center gap-1.5 text-[12px] transition-all cursor-pointer border" style={{ fontWeight: 600, ...ss04, ...pp, color: theme.text, backgroundColor: dk ? "rgba(251,191,36,0.1)" : "#fefce8", borderColor: dk ? "rgba(251,191,36,0.2)" : "#fde68a" }}>
             Lakers <span className="text-[#d97706]" style={{ fontWeight: 700 }}>x2.15</span>
           </button>
-          <button className="flex-1 bg-[#f0fdf4] border border-[#bbf7d0] hover:border-[#4ade80] text-[#070808] h-9 rounded-lg flex items-center justify-center gap-1.5 text-[12px] transition-all cursor-pointer" style={{ fontWeight: 600, ...ss04, ...pp }}>
+          <button className="flex-1 h-9 rounded-lg flex items-center justify-center gap-1.5 text-[12px] transition-all cursor-pointer border" style={{ fontWeight: 600, ...ss04, ...pp, color: theme.text, backgroundColor: dk ? "rgba(22,163,74,0.1)" : "#f0fdf4", borderColor: dk ? "rgba(22,163,74,0.2)" : "#bbf7d0" }}>
             Celtics <span className="text-[#16a34a]" style={{ fontWeight: 700 }}>x1.75</span>
           </button>
         </div>
 
         {/* Footer */}
         <div className="flex items-center justify-between mt-2">
-          <span className="text-[#b0b3b8] text-[10px]" style={ss04}>₱890k Vol · 3,420 bettors</span>
+          <span className="text-[10px]" style={{ ...ss04, color: theme.textMut }}>₱890k Vol · 3,420 bettors</span>
           <span className="text-[#3b82f6] text-[10px]" style={{ fontWeight: 600, ...ss04 }}>Celtics -4.5</span>
         </div>
       </div>
@@ -479,6 +487,8 @@ function OrderbookHeroCard() {
 /* ============ HOT MARKETS CHIPS ============ */
 function HotMarketsStrip() {
   const navigate = useNavigate();
+  const theme = usePageTheme();
+  const dk = theme.isDark;
   const chips = [
     { emoji: "₿",  label: "BTC $200K? [OB]", pool: "$4.2M", hot: true, slug: "btc-200k" },
     { emoji: "🏀", label: "Gilas FIBA 2027 [OB]", pool: "₱2.8M", hot: true, slug: "ph-gilas-fiba" },
@@ -491,16 +501,16 @@ function HotMarketsStrip() {
   ];
   return (
     <div className="flex items-center gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
-      <span className="text-[11px] text-[#84888c] shrink-0 inline-flex items-center gap-1" style={{ fontWeight: 600, ...ss04, ...pp }}><EmojiIcon emoji="🔥" size={12} /> Hot:</span>
+      <span className="text-[11px] shrink-0 inline-flex items-center gap-1" style={{ fontWeight: 600, ...ss04, ...pp, color: theme.textSec }}><EmojiIcon emoji="🔥" size={12} /> Hot:</span>
       {chips.map((c, i) => (
         <button
           key={i}
           onClick={() => navigate(`/market/${c.slug}`)}
           className="shrink-0 flex items-center gap-1.5 h-8 px-3 rounded-full border transition-all cursor-pointer hover:border-[#ff5222]/30 hover:bg-[#ff5222]/5"
-          style={{ background: c.hot ? "rgba(255,82,34,0.05)" : "#fff", borderColor: c.hot ? "rgba(255,82,34,0.15)" : "#f5f6f7" }}
+          style={{ background: c.hot ? "rgba(255,82,34,0.05)" : (dk ? theme.card : "#fff"), borderColor: c.hot ? "rgba(255,82,34,0.15)" : theme.cardBorder }}
         >
           <EmojiIcon emoji={c.emoji} size={14} />
-          <span className="text-[11px] text-[#070808]" style={{ fontWeight: 500, ...ss04, ...pp }}>{c.label}</span>
+          <span className="text-[11px]" style={{ fontWeight: 500, ...ss04, ...pp, color: theme.text }}>{c.label}</span>
           <span className="text-[10px] text-[#ff5222]" style={{ fontWeight: 700, ...ss04 }}>{c.pool}</span>
         </button>
       ))}
@@ -512,23 +522,25 @@ function HotMarketsStrip() {
 function BoxingHeroCard() {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
+  const theme = usePageTheme();
+  const dk = theme.isDark;
   return (
     <div
-      className="relative w-full rounded-2xl overflow-hidden cursor-pointer bg-white"
-      style={{ minHeight: 220, animation: "pulse-glow 3s ease-in-out infinite", border: "1px solid #e0e8f0", boxShadow: "0 0 15px rgba(8,109,224,0.08)" }}
+      className="relative w-full rounded-2xl overflow-hidden cursor-pointer"
+      style={{ minHeight: 220, animation: "pulse-glow 3s ease-in-out infinite", border: `1px solid ${dk ? theme.cardBorder : "#e0e8f0"}`, boxShadow: "0 0 15px rgba(8,109,224,0.08)", backgroundColor: dk ? theme.card : "#fff" }}
       onClick={() => navigate("/market/boxing-donaire")}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       <ImageWithFallback src="https://images.unsplash.com/photo-1575654402720-0af3480d1fad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080" alt="" className="absolute inset-0 w-full h-full object-cover" style={{ transform: hovered ? "scale(1.03)" : "scale(1)", transition: "transform 0.6s ease" }} />
-      <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.93) 0%, rgba(255,255,255,0.8) 40%, rgba(8,109,224,0.06) 100%)" }} />
+      <div className="absolute inset-0" style={{ background: dk ? "linear-gradient(135deg, rgba(22,23,26,0.95) 0%, rgba(22,23,26,0.84) 40%, rgba(8,109,224,0.08) 100%)" : "linear-gradient(135deg, rgba(255,255,255,0.93) 0%, rgba(255,255,255,0.8) 40%, rgba(8,109,224,0.06) 100%)" }} />
       <div className="relative z-10 h-full flex flex-col justify-between p-4 sm:p-6 gap-3">
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <span className="flex items-center gap-1.5 bg-[#086de0] text-white text-[10px] px-2.5 py-1 rounded-full" style={{ fontWeight: 700, ...ss04 }}><EmojiIcon emoji="🥊" size={12} /> WBC WELTERWEIGHT</span>
           <span className="bg-[#086de0]/10 text-[#086de0] text-[10px] px-2 py-1 rounded-full inline-flex items-center gap-1" style={{ fontWeight: 700, ...ss04 }}><EmojiIcon emoji="🔥" size={12} /> MAIN EVENT</span>
           <div className="hidden sm:flex items-center gap-2 ml-auto">
-            <span className="text-[#84888c] text-[11px]" style={ss04}>Mar 28, 2026</span>
-            <span className="bg-[#070808]/5 text-[#84888c] text-[10px] px-2 py-1 rounded" style={ss04}>2,100 bettors</span>
+            <span className="text-[11px]" style={{ ...ss04, color: theme.textSec }}>Mar 28, 2026</span>
+            <span className="text-[10px] px-2 py-1 rounded" style={{ ...ss04, backgroundColor: dk ? "rgba(255,255,255,0.06)" : "rgba(7,8,8,0.05)", color: theme.textSec }}>2,100 bettors</span>
           </div>
         </div>
         <div className="flex items-center justify-center gap-5 sm:gap-8">
@@ -536,20 +548,20 @@ function BoxingHeroCard() {
             <div className="size-12 sm:size-16 rounded-2xl bg-gradient-to-br from-[#dc2626] to-[#991b1b] flex items-center justify-center shadow-lg" style={{ boxShadow: "0 4px 20px rgba(220,38,38,0.35)" }}>
               <EmojiIcon emoji="🥊" size={22} />
             </div>
-            <span className="text-[#070808] text-[15px] sm:text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp }}>Donaire</span>
+            <span className="text-[15px] sm:text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp, color: theme.text }}>Donaire</span>
             <span className="text-[#dc2626] text-[14px]" style={{ fontWeight: 700, ...ss04 }}>x3.50</span>
           </div>
           <div className="flex flex-col items-center gap-1">
             <div className="size-10 sm:size-12 rounded-full bg-gradient-to-br from-[#086de0] to-[#1d4ed8] flex items-center justify-center shadow-xl" style={{ boxShadow: "0 0 30px rgba(8,109,224,0.3)", animation: "punch-shake 3s ease-in-out infinite" }}>
               <span className="text-white text-[12px] sm:text-[14px]" style={{ fontWeight: 800, ...pp }}>VS</span>
             </div>
-            <span className="text-[#b0b3b8] text-[10px]" style={{ fontWeight: 500, ...ss04 }}>12 ROUNDS</span>
+            <span className="text-[10px]" style={{ fontWeight: 500, ...ss04, color: theme.textMut }}>12 ROUNDS</span>
           </div>
           <div className="flex flex-col items-center gap-1" style={{ animation: "float-up 0.5s ease-out 0.1s both" }}>
             <div className="size-12 sm:size-16 rounded-2xl bg-gradient-to-br from-[#086de0] to-[#1e40af] flex items-center justify-center shadow-lg" style={{ boxShadow: "0 4px 20px rgba(8,109,224,0.35)" }}>
               <EmojiIcon emoji="🥊" size={22} />
             </div>
-            <span className="text-[#070808] text-[15px] sm:text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp }}>Inoue</span>
+            <span className="text-[15px] sm:text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp, color: theme.text }}>Inoue</span>
             <span className="text-[#086de0] text-[14px]" style={{ fontWeight: 700, ...ss04 }}>x1.35</span>
           </div>
         </div>
@@ -559,8 +571,8 @@ function BoxingHeroCard() {
               <span className="text-[13px] sm:text-[14px]">Donaire</span>
               <span className="text-[11px] sm:text-[12px] bg-white/20 px-1.5 py-0.5 rounded" style={{ fontWeight: 700 }}>x3.50</span>
             </button>
-            <button className="bg-[#f0f5ff] border border-[#c4d6f0] text-[#84888c] h-9 sm:h-11 px-3 sm:px-4 rounded-xl text-[11px] sm:text-[12px] transition-all cursor-pointer shrink-0" style={{ fontWeight: 600, ...ss04, ...pp }}>
-              Draw <span className="text-[#b0b3b8]">x15</span>
+            <button className="h-9 sm:h-11 px-3 sm:px-4 rounded-xl text-[11px] sm:text-[12px] transition-all cursor-pointer shrink-0 border" style={{ fontWeight: 600, ...ss04, ...pp, color: theme.textSec, backgroundColor: dk ? "rgba(8,109,224,0.08)" : "#f0f5ff", borderColor: dk ? "rgba(8,109,224,0.2)" : "#c4d6f0" }}>
+              Draw <span style={{ color: theme.textMut }}>x15</span>
             </button>
             <button className="bg-gradient-to-r from-[#086de0] to-[#1e40af] hover:from-[#1d4ed8] hover:to-[#1e3a8a] text-white h-9 sm:h-11 px-4 sm:px-6 rounded-xl flex items-center gap-2 transition-all cursor-pointer flex-1 sm:flex-initial justify-center shrink-0" style={{ fontWeight: 600, ...ss04, ...pp, boxShadow: "0 4px 15px rgba(8,109,224,0.35)" }}>
               <span className="text-[13px] sm:text-[14px]">Inoue</span>
@@ -568,8 +580,8 @@ function BoxingHeroCard() {
             </button>
           </div>
           <div className="flex items-center sm:items-end sm:flex-col gap-1.5 justify-between">
-            <span className="text-[#b0b3b8] text-[10px]" style={ss04}>Total Pool</span>
-            <span className="text-[#070808] text-[22px]" style={{ fontWeight: 700, ...ss04, ...pp }}>₱540,000</span>
+            <span className="text-[10px]" style={{ ...ss04, color: theme.textMut }}>Total Pool</span>
+            <span className="text-[22px]" style={{ fontWeight: 700, ...ss04, ...pp, color: theme.text }}>₱540,000</span>
             <span className="text-[#086de0] text-[10px]" style={{ fontWeight: 600, ...ss04 }}>+₱32,000 kahapon</span>
           </div>
         </div>
@@ -581,8 +593,10 @@ function BoxingHeroCard() {
 /* ============ TIER 2 — ESPORTS PREMIUM CARD ============ */
 function EsportsPremiumCard() {
   const navigate = useNavigate();
+  const theme = usePageTheme();
+  const dk = theme.isDark;
   return (
-    <div className="flex-1 min-w-0 rounded-2xl overflow-hidden cursor-pointer relative bg-white" style={{ border: "1px solid #f0f1f3", boxShadow: "0 2px 20px rgba(99,102,241,0.06)" }} onClick={() => navigate("/market/mlbb-m6")}>
+    <div className="flex-1 min-w-0 rounded-2xl overflow-hidden cursor-pointer relative" style={{ border: `1px solid ${theme.cardBorder}`, boxShadow: "0 2px 20px rgba(99,102,241,0.06)", backgroundColor: dk ? theme.card : "#fff" }} onClick={() => navigate("/market/mlbb-m6")}>
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(5)].map((_, i) => (
           <div key={i} className="absolute rounded-full" style={{ width: 8 + i * 4, height: 8 + i * 4, background: ["#6366f1", "#8b5cf6", "#a855f7", "#ec4899", "#06b6d4"][i], opacity: 0.06, left: `${10 + i * 18}%`, top: `${15 + (i % 3) * 28}%`, animation: `dice-bounce ${2 + i * 0.4}s ease-in-out infinite ${i * 0.15}s` }} />
@@ -592,10 +606,10 @@ function EsportsPremiumCard() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <EmojiIcon emoji="🎮" size={18} />
-            <span className="text-[#070808] text-[14px]" style={{ fontWeight: 700, ...ss04, ...pp }}>MLBB M6</span>
+            <span className="text-[14px]" style={{ fontWeight: 700, ...ss04, ...pp, color: theme.text }}>MLBB M6</span>
             <span className="bg-[#6366f1]/10 text-[#6366f1] text-[9px] px-2 py-0.5 rounded-full" style={{ fontWeight: 700, ...ss04, animation: "neon-flicker 2s ease-in-out infinite" }}>WORLD CHAMPIONSHIP</span>
           </div>
-          <span className="text-[#b0b3b8] text-[11px]" style={ss04}>14D 8h</span>
+          <span className="text-[11px]" style={{ ...ss04, color: theme.textMut }}>14D 8h</span>
         </div>
         <div className="flex items-center justify-center gap-3 sm:gap-4 my-2">
           {[
@@ -607,18 +621,18 @@ function EsportsPremiumCard() {
               <div className="size-10 sm:size-12 rounded-xl flex items-center justify-center" style={{ background: t.color, boxShadow: `0 4px 14px ${t.color}40` }}>
                 <EmojiIcon emoji={t.emoji} size={24} />
               </div>
-              <span className="text-[#070808] text-[11px]" style={{ fontWeight: 600, ...ss04, ...pp }}>{t.team}</span>
+              <span className="text-[11px]" style={{ fontWeight: 600, ...ss04, ...pp, color: theme.text }}>{t.team}</span>
               <span className="text-[11px]" style={{ fontWeight: 700, color: t.color, ...ss04 }}>{t.odds}</span>
             </button>
           ))}
         </div>
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
-            <span className="text-[#b0b3b8] text-[10px]" style={ss04}>Prize Pool</span>
-            <span className="text-[#070808] text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp }}>₱320,000</span>
+            <span className="text-[10px]" style={{ ...ss04, color: theme.textMut }}>Prize Pool</span>
+            <span className="text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp, color: theme.text }}>₱320,000</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="bg-[#070808]/5 text-[#84888c] text-[10px] px-2 py-1 rounded" style={ss04}>1,890 bettors</span>
+            <span className="text-[10px] px-2 py-1 rounded" style={{ ...ss04, backgroundColor: dk ? "rgba(255,255,255,0.06)" : "rgba(7,8,8,0.05)", color: theme.textSec }}>1,890 bettors</span>
               <button className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] text-white h-9 px-5 rounded-xl text-[13px] transition-all cursor-pointer inline-flex items-center gap-1.5" style={{ fontWeight: 600, ...ss04, ...pp, boxShadow: "0 4px 12px rgba(99,102,241,0.2)" }} onClick={e => e.stopPropagation()}>Tumaya <EmojiIcon emoji="🎮" size={14} /></button>
           </div>
         </div>
@@ -631,13 +645,15 @@ function EsportsPremiumCard() {
 function BingoPremiumCard() {
   const navigate = useNavigate();
   const bingoNums = [7, 22, 38, 51, 63];
+  const theme = usePageTheme();
+  const dk = theme.isDark;
   return (
-    <div className="flex-1 min-w-0 rounded-2xl overflow-hidden cursor-pointer relative bg-white" style={{ border: "1px solid #f0f1f3", boxShadow: "0 2px 20px rgba(234,88,12,0.06)" }} onClick={() => navigate("/fast-bet")}>
+    <div className="flex-1 min-w-0 rounded-2xl overflow-hidden cursor-pointer relative" style={{ border: `1px solid ${theme.cardBorder}`, boxShadow: "0 2px 20px rgba(234,88,12,0.06)", backgroundColor: dk ? theme.card : "#fff" }} onClick={() => navigate("/fast-bet")}>
       <div className="relative z-10 h-full flex flex-col justify-between p-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <EmojiIcon emoji="🎱" size={18} />
-            <span className="text-[#070808] text-[14px]" style={{ fontWeight: 700, ...ss04, ...pp }}>Super Bingo</span>
+            <span className="text-[14px]" style={{ fontWeight: 700, ...ss04, ...pp, color: theme.text }}>Super Bingo</span>
             <span className="bg-[#ea580c]/10 text-[#ea580c] text-[9px] px-2 py-0.5 rounded-full animate-pulse" style={{ fontWeight: 700, ...ss04 }}>LIVE DRAW</span>
           </div>
           <span className="bg-[#ff5222]/10 text-[#ff5222] text-[11px] px-2 py-0.5 rounded-full" style={{ fontWeight: 700, ...ss04 }}>0:15</span>
@@ -650,15 +666,15 @@ function BingoPremiumCard() {
           ))}
         </div>
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-[#b0b3b8] text-[10px]" style={ss04}>Jackpot Range:</span>
+          <span className="text-[10px]" style={{ ...ss04, color: theme.textMut }}>Jackpot Range:</span>
           {[{ range: "1-15", mult: "x5.2", hot: true }, { range: "46-60", mult: "x6.3", hot: true }].map((r, i) => (
             <span key={i} className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: r.hot ? "rgba(255,82,34,0.08)" : "#f7f8f9", color: r.hot ? "#ff5222" : "#84888c", fontWeight: 600, ...ss04 }}>{r.range} {r.mult}</span>
           ))}
         </div>
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
-            <span className="text-[#b0b3b8] text-[10px]" style={ss04}>Prize Pool</span>
-            <span className="text-[#070808] text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp }}>₱28,100</span>
+            <span className="text-[10px]" style={{ ...ss04, color: theme.textMut }}>Prize Pool</span>
+            <span className="text-[18px]" style={{ fontWeight: 700, ...ss04, ...pp, color: theme.text }}>₱28,100</span>
           </div>
           <button className="bg-gradient-to-r from-[#ea580c] to-[#dc2626] text-white h-9 px-5 rounded-xl text-[13px] transition-all cursor-pointer inline-flex items-center gap-1.5" style={{ fontWeight: 600, ...ss04, ...pp, boxShadow: "0 4px 12px rgba(234,88,12,0.2)" }} onClick={e => e.stopPropagation()}>Sumali Na! <EmojiIcon emoji="🎱" size={14} /></button>
         </div>
@@ -669,6 +685,8 @@ function BingoPremiumCard() {
 
 /* ============ TIER 2 — HOT TICKER ============ */
 function Tier2HotTicker() {
+  const theme = usePageTheme();
+  const dk = theme.isDark;
   const items = [
     { emoji: "🥊", text: "BetKing99 nanalo ng ₱85,000 sa Donaire fight!", hot: true },
     { emoji: "🎮", text: "MLBB M6 pool umabot na sa ₱320K!", hot: false },
@@ -679,12 +697,12 @@ function Tier2HotTicker() {
   ];
   const doubled = [...items, ...items];
   return (
-    <div className="w-full overflow-hidden rounded-xl border border-[#dfe5f0]" style={{ background: "linear-gradient(90deg, #f0f5ff 0%, #ffffff 50%, #fef0f0 100%)" }}>
+    <div className="w-full overflow-hidden rounded-xl" style={{ border: `1px solid ${theme.cardBorder}`, background: dk ? theme.card : "linear-gradient(90deg, #f0f5ff 0%, #ffffff 50%, #fef0f0 100%)" }}>
       <div className="flex items-center h-10 whitespace-nowrap" style={{ animation: "marquee-scroll 28s linear infinite" }}>
         {doubled.map((item, i) => (
-          <span key={i} className="inline-flex items-center gap-1.5 px-4 text-[12px]" style={{ color: item.hot ? "#086de0" : "#84888c", fontWeight: item.hot ? 600 : 400, ...ss04, ...pp }}>
+          <span key={i} className="inline-flex items-center gap-1.5 px-4 text-[12px]" style={{ color: item.hot ? "#086de0" : theme.textSec, fontWeight: item.hot ? 600 : 400, ...ss04, ...pp }}>
             <EmojiIcon emoji={item.emoji} size={14} /> {item.text}
-            <span className="text-[#f0f1f3] mx-2">|</span>
+            <span style={{ color: theme.cardBorder }} className="mx-2">|</span>
           </span>
         ))}
       </div>
@@ -695,6 +713,8 @@ function Tier2HotTicker() {
 /* ============ TIER 2 — HOT MARKETS STRIP ============ */
 function Tier2HotMarketsStrip() {
   const navigate = useNavigate();
+  const theme = usePageTheme();
+  const dk = theme.isDark;
   const chips = [
     { emoji: "🥊", label: "Donaire vs Inoue III", pool: "₱540K", hot: true, slug: "boxing-donaire" },
     { emoji: "🥊", label: "Pacquiao Comeback?", pool: "₱890K", hot: true, slug: "pacquiao-comeback" },
@@ -705,11 +725,11 @@ function Tier2HotMarketsStrip() {
   ];
   return (
     <div className="flex items-center gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
-      <span className="text-[11px] text-[#84888c] shrink-0 inline-flex items-center gap-1" style={{ fontWeight: 600, ...ss04, ...pp }}><EmojiIcon emoji="⚡" size={12} /> Hot:</span>
+      <span className="text-[11px] shrink-0 inline-flex items-center gap-1" style={{ fontWeight: 600, ...ss04, ...pp, color: theme.textSec }}><EmojiIcon emoji="⚡" size={12} /> Hot:</span>
       {chips.map((c, i) => (
-        <button key={i} onClick={() => navigate(`/market/${c.slug}`)} className="shrink-0 flex items-center gap-1.5 h-8 px-3 rounded-full border transition-all cursor-pointer hover:border-[#086de0]/30 hover:bg-[#086de0]/5" style={{ background: c.hot ? "rgba(8,109,224,0.05)" : "#fff", borderColor: c.hot ? "rgba(8,109,224,0.15)" : "#f5f6f7" }}>
+        <button key={i} onClick={() => navigate(`/market/${c.slug}`)} className="shrink-0 flex items-center gap-1.5 h-8 px-3 rounded-full border transition-all cursor-pointer hover:border-[#086de0]/30 hover:bg-[#086de0]/5" style={{ background: c.hot ? "rgba(8,109,224,0.05)" : (dk ? theme.card : "#fff"), borderColor: c.hot ? "rgba(8,109,224,0.15)" : theme.cardBorder }}>
           <EmojiIcon emoji={c.emoji} size={14} />
-          <span className="text-[11px] text-[#070808]" style={{ fontWeight: 500, ...ss04, ...pp }}>{c.label}</span>
+          <span className="text-[11px]" style={{ fontWeight: 500, ...ss04, ...pp, color: theme.text }}>{c.label}</span>
           <span className="text-[10px] text-[#086de0]" style={{ fontWeight: 700, ...ss04 }}>{c.pool}</span>
         </button>
       ))}
@@ -721,11 +741,13 @@ function Tier2HotMarketsStrip() {
 function LotteryHeroCard() {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
+  const theme = usePageTheme();
+  const dk = theme.isDark;
   const lottoNums = [8, 17, 23, 31, 42, 45];
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden cursor-pointer bg-white" style={{ minHeight: 220, border: "1px solid #ede5f5", boxShadow: "0 0 15px rgba(139,92,246,0.08)" }} onClick={() => navigate("/market/lotto-645")} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+    <div className="relative w-full rounded-2xl overflow-hidden cursor-pointer" style={{ minHeight: 220, border: `1px solid ${dk ? theme.cardBorder : "#ede5f5"}`, boxShadow: "0 0 15px rgba(139,92,246,0.08)", backgroundColor: dk ? theme.card : "#fff" }} onClick={() => navigate("/market/lotto-645")} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
       <ImageWithFallback src="https://images.unsplash.com/photo-1724866976329-71fbbc171db2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080" alt="" className="absolute inset-0 w-full h-full object-cover" style={{ transform: hovered ? "scale(1.03)" : "scale(1)", transition: "transform 0.6s ease" }} />
-      <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0.82) 40%, rgba(139,92,246,0.06) 100%)" }} />
+      <div className="absolute inset-0" style={{ background: dk ? "linear-gradient(135deg, rgba(22,23,26,0.95) 0%, rgba(22,23,26,0.85) 40%, rgba(139,92,246,0.08) 100%)" : "linear-gradient(135deg, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0.82) 40%, rgba(139,92,246,0.06) 100%)" }} />
       <div className="relative z-10 h-full flex flex-col justify-between p-4 sm:p-6 gap-3">
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <span className="bg-[#8b5cf6] text-white text-[10px] px-2.5 py-1 rounded-full inline-flex items-center gap-1" style={{ fontWeight: 700, ...ss04 }}><EmojiIcon emoji="🎰" size={12} /> PCSO LOTTO 6/45</span>
@@ -955,10 +977,11 @@ function Tier3HotMarketsStrip() {
 
 /* ============ SECTION TITLE ============ */
 function SectionTitle({ title, subtitle, badge, emoji }: { title: string; subtitle?: string; badge?: string; emoji?: string }) {
+  const theme = usePageTheme();
   return (
     <div className="flex items-center gap-2 pt-4 pb-2">
       {emoji && <EmojiIcon emoji={emoji} size={18} />}
-      <span className="text-[14px] text-[#070808]" style={{ fontWeight: 600, ...pp, ...ss04 }}>
+      <span className="text-[14px]" style={{ fontWeight: 600, color: theme.text, ...pp, ...ss04 }}>
         {title}
       </span>
       {badge && (
@@ -967,7 +990,7 @@ function SectionTitle({ title, subtitle, badge, emoji }: { title: string; subtit
         </span>
       )}
       {subtitle && (
-        <span className="text-[12px] text-[#b0b3b8]" style={{ ...pp, ...ss04 }}>
+        <span className="text-[12px]" style={{ color: theme.textMut, ...pp, ...ss04 }}>
           {subtitle}
         </span>
       )}
@@ -1089,18 +1112,11 @@ function MarketGrid() {
 export default function MarketsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const theme = usePageTheme();
   const openDeposit = () => setModalOpen(true);
 
-  const modalTheme: ModalTheme = {
-    bg: "#ffffff", card: "#ffffff", cardBorder: "#f5f6f7",
-    text: "#070808", textSec: "#84888c", textMut: "#a0a3a7", textFaint: "#dfe0e2",
-    inputBg: "#fafafa", inputBorder: "#f5f6f7",
-    greenBg: "#e6fff3", greenText: "#00bf85", orangeBg: "#fff4ed", orangeText: "#ff5222",
-    isDark: false,
-  };
-
   return (
-    <div className="bg-[#f7f8fa] flex flex-col min-h-screen w-full" style={{ fontFamily: "'Poppins', sans-serif" }}>
+    <div className="flex flex-col min-h-screen w-full" style={{ fontFamily: "'Poppins', sans-serif", background: theme.bg }}>
       <div className="flex items-stretch flex-1">
         <Sidebar onDeposit={openDeposit} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <div className="flex-1 min-w-0 flex flex-col">
@@ -1117,7 +1133,7 @@ export default function MarketsPage() {
         </div>
       </div>
       <Footer />
-      <DepositWithdrawModal isOpen={modalOpen} onClose={() => setModalOpen(false)} mode="deposit" theme={modalTheme} balance={5000} />
+      <DepositWithdrawModal isOpen={modalOpen} onClose={() => setModalOpen(false)} mode="deposit" theme={toModalTheme(theme)} balance={5000} />
     </div>
   );
 }

@@ -30,10 +30,8 @@ export default function SignupPage() {
   const [country, setCountry] = useState<Country>(DEFAULT_COUNTRY);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [agreeTerms, setAgreeTerms] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (isLoggedIn && step !== "success") navigate("/", { replace: true });
@@ -55,8 +53,6 @@ export default function SignupPage() {
     if (!name.trim()) errs.name = t("signup.error.nameRequired");
     if (!phone.trim()) errs.phone = t("signup.error.phoneRequired");
     else if (phone.length < 5) errs.phone = `Enter a valid phone number for ${country.name}`;
-    if (!password.trim()) errs.password = t("signup.error.passwordRequired");
-    else if (password.length < 6) errs.password = t("signup.error.passwordMin");
     if (!agreeTerms) errs.terms = t("signup.error.agreeTerms");
     setErrors(errs);
     if (Object.keys(errs).length > 0) { triggerShake(); return false; }
@@ -102,7 +98,7 @@ export default function SignupPage() {
     };
     signup(mockUser);
     setStep("success");
-    setTimeout(() => navigate("/"), 1500);
+    setTimeout(() => navigate("/mfa-setup"), 2000);
   };
 
   return (
@@ -208,25 +204,6 @@ export default function SignupPage() {
                     <FieldError field="phone" />
                   </div>
 
-                  {/* Password */}
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[12px] text-[#555]" style={{ fontWeight: 500, ...ss }}>{t("signup.password")}</label>
-                    <div className="relative">
-                      <input type={showPassword ? "text" : "password"} value={password}
-                        onChange={e => { setPassword(e.target.value); setErrors(prev => { const n = { ...prev }; delete n.password; return n; }); }}
-                        placeholder={t("signup.passwordPlaceholder")}
-                        className={`w-full h-11 px-3.5 pr-10 rounded-xl border ${errors.password ? "border-[#dc2626]/50 bg-[#fef2f2]" : "border-[#f0f1f3] bg-[#fafafa]"} text-[13px] text-[#070808] outline-none focus:border-[#ff5222]/40 focus:bg-white transition-all`}
-                        style={ss}
-                        onKeyDown={e => { if (e.key === "Enter") handleSubmit(); }}
-                      />
-                      <button type="button" onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b0b3b8] text-[14px] cursor-pointer hover:text-[#84888c]">
-                        {showPassword ? "🙈" : "👁️"}
-                      </button>
-                    </div>
-                    <FieldError field="password" />
-                  </div>
-
                   {/* Terms */}
                   <label className={`flex items-start gap-2.5 cursor-pointer ${errors.terms ? "animate-pulse" : ""}`}>
                     <input type="checkbox" checked={agreeTerms}
@@ -248,7 +225,7 @@ export default function SignupPage() {
                     <EmojiIcon emoji="💡" size={14} />
                     <span className="text-[11px] text-[#1e40af]" style={{ fontWeight: 600, ...ss }}>Demo Mode — Quick Fill</span>
                   </div>
-                  <button onClick={() => { setName("Juan Dela Cruz"); setPhone("9171234567"); setPassword("password123"); setAgreeTerms(true); setErrors({}); }}
+                  <button onClick={() => { setName("Juan Dela Cruz"); setPhone("9171234567"); setAgreeTerms(true); setErrors({}); }}
                     className="text-[11px] text-[#2563eb] cursor-pointer hover:underline flex items-center gap-1"
                     style={{ fontWeight: 500, ...ss }}>
                     <EmojiIcon emoji="⚡" size={12} /> Click to auto-fill demo credentials
@@ -371,41 +348,20 @@ export default function SignupPage() {
                   </span>
                 </div>
 
-                {/* MFA Setup Prompt */}
+                {/* MFA Setup Redirect Notice */}
                 <div className="w-full bg-[#f0f5ff] border border-[#bfdbfe] rounded-2xl p-5 mb-4" style={{ animation: "fade-in 0.5s ease-out 0.6s both" }}>
-                  <div className="flex items-center gap-3 mb-3">
+                  <div className="flex items-center gap-3">
                     <div className="size-10 rounded-xl bg-[#dbeafe] flex items-center justify-center shrink-0">
                       <EmojiIcon emoji="🛡️" size={22} />
                     </div>
                     <div>
-                      <h3 className="text-[14px] text-[#070808]" style={{ fontWeight: 700, ...ss }}>{t("signup.success.setupMfa")}</h3>
-                      <p className="text-[11px] text-[#6b7280]" style={ss}>{t("signup.success.mfaDesc")}</p>
+                      <h3 className="text-[14px] text-[#070808]" style={{ fontWeight: 700, ...ss }}>Next: Secure Your Account</h3>
+                      <p className="text-[11px] text-[#6b7280]" style={ss}>Redirecting to mandatory MFA setup...</p>
                     </div>
-                  </div>
-                  <p className="text-[11px] text-[#6b7280] leading-relaxed mb-3" style={ss}>
-                    Protect your account with additional verification methods — Authenticator App or Phone OTP.
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => navigate("/profile?tab=security")}
-                      className="flex-1 h-10 rounded-xl text-white text-[12px] cursor-pointer hover:brightness-110 transition-all"
-                      style={{ fontWeight: 600, background: "linear-gradient(135deg, #ff5222 0%, #ff7a4f 100%)", ...ss }}
-                    >
-                      Set Up MFA Now
-                    </button>
-                    <button
-                      onClick={() => navigate("/")}
-                      className="h-10 px-4 rounded-xl border border-[#e5e7eb] text-[12px] text-[#6b7280] cursor-pointer hover:bg-[#f9fafb] transition-colors"
-                      style={{ fontWeight: 500, ...ss }}
-                    >
-                      Later
-                    </button>
                   </div>
                 </div>
 
-                <p className="text-[10px] text-[#b0b3b8] text-center" style={ss}>
-                  You can always set up MFA later in Profile → Security
-                </p>
+                <p className="text-[11px] text-[#84888c] mt-2" style={ss}>Setting up Multi-Factor Authentication...</p>
               </div>
             )}
           </div>

@@ -6,17 +6,10 @@ import { DepositWithdrawModal } from "../components/deposit-withdraw-modal";
 import { EmojiIcon } from "../components/two-tone-icons";
 import { AuthGate } from "../components/auth-gate";
 import { Footer } from "../components/footer";
+import { usePageTheme, toModalTheme } from "../components/theme-utils";
 
 const pp = { fontFamily: "'Poppins', sans-serif" };
 const ss = { fontFeatureSettings: "'ss04'" };
-
-const LIGHT_THEME = {
-  bg: "#ffffff", card: "#ffffff", cardBorder: "#f5f6f7",
-  text: "#070808", textSec: "#84888c", textMut: "#a0a3a7", textFaint: "#dfe0e2",
-  inputBg: "#fafafa", inputBorder: "#f5f6f7",
-  greenBg: "#e6fff3", greenText: "#00bf85", orangeBg: "#fff4ed", orangeText: "#ff5222",
-  isDark: false,
-};
 
 type NotifCategory = "all" | "order" | "security" | "reward" | "system";
 
@@ -58,6 +51,7 @@ const ALL_NOTIFICATIONS: NotificationItem[] = [
 
 export default function NotificationsPage() {
   const navigate = useNavigate();
+  const theme = usePageTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"deposit" | "withdraw">("deposit");
@@ -92,27 +86,27 @@ export default function NotificationsPage() {
   ];
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-white" style={pp}>
+    <div className="flex h-screen w-full overflow-hidden" style={{ ...pp, background: theme.bg }}>
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} onDeposit={openDeposit} />
 
       <div className="flex flex-col flex-1 min-w-0">
         <Header onDeposit={openDeposit} onMenuToggle={() => setSidebarOpen(true)} />
 
         <AuthGate pageName="Notifications" strict>
-        <div className="flex-1 overflow-y-auto bg-[#fafafa]">
+        <div className="flex-1 overflow-y-auto" style={{ background: theme.bg }}>
           <div className="max-w-[800px] mx-auto px-3 sm:px-6 py-4 sm:py-6">
 
             {/* Page Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
               <div className="flex items-center gap-3">
-                <button onClick={() => navigate(-1)} className="size-9 rounded-lg bg-white border border-[#f0f1f3] flex items-center justify-center cursor-pointer hover:bg-[#f5f6f7] transition-colors shrink-0">
-                  <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="#070808" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+                <button onClick={() => navigate(-1)} className="size-9 rounded-lg flex items-center justify-center cursor-pointer transition-colors shrink-0" style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }} onMouseEnter={e => (e.currentTarget.style.background = theme.inputBg)} onMouseLeave={e => (e.currentTarget.style.background = theme.card)}>
+                  <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke={theme.text} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
                 </button>
                 <div>
-                  <h1 className="text-[20px] sm:text-[24px] text-[#070808]" style={{ fontWeight: 700, ...ss }}>
+                  <h1 className="text-[20px] sm:text-[24px]" style={{ fontWeight: 700, color: theme.text, ...ss }}>
                     Notifications
                   </h1>
-                  <p className="text-[12px] text-[#84888c]" style={ss}>
+                  <p className="text-[12px]" style={{ color: theme.textSec, ...ss }}>
                     {unreadCount > 0 ? `${unreadCount} bagong notification` : "Wala kang bagong notification"}
                   </p>
                 </div>
@@ -133,8 +127,8 @@ export default function NotificationsPage() {
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 placeholder="Hanapin ang notification..."
-                className="w-full h-10 pl-9 pr-4 rounded-lg bg-white border border-[#f0f1f3] text-[13px] text-[#070808] outline-none focus:border-[#ff5222]/40 transition-colors"
-                style={ss}
+                className="w-full h-10 pl-9 pr-4 rounded-lg text-[13px] outline-none transition-colors"
+                style={{ background: theme.inputBg, border: `1px solid ${theme.inputBorder}`, color: theme.text, ...ss }}
               />
             </div>
 
@@ -144,16 +138,17 @@ export default function NotificationsPage() {
                 const count = cat.key === "all"
                   ? notifications.filter(n => !n.read).length
                   : notifications.filter(n => n.category === cat.key && !n.read).length;
+                const isActive = filter === cat.key;
                 return (
                   <button
                     key={cat.key}
                     onClick={() => setFilter(cat.key)}
                     className="shrink-0 h-8 px-3 rounded-full text-[12px] cursor-pointer transition-all flex items-center gap-1.5"
                     style={{
-                      background: filter === cat.key ? "#070808" : "#fff",
-                      color: filter === cat.key ? "#fff" : "#84888c",
-                      border: `1px solid ${filter === cat.key ? "#070808" : "#f0f1f3"}`,
-                      fontWeight: filter === cat.key ? 600 : 400, ...ss,
+                      background: isActive ? (theme.isDark ? "#f0f0f2" : "#070808") : theme.card,
+                      color: isActive ? (theme.isDark ? "#070808" : "#fff") : theme.textSec,
+                      border: `1px solid ${isActive ? (theme.isDark ? "#f0f0f2" : "#070808") : theme.cardBorder}`,
+                      fontWeight: isActive ? 600 : 400, ...ss,
                     }}
                   >
                     {cat.emoji && <EmojiIcon emoji={cat.emoji} size={13} />}
@@ -162,8 +157,8 @@ export default function NotificationsPage() {
                       <span
                         className="text-[9px] size-4 rounded-full flex items-center justify-center leading-none"
                         style={{
-                          background: filter === cat.key ? "#ff5222" : "rgba(255,82,34,0.1)",
-                          color: filter === cat.key ? "#fff" : "#ff5222",
+                          background: isActive ? "#ff5222" : "rgba(255,82,34,0.1)",
+                          color: isActive ? "#fff" : "#ff5222",
                           fontWeight: 600,
                         }}
                       >
@@ -180,25 +175,26 @@ export default function NotificationsPage() {
               {filtered.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 gap-3">
                   <EmojiIcon emoji="🔔" size={40} />
-                  <span className="text-[14px] text-[#a0a3a7]" style={ss}>
+                  <span className="text-[14px]" style={{ color: theme.textMut, ...ss }}>
                     {searchTerm ? "Walang nahanap na notification." : "Walang notification sa category na ito."}
                   </span>
                 </div>
               ) : (
                 filtered.map(n => {
                   const meta = CATEGORY_META[n.category];
+                  const metaBg = theme.isDark ? `${meta.color}18` : meta.bg;
                   return (
                     <div
                       key={n.id}
-                      className="bg-white rounded-xl border overflow-hidden transition-all hover:shadow-sm group"
+                      className="rounded-xl border overflow-hidden transition-all hover:shadow-sm group"
                       style={{
-                        borderColor: n.read ? "#f0f1f3" : "rgba(255,82,34,0.15)",
-                        background: n.read ? "#fff" : "rgba(255,82,34,0.02)",
+                        borderColor: n.read ? theme.cardBorder : "rgba(255,82,34,0.15)",
+                        background: n.read ? theme.card : (theme.isDark ? "rgba(255,82,34,0.04)" : "rgba(255,82,34,0.02)"),
                       }}
                     >
                       <div className="flex items-start gap-3 p-4">
                         {/* Icon */}
-                        <div className="size-10 rounded-lg shrink-0 flex items-center justify-center mt-0.5" style={{ background: meta.bg }}>
+                        <div className="size-10 rounded-lg shrink-0 flex items-center justify-center mt-0.5" style={{ background: metaBg }}>
                           <EmojiIcon emoji={meta.emoji} size={20} />
                         </div>
 
@@ -206,7 +202,7 @@ export default function NotificationsPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2 mb-1">
                             <div className="flex items-center gap-2 min-w-0">
-                              <span className="text-[14px] truncate" style={{ color: "#070808", fontWeight: n.read ? 500 : 600, ...ss }}>{n.title}</span>
+                              <span className="text-[14px] truncate" style={{ color: theme.text, fontWeight: n.read ? 500 : 600, ...ss }}>{n.title}</span>
                               {!n.read && <div className="size-2 rounded-full bg-[#ff5222] shrink-0" />}
                             </div>
                             {/* Actions */}
@@ -214,27 +210,33 @@ export default function NotificationsPage() {
                               {!n.read && (
                                 <button
                                   onClick={() => markAsRead(n.id)}
-                                  className="size-7 rounded-md flex items-center justify-center hover:bg-[#f5f6f7] cursor-pointer transition-colors"
+                                  className="size-7 rounded-md flex items-center justify-center cursor-pointer transition-colors"
+                                  style={{ background: "transparent" }}
+                                  onMouseEnter={e => (e.currentTarget.style.background = theme.inputBg)}
+                                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                                   title="Markahan bilang nabasa"
                                 >
-                                  <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="#84888c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                                  <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke={theme.textSec} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                 </button>
                               )}
                               <button
                                 onClick={() => deleteNotification(n.id)}
-                                className="size-7 rounded-md flex items-center justify-center hover:bg-[#fef2f2] cursor-pointer transition-colors"
+                                className="size-7 rounded-md flex items-center justify-center cursor-pointer transition-colors"
+                                style={{ background: "transparent" }}
+                                onMouseEnter={e => (e.currentTarget.style.background = theme.isDark ? "rgba(239,68,68,0.1)" : "#fef2f2")}
+                                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                                 title="I-delete"
                               >
                                 <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                               </button>
                             </div>
                           </div>
-                          <p className="text-[12px] leading-[1.6] mb-2" style={{ color: "#84888c", ...ss }}>{n.message}</p>
+                          <p className="text-[12px] leading-[1.6] mb-2" style={{ color: theme.textSec, ...ss }}>{n.message}</p>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-[10px] px-2 py-0.5 rounded" style={{ background: meta.bg, color: meta.color, fontWeight: 500, ...ss }}>{meta.label}</span>
-                            <span className="text-[10px] text-[#a0a3a7]" style={ss}>{n.timeAgo}</span>
-                            <span className="text-[10px] text-[#dfe0e2]">•</span>
-                            <span className="text-[10px] text-[#a0a3a7]" style={ss}>{n.time}</span>
+                            <span className="text-[10px] px-2 py-0.5 rounded" style={{ background: metaBg, color: meta.color, fontWeight: 500, ...ss }}>{meta.label}</span>
+                            <span className="text-[10px]" style={{ color: theme.textMut, ...ss }}>{n.timeAgo}</span>
+                            <span className="text-[10px]" style={{ color: theme.textFaint }}>•</span>
+                            <span className="text-[10px]" style={{ color: theme.textMut, ...ss }}>{n.time}</span>
                           </div>
                         </div>
                       </div>
@@ -246,7 +248,7 @@ export default function NotificationsPage() {
 
             {/* Footer */}
             <div className="flex items-center justify-center py-8">
-              <span className="text-[11px] text-[#a0a3a7]" style={ss}>
+              <span className="text-[11px]" style={{ color: theme.textMut, ...ss }}>
                 {filtered.length} notification{filtered.length !== 1 ? "s" : ""} ang naka-display
               </span>
             </div>
@@ -256,7 +258,7 @@ export default function NotificationsPage() {
         </AuthGate>
       </div>
 
-      <DepositWithdrawModal isOpen={modalOpen} onClose={() => setModalOpen(false)} mode={modalMode} theme={LIGHT_THEME} balance={23450} />
+      <DepositWithdrawModal isOpen={modalOpen} onClose={() => setModalOpen(false)} mode={modalMode} theme={toModalTheme(theme)} balance={23450} />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { Footer } from "../components/footer";
 import { DepositWithdrawModal, type ModalTheme } from "../components/deposit-withdraw-modal";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { EmojiIcon, MoneyIcon, PeopleIcon, TrophyIcon, TargetIcon } from "../components/two-tone-icons";
+import { usePageTheme, toModalTheme } from "../components/theme-utils";
 
 const ss = { fontFeatureSettings: "'ss04'" };
 const pp = { fontFamily: "'Poppins', sans-serif" };
@@ -73,14 +74,15 @@ function StatusBadge({ status }: { status: "live" | "upcoming" | "closing" }) {
 }
 
 /* ====== MARKET CARD ====== */
-function MarketCard({ market, accentColor, accentLight, index }: { market: MarketItem; accentColor: string; accentLight: string; index: number }) {
+function MarketCard({ market, accentColor, accentLight, index, theme }: { market: MarketItem; accentColor: string; accentLight: string; index: number; theme: import("../components/theme-utils").PageTheme }) {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
 
   return (
     <div
-      className="bg-white rounded-xl border border-[#f0f1f3] overflow-hidden cursor-pointer transition-all"
+      className="rounded-xl overflow-hidden cursor-pointer transition-all"
       style={{
+        background: theme.card, border: `1px solid ${theme.cardBorder}`,
         animation: `fade-up 0.4s ease-out ${index * 0.06}s both`,
         transform: hovered ? "translateY(-2px)" : "translateY(0)",
         boxShadow: hovered ? "0 8px 30px rgba(0,0,0,0.1)" : "0 2px 8px rgba(0,0,0,0.04)",
@@ -105,13 +107,13 @@ function MarketCard({ market, accentColor, accentLight, index }: { market: Marke
             </span>
           )}
         </div>
-        <span className="text-[10px] text-[#b0b3b8]" style={ss}>{market.endDate}</span>
+        <span className="text-[10px]" style={{ color: theme.textMut, ...ss }}>{market.endDate}</span>
       </div>
 
       {/* Title */}
       <div className="px-4 pb-2">
-        <h3 className="text-[14px] text-[#070808] mb-0.5" style={{ fontWeight: 600, ...ss, ...pp }}>{market.title}</h3>
-        <p className="text-[11px] text-[#84888c]" style={ss}>{market.subtitle}</p>
+        <h3 className="text-[14px] mb-0.5" style={{ fontWeight: 600, ...ss, ...pp, color: theme.text }}>{market.title}</h3>
+        <p className="text-[11px]" style={{ ...ss, color: theme.textSec }}>{market.subtitle}</p>
       </div>
 
       {/* Options */}
@@ -120,21 +122,21 @@ function MarketCard({ market, accentColor, accentLight, index }: { market: Marke
           <div
             key={i}
             className="flex items-center justify-between h-9 px-3 rounded-lg border transition-colors"
-            style={{ borderColor: hovered ? `${opt.color}30` : "#f0f1f3", background: hovered ? `${opt.color}05` : "#fafafa" }}
+            style={{ borderColor: hovered ? `${opt.color}30` : theme.cardBorder, background: hovered ? `${opt.color}05` : theme.inputBg }}
           >
-            <span className="text-[12px] text-[#070808]" style={{ fontWeight: 500, ...ss }}>{opt.label}</span>
+            <span className="text-[12px]" style={{ fontWeight: 500, ...ss, color: theme.text }}>{opt.label}</span>
             <span className="text-[12px]" style={{ fontWeight: 700, color: opt.color, ...ss }}>{(opt.odds * 100).toFixed(0)}%</span>
           </div>
         ))}
       </div>
 
       {/* Footer */}
-      <div className="px-4 py-2.5 border-t border-[#f5f6f7] flex items-center justify-between bg-[#fafbfc]">
+      <div className="px-4 py-2.5 flex items-center justify-between" style={{ borderTop: `1px solid ${theme.cardBorder}`, background: theme.inputBg }}>
         <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1 text-[10px] text-[#84888c]" style={ss}>
-            <EmojiIcon emoji="💰" size={12} /> <span style={{ fontWeight: 600, color: "#070808" }}>{market.volume}</span>
+          <span className="flex items-center gap-1 text-[10px]" style={{ color: theme.textSec, ...ss }}>
+            <EmojiIcon emoji="💰" size={12} /> <span style={{ fontWeight: 600, color: theme.text }}>{market.volume}</span>
           </span>
-          <span className="flex items-center gap-1 text-[10px] text-[#84888c]" style={ss}>
+          <span className="flex items-center gap-1 text-[10px]" style={{ color: theme.textSec, ...ss }}>
             <EmojiIcon emoji="👥" size={12} /> {market.bettors.toLocaleString()}
           </span>
         </div>
@@ -151,13 +153,13 @@ function MarketCard({ market, accentColor, accentLight, index }: { market: Marke
 }
 
 /* ====== STAT CARD ====== */
-function StatCard({ label, value, icon, delay }: { label: string; value: string; icon: React.ReactNode; delay: number }) {
+function StatCard({ label, value, icon, delay, theme }: { label: string; value: string; icon: React.ReactNode; delay: number; theme: import("../components/theme-utils").PageTheme }) {
   return (
-    <div className="bg-white rounded-xl border border-[#f0f1f3] px-4 py-3.5 flex items-center gap-3" style={{ animation: `count-up 0.4s ease-out ${delay}s both` }}>
+    <div className="rounded-xl px-4 py-3.5 flex items-center gap-3" style={{ background: theme.card, border: `1px solid ${theme.cardBorder}`, animation: `count-up 0.4s ease-out ${delay}s both` }}>
       <span className="shrink-0">{icon}</span>
       <div>
-        <div className="text-[18px] text-[#070808]" style={{ fontWeight: 700, ...ss, ...pp }}>{value}</div>
-        <div className="text-[11px] text-[#84888c]" style={ss}>{label}</div>
+        <div className="text-[18px]" style={{ fontWeight: 700, ...ss, ...pp, color: theme.text }}>{value}</div>
+        <div className="text-[11px]" style={{ ...ss, color: theme.textSec }}>{label}</div>
       </div>
     </div>
   );
@@ -170,6 +172,7 @@ export default function CategoryPage({ config }: { config: CategoryConfig }) {
   const [filter, setFilter] = useState<"all" | "live" | "upcoming" | "closing">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const theme = usePageTheme();
 
   const filtered = config.markets.filter((m) => {
     if (filter !== "all" && m.status !== filter) return false;
@@ -178,7 +181,7 @@ export default function CategoryPage({ config }: { config: CategoryConfig }) {
   });
 
   return (
-    <div className="flex h-screen bg-[#f7f8fa] overflow-hidden" style={pp}>
+    <div className="flex h-screen overflow-hidden" style={{ ...pp, background: theme.bg }}>
       <style>{keyframes}</style>
       <Sidebar onDeposit={() => setShowDeposit(true)} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex-1 flex flex-col min-w-0">
@@ -225,10 +228,10 @@ export default function CategoryPage({ config }: { config: CategoryConfig }) {
 
             {/* ===== STATS ROW ===== */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-5 md:mb-6">
-              <StatCard label="Total Bets" value={config.stats.totalBets} icon={<MoneyIcon size={28} />} delay={0.1} />
-              <StatCard label="Active Bettors" value={config.stats.activeBettors} icon={<PeopleIcon size={28} />} delay={0.15} />
-              <StatCard label="Biggest Pot" value={config.stats.biggestPot} icon={<TrophyIcon size={28} />} delay={0.2} />
-              <StatCard label="Live Markets" value={`${config.stats.liveNow}`} icon={<TargetIcon size={28} />} delay={0.25} />
+              <StatCard label="Total Bets" value={config.stats.totalBets} icon={<MoneyIcon size={28} />} delay={0.1} theme={theme} />
+              <StatCard label="Active Bettors" value={config.stats.activeBettors} icon={<PeopleIcon size={28} />} delay={0.15} theme={theme} />
+              <StatCard label="Biggest Pot" value={config.stats.biggestPot} icon={<TrophyIcon size={28} />} delay={0.2} theme={theme} />
+              <StatCard label="Live Markets" value={`${config.stats.liveNow}`} icon={<TargetIcon size={28} />} delay={0.25} theme={theme} />
             </div>
 
             {/* ===== SUBCATEGORY PILLS ===== */}
@@ -237,7 +240,7 @@ export default function CategoryPage({ config }: { config: CategoryConfig }) {
                 <button
                   key={sub}
                   className="shrink-0 h-8 px-3.5 rounded-full border text-[12px] cursor-pointer transition-all hover:border-[#ff5222]/30 hover:bg-[#ff5222]/5"
-                  style={{ borderColor: i === 0 ? config.accentColor + "40" : "#f0f1f3", background: i === 0 ? config.accentLight : "#fff", color: i === 0 ? config.accentColor : "#84888c", fontWeight: i === 0 ? 600 : 400, animation: `slide-in 0.3s ease-out ${i * 0.05}s both`, ...ss }}
+                  style={{ borderColor: i === 0 ? config.accentColor + "40" : theme.cardBorder, background: i === 0 ? config.accentLight : theme.card, color: i === 0 ? config.accentColor : theme.textSec, fontWeight: i === 0 ? 600 : 400, animation: `slide-in 0.3s ease-out ${i * 0.05}s both`, ...ss }}
                   onClick={() => {}}
                 >
                   {sub}
@@ -247,27 +250,27 @@ export default function CategoryPage({ config }: { config: CategoryConfig }) {
 
             {/* ===== FILTERS + SEARCH ===== */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-5">
-              <div className="flex items-center gap-1.5 bg-[#f7f8f9] rounded-lg p-1 overflow-x-auto">
+              <div className="flex items-center gap-1.5 rounded-lg p-1 overflow-x-auto" style={{ background: theme.inputBg }}>
                 {(["all", "live", "upcoming", "closing"] as const).map((f) => (
                   <button
                     key={f}
                     onClick={() => setFilter(f)}
-                    className={`flex items-center gap-1 h-8 px-3 rounded-md text-[12px] cursor-pointer transition-all ${filter === f ? "bg-white shadow-sm text-[#070808]" : "text-[#84888c] hover:text-[#070808]"}`}
-                    style={{ fontWeight: filter === f ? 600 : 400, ...ss }}
+                    className="flex items-center gap-1 h-8 px-3 rounded-md text-[12px] cursor-pointer transition-all"
+                    style={{ background: filter === f ? theme.card : 'transparent', boxShadow: filter === f ? '0 1px 3px rgba(0,0,0,0.08)' : 'none', color: filter === f ? theme.text : theme.textSec, fontWeight: filter === f ? 600 : 400, ...ss }}
                   >
                     {f !== "all" && <EmojiIcon emoji={f === "live" ? "🔴" : f === "upcoming" ? "📅" : "⏳"} size={10} />}
                     {f === "all" ? "Lahat" : f === "live" ? "Live" : f === "upcoming" ? "Upcoming" : "Closing"}
                   </button>
                 ))}
               </div>
-              <div className="flex items-center gap-2 h-9 px-3 rounded-lg border border-[#f0f1f3] bg-white w-full sm:w-[240px]">
-                <span className="text-[#b0b3b8]"><EmojiIcon emoji="🔍" size={14} /></span>
+              <div className="flex items-center gap-2 h-9 px-3 rounded-lg w-full sm:w-[240px]" style={{ border: `1px solid ${theme.cardBorder}`, background: theme.card }}>
+                <span style={{ color: theme.textMut }}><EmojiIcon emoji="🔍" size={14} /></span>
                 <input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={`Maghanap sa ${config.name}...`}
-                  className="flex-1 text-[12px] text-[#070808] bg-transparent outline-none"
-                  style={ss}
+                  className="flex-1 text-[12px] bg-transparent outline-none"
+                  style={{ ...ss, color: theme.text }}
                 />
               </div>
             </div>
@@ -282,14 +285,15 @@ export default function CategoryPage({ config }: { config: CategoryConfig }) {
                     accentColor={config.accentColor}
                     accentLight={config.accentLight}
                     index={i}
+                    theme={theme}
                   />
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-16 bg-white rounded-xl border border-[#f0f1f3] mb-8">
+              <div className="flex flex-col items-center justify-center py-16 rounded-xl mb-8" style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}>
                 <span className="mb-3"><EmojiIcon emoji={config.emoji} size={48} /></span>
-                <h3 className="text-[16px] text-[#070808] mb-1" style={{ fontWeight: 600, ...ss }}>Walang makitang market</h3>
-                <p className="text-[12px] text-[#84888c]" style={ss}>
+                <h3 className="text-[16px] mb-1" style={{ fontWeight: 600, ...ss, color: theme.text }}>Walang makitang market</h3>
+                <p className="text-[12px]" style={{ ...ss, color: theme.textSec }}>
                   {searchQuery ? `Walang resulta para sa "${searchQuery}"` : "Wala pang available na market sa filter na 'to."}
                 </p>
                 <button
@@ -303,16 +307,16 @@ export default function CategoryPage({ config }: { config: CategoryConfig }) {
             )}
 
             {/* ===== DESCRIPTION SECTION ===== */}
-            <div className="bg-white rounded-xl border border-[#f0f1f3] p-5 mb-8">
-              <h3 className="text-[14px] text-[#070808] mb-2 flex items-center gap-2" style={{ fontWeight: 600, ...ss }}>
+            <div className="rounded-xl p-5 mb-8" style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}>
+              <h3 className="text-[14px] mb-2 flex items-center gap-2" style={{ fontWeight: 600, ...ss, color: theme.text }}>
                 <EmojiIcon emoji={config.emoji} size={22} /> Tungkol sa {config.name}
               </h3>
-              <p className="text-[12px] text-[#84888c] leading-[1.7]" style={ss}>{config.description}</p>
+              <p className="text-[12px] leading-[1.7]" style={{ ...ss, color: theme.textSec }}>{config.description}</p>
             </div>
 
             {/* ===== QUICK NAV TO OTHER CATEGORIES ===== */}
             <div className="mb-8">
-              <h3 className="text-[14px] text-[#070808] mb-3" style={{ fontWeight: 600, ...ss }}>Iba pang Categories</h3>
+              <h3 className="text-[14px] mb-3" style={{ fontWeight: 600, ...ss, color: theme.text }}>Iba pang Categories</h3>
               <div className="flex flex-wrap gap-2">
                 {[
                   { label: "Basketball", emoji: "🏀", route: "/category/basketball" },
@@ -328,10 +332,11 @@ export default function CategoryPage({ config }: { config: CategoryConfig }) {
                   <button
                     key={cat.route}
                     onClick={() => navigate(cat.route)}
-                    className="flex items-center gap-1.5 h-9 px-3.5 rounded-full border border-[#f0f1f3] bg-white hover:border-[#ff5222]/30 hover:bg-[#ff5222]/5 transition-all cursor-pointer"
+                    className="flex items-center gap-1.5 h-9 px-3.5 rounded-full transition-all cursor-pointer hover:border-[#ff5222]/30 hover:bg-[#ff5222]/5"
+                    style={{ border: `1px solid ${theme.cardBorder}`, background: theme.card }}
                   >
                     <EmojiIcon emoji={cat.emoji} size={18} />
-                    <span className="text-[12px] text-[#070808]" style={{ fontWeight: 500, ...ss }}>{cat.label}</span>
+                    <span className="text-[12px]" style={{ fontWeight: 500, ...ss, color: theme.text }}>{cat.label}</span>
                   </button>
                 ))}
               </div>
@@ -345,7 +350,7 @@ export default function CategoryPage({ config }: { config: CategoryConfig }) {
       <DepositWithdrawModal
         isOpen={showDeposit}
         onClose={() => setShowDeposit(false)}
-        theme={depositTheme}
+        theme={toModalTheme(theme)}
       />
     </div>
   );

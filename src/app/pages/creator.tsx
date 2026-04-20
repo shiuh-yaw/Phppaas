@@ -11,6 +11,7 @@ import { EmojiIcon } from "../components/two-tone-icons";
 import { useAuth } from "../components/auth-context";
 import { CreatorLanding } from "../components/creator-landing";
 import { Footer } from "../components/footer";
+import { toModalTheme } from "../components/theme-utils";
 
 const pp = { fontFamily: "'Poppins', sans-serif" };
 const ss = { fontFeatureSettings: "'ss04'" };
@@ -783,13 +784,12 @@ function CreateMarket({ onBack }: { onBack: () => void }) {
    MAIN PAGE
    ==================================================================== */
 export default function CreatorPage() {
-  const [isDark, setIsDark] = useState(false);
+  const { isLoggedIn, darkMode: isDark, toggleDarkMode } = useAuth();
   const t = isDark ? dark : light;
   const [view, setView] = useState<"apply" | "center" | "create">("center");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"deposit" | "withdraw">("deposit");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { isLoggedIn } = useAuth();
 
   const openDeposit = () => { setModalMode("deposit"); setModalOpen(true); };
 
@@ -802,8 +802,8 @@ export default function CreatorPage() {
   };
 
   return (
-    <ThemeCtx.Provider value={{ t, isDark, toggle: () => setIsDark(!isDark) }}>
-      <div className="flex h-screen w-full overflow-hidden bg-white" style={pp}>
+    <ThemeCtx.Provider value={{ t, isDark, toggle: toggleDarkMode }}>
+      <div className="flex h-screen w-full overflow-hidden" style={{ ...pp, background: t.bg }}>
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} onDeposit={openDeposit} />
 
         <div className="flex flex-col flex-1 min-w-0">

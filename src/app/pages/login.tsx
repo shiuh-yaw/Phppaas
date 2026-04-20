@@ -5,7 +5,6 @@ import { useT } from "../i18n/useT";
 import { EmojiIcon } from "../components/two-tone-icons";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { CountryPhoneSelector, DEFAULT_COUNTRY, type Country } from "../components/country-phone-selector";
-import { MfaVerifyGate } from "../components/mfa-manager";
 import imgFrame2087325367 from "figma:asset/aa22ee141c47adc40b93dee89db917612452e751.png";
 
 const pp = { fontFamily: "'Poppins', sans-serif" };
@@ -34,9 +33,7 @@ export default function LoginPage() {
   const [forgotCountry, setForgotCountry] = useState<Country>(DEFAULT_COUNTRY);
 
   const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [showPassword, setShowPassword] = useState(false);
 
   const [forgotPhone, setForgotPhone] = useState("");
   const [resetCode, setResetCode] = useState(["", "", "", "", "", ""]);
@@ -63,8 +60,6 @@ export default function LoginPage() {
     const errs: Record<string, string> = {};
     if (!phone.trim()) errs.phone = t("login.error.phoneRequired");
     else if (phone.length < 5) errs.phone = `Enter a valid phone number for ${country.name}`;
-    if (!password.trim()) errs.password = t("login.error.passwordRequired");
-    else if (password.length < 6) errs.password = t("login.error.passwordMin");
     setErrors(errs);
     if (Object.keys(errs).length > 0) { triggerShake(); return false; }
     return true;
@@ -85,7 +80,8 @@ export default function LoginPage() {
     };
     login(mockUser);
     setStep("success");
-    setTimeout(() => navigate("/"), 1500);
+    const dest = mockUser.mfaConfigured === false ? "/mfa-setup" : "/";
+    setTimeout(() => navigate(dest), 1500);
   };
 
   const handleOtp = (val: string, idx: number) => {
@@ -100,16 +96,22 @@ export default function LoginPage() {
   const verifyOtp = (digits?: string[]) => {
     const code = (digits || otp).join("");
     if (code.length < 6) { triggerShake(); setErrors({ otp: "Enter the 6-digit code" }); return; }
+    // Mock: simulate returning user — check stored user's mfaConfigured status
+    // In a real app, the server would return the user's MFA status
+    const storedRaw = localStorage.getItem("fg_auth_user_v1");
+    const storedUser = storedRaw ? JSON.parse(storedRaw) : null;
     const mockUser = {
       name: "Juan Cruz",
       handle: "@JuanBet123",
       avatar: "https://images.unsplash.com/photo-1642060603505-e716140d45d2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=100",
       balance: 5000,
       portfolio: 1234.56,
+      mfaConfigured: storedUser?.mfaConfigured ?? false,
     };
     login(mockUser);
     setStep("success");
-    setTimeout(() => navigate("/"), 1500);
+    const dest = mockUser.mfaConfigured ? "/" : "/mfa-setup";
+    setTimeout(() => navigate(dest), 1500);
   };
 
   return (
@@ -186,7 +188,7 @@ export default function LoginPage() {
                     Welcome back!
                   </h2>
                   <p className="text-[13px] text-[#84888c] leading-[1.5]" style={ss}>
-                    Enter your phone number and password to sign in.
+                    Enter your phone number to receive an OTP code.
                   </p>
                 </div>
 
@@ -204,43 +206,27 @@ export default function LoginPage() {
                     />
                     <FieldError field="phone" />
                   </div>
+                </div>
 
-                  {/* Password */}
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[12px] text-[#555]" style={{ fontWeight: 500, ...ss }}>{t("login.password")}</label>
-                    <div className="relative">
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={e => { setPassword(e.target.value); setErrors(prev => { const n = { ...prev }; delete n.password; return n; }); }}
-                        placeholder={t("login.passwordPlaceholder")}
-                        className={`w-full h-11 px-3.5 pr-10 rounded-xl border ${errors.password ? "border-[#dc2626]/50 bg-[#fef2f2]" : "border-[#f0f1f3] bg-[#fafafa]"} text-[13px] text-[#070808] outline-none focus:border-[#ff5222]/40 focus:bg-white transition-all`}
-                        style={ss}
-                        onKeyDown={e => { if (e.key === "Enter") handleSubmit(); }}
-                      />
-                      <button type="button" onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#b0b3b8] text-[14px] cursor-pointer hover:text-[#84888c]">
-                        {showPassword ? "🙈" : "👁️"}
-                      </button>
-                    </div>
-                    <FieldError field="password" />
-                    <button onClick={() => { setForgotPhone(phone); setForgotCountry(country); setStep("forgot"); setErrors({}); }} className="text-[12px] text-[#ff5222] self-end mt-0.5 cursor-pointer hover:underline" style={{ fontWeight: 500, ...ss }}>
-                      {t("login.forgotPassword")}
-                    </button>
-                  </div>
+                {/* OTP info */}
+                <div className="mt-3 flex items-start gap-2.5 bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl px-4 py-3">
+                  <EmojiIcon emoji="🔒" size={14} />
+                  <span className="text-[11px] text-[#166534] leading-relaxed" style={{ fontWeight: 500, ...ss }}>
+                    We'll send a one-time passcode (OTP) via SMS to verify your identity. No password needed.
+                  </span>
                 </div>
 
                 {/* Demo quick-fill */}
-                <div className="mt-4 bg-[#eff6ff] border border-[#bfdbfe] rounded-xl px-4 py-2.5">
+                <div className="mt-3 bg-[#eff6ff] border border-[#bfdbfe] rounded-xl px-4 py-2.5">
                   <div className="flex items-center gap-2 mb-1">
                     <EmojiIcon emoji="💡" size={14} />
                     <span className="text-[11px] text-[#1e40af]" style={{ fontWeight: 600, ...ss }}>Demo Mode — Quick Fill</span>
                   </div>
                   <button
-                    onClick={() => { setPhone("9171234567"); setPassword("password123"); setErrors({}); }}
+                    onClick={() => { setPhone("9171234567"); setErrors({}); }}
                     className="text-[11px] text-[#2563eb] cursor-pointer hover:underline flex items-center gap-1"
                     style={{ fontWeight: 500, ...ss }}>
-                    <EmojiIcon emoji="⚡" size={12} /> Click to auto-fill demo credentials
+                    <EmojiIcon emoji="⚡" size={12} /> Click to auto-fill demo phone number
                   </button>
                 </div>
 
@@ -248,7 +234,7 @@ export default function LoginPage() {
                 <button onClick={handleSubmit}
                   className="w-full h-12 rounded-xl text-white text-[14px] mt-5 cursor-pointer transition-all hover:brightness-110 active:scale-[0.98]"
                   style={{ fontWeight: 600, background: "linear-gradient(135deg, #ff5222 0%, #ff7a4f 100%)", boxShadow: "0 4px 15px rgba(255,82,34,0.3)", ...ss }}>
-                  {t("login.submit")}
+                  Send OTP Code
                 </button>
 
                 {/* Divider */}
@@ -284,24 +270,65 @@ export default function LoginPage() {
             )}
 
             {step === "otp" && (
-              <MfaVerifyGate
-                phone={`${country.dial} ${phone}`}
-                email="juan••••@gmail.com"
-                onVerified={() => {
-                  const mockUser = {
-                    name: "Juan Cruz",
-                    handle: "@JuanBet123",
-                    avatar: "https://images.unsplash.com/photo-1642060603505-e716140d45d2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=100",
-                    balance: 5000,
-                    portfolio: 1234.56,
-                    email: "juan••••@gmail.com",
-                  };
-                  login(mockUser);
-                  setStep("success");
-                  setTimeout(() => navigate("/"), 1500);
-                }}
-                onBack={() => { setStep("form"); setErrors({}); }}
-              />
+              <>
+                <div className="text-center mb-6">
+                  <div className="size-16 rounded-2xl bg-[#fff4ed] flex items-center justify-center mx-auto mb-4">
+                    <EmojiIcon emoji="📱" size={32} />
+                  </div>
+                  <h2 className="text-[22px] text-[#070808] mb-1" style={{ fontWeight: 700, ...ss }}>
+                    Enter OTP Code
+                  </h2>
+                  <p className="text-[13px] text-[#84888c]" style={ss}>
+                    6-digit code sent to {country.dial} {phone}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-center gap-2.5 mb-3">
+                  {otp.map((digit, i) => (
+                    <input key={i} id={`login-otp-${i}`} value={digit}
+                      onChange={e => handleOtp(e.target.value, i)}
+                      onKeyDown={e => {
+                        if (e.key === "Backspace" && !digit && i > 0) document.getElementById(`login-otp-${i - 1}`)?.focus();
+                        if (e.key === "Enter") verifyOtp();
+                      }}
+                      maxLength={1}
+                      className={`size-13 rounded-xl border-2 ${errors.otp ? "border-[#dc2626]/50" : "border-[#f0f1f3]"} bg-[#fafafa] text-center text-[22px] text-[#070808] outline-none focus:border-[#ff5222] focus:bg-white transition-all`}
+                      style={{ fontWeight: 700, ...ss }}
+                      autoFocus={i === 0}
+                      inputMode="numeric"
+                    />
+                  ))}
+                </div>
+                {errors.otp && <p className="text-[11px] text-[#dc2626] text-center mb-2" style={ss}><EmojiIcon emoji="⚠️" size={12} /> {errors.otp}</p>}
+
+                <div className="bg-[#eff6ff] border border-[#bfdbfe] rounded-xl px-4 py-2.5 mb-5">
+                  <button onClick={() => {
+                    const demoOtp = ["1", "2", "3", "4", "5", "6"];
+                    setOtp(demoOtp);
+                    setErrors({});
+                    setTimeout(() => verifyOtp(demoOtp), 500);
+                  }}
+                    className="w-full text-[11px] text-[#2563eb] cursor-pointer hover:underline flex items-center justify-center gap-1"
+                    style={{ fontWeight: 500, ...ss }}>
+                    <EmojiIcon emoji="💡" size={12} /> Demo: Click to auto-fill OTP (123456)
+                  </button>
+                </div>
+
+                <button onClick={() => verifyOtp()}
+                  className="w-full h-12 rounded-xl text-white text-[14px] cursor-pointer transition-all hover:brightness-110 active:scale-[0.98]"
+                  style={{ fontWeight: 600, background: "linear-gradient(135deg, #ff5222 0%, #ff7a4f 100%)", boxShadow: "0 4px 15px rgba(255,82,34,0.3)", ...ss }}>
+                  Verify & Sign In
+                </button>
+
+                <div className="flex items-center justify-center gap-2 mt-5">
+                  <span className="text-[12px] text-[#84888c]" style={ss}>Didn't receive the code?</span>
+                  <button className="text-[12px] text-[#ff5222] cursor-pointer hover:underline" style={{ fontWeight: 600, ...ss }}>Resend</button>
+                </div>
+                <button onClick={() => { setStep("form"); setOtp(["", "", "", "", "", ""]); setErrors({}); }}
+                  className="w-full text-center text-[12px] text-[#84888c] mt-4 cursor-pointer hover:text-[#070808]" style={ss}>
+                  ← Back
+                </button>
+              </>
             )}
 
             {step === "success" && (

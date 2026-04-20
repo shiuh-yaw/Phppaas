@@ -11,6 +11,7 @@ export interface User {
   balance: number;
   portfolio: number;
   email?: string;
+  mfaConfigured?: boolean;
 }
 
 interface AuthContextType {
@@ -19,6 +20,7 @@ interface AuthContextType {
   login: (user: User) => void;
   signup: (user: User) => void;
   logout: () => void;
+  setMfaConfigured: () => void;
   locale: "en" | "fil";
   setLocale: (l: "en" | "fil") => void;
   darkMode: boolean;
@@ -57,6 +59,7 @@ const AuthContext = createContext<AuthContextType>({
   login: () => {},
   signup: () => {},
   logout: () => {},
+  setMfaConfigured: () => {},
   locale: "fil",
   setLocale: () => {},
   darkMode: false,
@@ -73,8 +76,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const login = useCallback((u: User) => { setUser(u); saveUser(u); }, []);
-  const signup = useCallback((u: User) => { setUser(u); saveUser(u); }, []);
+  const signup = useCallback((u: User) => { const newUser = { ...u, mfaConfigured: false }; setUser(newUser); saveUser(newUser); }, []);
   const logout = useCallback(() => { setUser(null); saveUser(null); }, []);
+  const setMfaConfigured = useCallback(() => {
+    setUser(prev => {
+      if (!prev) return prev;
+      const updated = { ...prev, mfaConfigured: true };
+      saveUser(updated);
+      return updated;
+    });
+  }, []);
 
   const setLocale = useCallback((l: "en" | "fil") => {
     setLocaleState(l);
@@ -116,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [darkMode]);
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn: !!user, login, signup, logout, locale, setLocale, darkMode, toggleDarkMode }}>
+    <AuthContext.Provider value={{ user, isLoggedIn: !!user, login, signup, logout, setMfaConfigured, locale, setLocale, darkMode, toggleDarkMode }}>
       {children}
     </AuthContext.Provider>
   );

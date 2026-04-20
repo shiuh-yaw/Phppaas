@@ -31,6 +31,7 @@ export const router = createBrowserRouter([
       // Auth pages — no bottom nav
       { path: "/login", lazy: lazy(() => import("./pages/login")) },
       { path: "/signup", lazy: lazy(() => import("./pages/signup")) },
+      { path: "/mfa-setup", lazy: lazy(() => import("./pages/mfa-setup")) },
       // User portal — wrapped with UserLayout (includes BottomNav)
       {
         lazy: lazyUserLayout,

@@ -13,17 +13,10 @@ import {
 } from "../components/two-tone-icons";
 import { AuthGate } from "../components/auth-gate";
 import { Footer } from "../components/footer";
+import { usePageTheme, toModalTheme } from "../components/theme-utils";
 
 const pp = { fontFamily: "'Poppins', sans-serif" };
 const ss = { fontFeatureSettings: "'ss04'" };
-
-const LIGHT_THEME = {
-  bg: "#ffffff", card: "#ffffff", cardBorder: "#f5f6f7",
-  text: "#070808", textSec: "#84888c", textMut: "#a0a3a7", textFaint: "#dfe0e2",
-  inputBg: "#fafafa", inputBorder: "#f5f6f7",
-  greenBg: "#e6fff3", greenText: "#00bf85", orangeBg: "#fff4ed", orangeText: "#ff5222",
-  isDark: false,
-};
 
 const HERO_BG = "https://images.unsplash.com/photo-1608521704450-893e5ac294fc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080";
 
@@ -141,6 +134,7 @@ const PROMOTION_METHODS = [
 /* ==================== MAIN PAGE ==================== */
 export default function AffiliatePage() {
   const navigate = useNavigate();
+  const theme = usePageTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"deposit" | "withdraw">("deposit");
@@ -199,53 +193,55 @@ export default function AffiliatePage() {
   /* ==================== RENDER: APPLICATION FORM (Step 1) ==================== */
   const renderApplyForm = () => (
     <div className="flex items-start justify-center py-10 sm:py-16 px-4">
-      <div className="bg-white rounded-2xl border border-[#f5f6f7] w-full max-w-[400px] overflow-hidden">
+      <div className="rounded-2xl w-full max-w-[400px] overflow-hidden" style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}>
         {/* Header */}
         <div className="px-6 pt-6 pb-1">
-          <h2 className="text-[22px] sm:text-[24px] text-[#070808]" style={{ fontWeight: 600, ...ss, ...pp }}>
+          <h2 className="text-[22px] sm:text-[24px]" style={{ fontWeight: 600, color: theme.text, ...ss, ...pp }}>
             Sumali sa Affiliate Program
           </h2>
-          <p className="text-[12px] text-[#84888c] mt-1" style={{ ...ss, ...pp }}>
+          <p className="text-[12px] mt-1" style={{ color: theme.textSec, ...ss, ...pp }}>
             Simulan kumita ng commission sa pag-share ng Lucky Taya sa audience mo. Mag-sign up gamit ang email mo.
           </p>
         </div>
 
         {/* Step indicator */}
         <div className="px-6 py-2 flex items-center gap-1">
-          <div className="bg-[#070808] h-1.5 w-6 rounded-sm" />
-          <div className="bg-[#f2f3f4] h-1.5 w-1.5 rounded-sm" />
-          <div className="bg-[#f2f3f4] h-1.5 w-1.5 rounded-sm" />
+          <div className="h-1.5 w-6 rounded-sm" style={{ background: theme.text }} />
+          <div className="h-1.5 w-1.5 rounded-sm" style={{ background: theme.textFaint }} />
+          <div className="h-1.5 w-1.5 rounded-sm" style={{ background: theme.textFaint }} />
         </div>
 
         {/* Form */}
         <div className="px-6 pt-4 flex flex-col gap-5">
           <div className="flex flex-col gap-0.5">
-            <label className="text-[14px] text-[#070808]" style={{ ...ss, ...pp }}>Buong Pangalan</label>
+            <label className="text-[14px]" style={{ color: theme.text, ...ss, ...pp }}>Buong Pangalan</label>
             <input value={fullName} onChange={e => setFullName(e.target.value)}
               placeholder="I-enter ang buong pangalan mo"
-              className="h-12 px-4 rounded-lg bg-[#fafafa] text-[14px] outline-none" style={{ color: "#070808", ...ss, ...pp }} />
+              className="h-12 px-4 rounded-lg text-[14px] outline-none" style={{ background: theme.inputBg, color: theme.text, ...ss, ...pp }} />
           </div>
           <div className="flex flex-col gap-0.5">
-            <label className="text-[14px] text-[#070808]" style={{ ...ss, ...pp }}>Email Address</label>
+            <label className="text-[14px]" style={{ color: theme.text, ...ss, ...pp }}>Email Address</label>
             <input value={email} onChange={e => setEmail(e.target.value)}
               placeholder="I-enter ang email address mo"
               type="email"
-              className="h-12 px-4 rounded-lg bg-[#fafafa] text-[14px] outline-none" style={{ color: "#070808", ...ss, ...pp }} />
+              className="h-12 px-4 rounded-lg text-[14px] outline-none" style={{ background: theme.inputBg, color: theme.text, ...ss, ...pp }} />
           </div>
           <div className="flex flex-col gap-0.5 relative">
-            <label className="text-[14px] text-[#070808]" style={{ ...ss, ...pp }}>Paano mo ipo-promote ang Lucky Taya?</label>
+            <label className="text-[14px]" style={{ color: theme.text, ...ss, ...pp }}>Paano mo ipo-promote ang Lucky Taya?</label>
             <button onClick={() => setPromoDropdown(!promoDropdown)}
-              className="h-12 px-4 rounded-lg bg-[#fafafa] text-[14px] flex items-center justify-between cursor-pointer text-left"
-              style={{ color: promoMethod ? "#070808" : "#84888c", ...ss, ...pp }}>
+              className="h-12 px-4 rounded-lg text-[14px] flex items-center justify-between cursor-pointer text-left"
+              style={{ background: theme.inputBg, color: promoMethod ? theme.text : theme.textSec, ...ss, ...pp }}>
               <span>{promoMethod ? PROMOTION_METHODS.find(m => m.id === promoMethod)?.label : "Pumili ng paraan"}</span>
-              <svg className={`size-4 transition-transform ${promoDropdown ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="#84888c" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
+              <svg className={`size-4 transition-transform ${promoDropdown ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke={theme.textSec} strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
             </button>
             {promoDropdown && (
-              <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white rounded-lg border border-[#f0f1f3] shadow-lg py-1 max-h-[200px] overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg shadow-lg py-1 max-h-[200px] overflow-y-auto" style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}>
                 {PROMOTION_METHODS.map(m => (
                   <button key={m.id} onClick={() => { setPromoMethod(m.id); setPromoDropdown(false); }}
-                    className="w-full flex items-center gap-2 px-4 py-2.5 text-[14px] text-left cursor-pointer hover:bg-[#fafafa] transition-colors"
-                    style={{ color: "#070808", ...ss, ...pp }}>
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-[14px] text-left cursor-pointer transition-colors"
+                    style={{ color: theme.text, ...ss, ...pp }}
+                    onMouseEnter={e => (e.currentTarget.style.background = theme.inputBg)}
+                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                     <EmojiIcon emoji={m.icon} size={14} /> {m.label}
                   </button>
                 ))}
@@ -258,20 +254,20 @@ export default function AffiliatePage() {
         <div className="px-6 py-5 flex flex-col gap-4">
           <label className="flex items-start gap-2 cursor-pointer">
             <div className="size-[18px] rounded border flex items-center justify-center shrink-0 mt-0.5"
-              style={{ borderColor: agreed ? "#ff5222" : "#dfe0e2", background: agreed ? "#ff5222" : "transparent" }}
+              style={{ borderColor: agreed ? "#ff5222" : theme.textFaint, background: agreed ? "#ff5222" : "transparent" }}
               onClick={() => setAgreed(!agreed)}>
               {agreed && <svg className="size-3" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>}
             </div>
-            <span className="text-[13px] text-[#070808]" style={{ ...ss, ...pp }}>
+            <span className="text-[13px]" style={{ color: theme.text, ...ss, ...pp }}>
               Sumasang-ayon ako sa <span className="text-[#ff5222] cursor-pointer">Affiliate Program Terms and Conditions</span>
             </span>
           </label>
           <button onClick={() => canSubmitApp && setStep("verify")} disabled={!canSubmitApp}
-            className="h-12 bg-[#070808] text-white rounded-lg text-[16px] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
-            style={{ fontWeight: 500, ...ss, ...pp }}>
+            className="h-12 text-white rounded-lg text-[16px] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+            style={{ fontWeight: 500, background: theme.isDark ? "#f0f0f2" : "#070808", color: theme.isDark ? "#070808" : "#fff", ...ss, ...pp }}>
             Magpatuloy
           </button>
-          <p className="text-[14px] text-center" style={{ color: "#070808", ...ss, ...pp }}>
+          <p className="text-[14px] text-center" style={{ color: theme.text, ...ss, ...pp }}>
             May account ka na? <span className="text-[#ff5222] cursor-pointer" onClick={() => setStep("welcome")}>Mag-log in</span>
           </p>
         </div>
@@ -282,20 +278,20 @@ export default function AffiliatePage() {
   /* ==================== RENDER: VERIFY EMAIL (Step 2) ==================== */
   const renderVerify = () => (
     <div className="flex items-start justify-center py-[80px] px-4">
-      <div className="bg-white rounded-[16px] w-full max-w-[392px] flex flex-col items-start relative">
-        <div aria-hidden="true" className="absolute inset-0 border border-[#f5f6f7] rounded-[16px] pointer-events-none" />
+      <div className="rounded-[16px] w-full max-w-[392px] flex flex-col items-start relative" style={{ background: theme.card }}>
+        <div aria-hidden="true" className="absolute inset-0 rounded-[16px] pointer-events-none" style={{ border: `1px solid ${theme.cardBorder}` }} />
 
         {/* Header group */}
         <div className="flex flex-col items-start w-full">
           {/* Title row */}
           <div className="pt-[24px] px-[24px] w-full">
             <div className="flex items-center justify-between w-full">
-              <p className="text-[24px] text-[#070808]" style={{ fontWeight: 600, ...ss, ...pp }}>
+              <p className="text-[24px]" style={{ fontWeight: 600, color: theme.text, ...ss, ...pp }}>
                 I-verify ang Email Mo
               </p>
               <button onClick={() => setStep("apply")} className="size-[20px] flex items-center justify-center cursor-pointer opacity-60 hover:opacity-100 transition-opacity">
                 <svg className="size-[13px]" viewBox="0 0 13.13 13.13" fill="none">
-                  <path d="M12.13 1L1 12.13M1 1l11.13 11.13" stroke="#070808" strokeWidth="1.5" strokeLinecap="round" />
+                  <path d="M12.13 1L1 12.13M1 1l11.13 11.13" stroke={theme.text} strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
               </button>
             </div>
@@ -303,9 +299,9 @@ export default function AffiliatePage() {
 
           {/* Description */}
           <div className="px-[24px] w-full">
-            <p className="text-[12px] text-[#84888c] leading-[1.5]" style={{ ...ss, ...pp }}>
+            <p className="text-[12px] leading-[1.5]" style={{ color: theme.textSec, ...ss, ...pp }}>
               Nag-send kami ng 6-digit verification code sa{" "}
-              <span className="text-[#070808]" style={{ fontWeight: 500, ...ss }}>{email || "juan@email.com"}</span>.
+              <span style={{ color: theme.text, fontWeight: 500, ...ss }}>{email || "juan@email.com"}</span>.
               {" "}I-enter ito sa ibaba para ma-verify ang email mo.
             </p>
           </div>
@@ -313,16 +309,16 @@ export default function AffiliatePage() {
 
         {/* Step indicator */}
         <div className="px-[24px] py-[8px] w-full flex items-start gap-[4px]">
-          <div className="bg-[#070808] rounded-[2px] size-[6px]" />
-          <div className="bg-[#070808] h-[6px] w-[24px] rounded-[2px]" />
-          <div className="bg-[#f2f3f4] rounded-[2px] size-[6px]" />
+          <div className="rounded-[2px] size-[6px]" style={{ background: theme.text }} />
+          <div className="h-[6px] w-[24px] rounded-[2px]" style={{ background: theme.text }} />
+          <div className="rounded-[2px] size-[6px]" style={{ background: theme.textFaint }} />
         </div>
 
         {/* Code inputs */}
         <div className="w-full">
           <div className="flex flex-col items-center w-full">
             <div className="pt-[24px] px-[24px] w-full">
-              <div className="bg-white flex flex-col items-start w-full">
+              <div className="flex flex-col items-start w-full" style={{ background: theme.card }}>
                 {/* 6-digit input row */}
                 <div className="flex gap-[8px] items-start w-full">
                   {verifyCode.map((digit, i) => (
@@ -334,14 +330,14 @@ export default function AffiliatePage() {
                       maxLength={1}
                       inputMode="numeric"
                       placeholder="0"
-                      className="flex-1 min-w-0 h-[48px] bg-[#fafafa] rounded-[8px] text-center text-[18px] outline-none focus:ring-2 focus:ring-[#ff5222]/20 transition-shadow"
-                      style={{ color: "#070808", fontWeight: 600, ...ss, ...pp }}
+                      className="flex-1 min-w-0 h-[48px] rounded-[8px] text-center text-[18px] outline-none focus:ring-2 focus:ring-[#ff5222]/20 transition-shadow"
+                      style={{ background: theme.inputBg, color: theme.text, fontWeight: 600, ...ss, ...pp }}
                     />
                   ))}
                 </div>
                 {/* Resend code link */}
                 <div className="flex items-center justify-end w-full mt-[2px]">
-                  <p className="text-[12px] text-[#070808] underline cursor-pointer text-right leading-[1.5]" style={{ ...ss, ...pp }}>
+                  <p className="text-[12px] underline cursor-pointer text-right leading-[1.5]" style={{ color: theme.text, ...ss, ...pp }}>
                     Resend code
                   </p>
                 </div>
@@ -353,8 +349,8 @@ export default function AffiliatePage() {
         {/* Verify button */}
         <div className="p-[24px] w-full">
           <button onClick={() => setStep("welcome")} disabled={!canVerify}
-            className="w-full h-[48px] bg-[#070808] text-white rounded-[8px] text-[16px] text-center cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
-            style={{ fontWeight: 500, ...ss, ...pp }}>
+            className="w-full h-[48px] rounded-[8px] text-[16px] text-center cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+            style={{ fontWeight: 500, background: theme.isDark ? "#f0f0f2" : "#070808", color: theme.isDark ? "#070808" : "#fff", ...ss, ...pp }}>
             I-verify ang Email
           </button>
         </div>
@@ -365,17 +361,17 @@ export default function AffiliatePage() {
   /* ==================== RENDER: WELCOME (Step 3) ==================== */
   const renderWelcome = () => (
     <div className="flex items-start justify-center py-10 sm:py-16 px-4">
-      <div className="bg-white rounded-2xl border border-[#f5f6f7] w-full max-w-[400px] overflow-hidden">
+      <div className="rounded-2xl w-full max-w-[400px] overflow-hidden" style={{ background: theme.card, border: `1px solid ${theme.cardBorder}` }}>
         {/* Success */}
         <div className="flex flex-col items-center pt-6 px-6 gap-4">
           <div className="size-[68px] rounded-full bg-[#00BF85] flex items-center justify-center">
             <svg className="size-9" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
           </div>
           <div className="flex flex-col items-center gap-2 text-center">
-            <h2 className="text-[22px] sm:text-[24px] text-[#070808]" style={{ fontWeight: 600, ...ss, ...pp }}>
+            <h2 className="text-[22px] sm:text-[24px]" style={{ fontWeight: 600, color: theme.text, ...ss, ...pp }}>
               Welcome sa Affiliate Program!
             </h2>
-            <p className="text-[14px] text-[#84888c]" style={{ ...ss, ...pp }}>
+            <p className="text-[14px]" style={{ color: theme.textSec, ...ss, ...pp }}>
               Na-verify na ang account mo at part ka na ng Lucky Taya Affiliate Program. Simulan na kumita!
             </p>
           </div>
@@ -384,19 +380,19 @@ export default function AffiliatePage() {
         {/* Referral + Details */}
         <div className="px-6 pt-5 flex flex-col gap-5">
           <div className="flex flex-col gap-0.5">
-            <label className="text-[14px] text-[#070808]" style={{ ...ss, ...pp }}>Referral Link Mo</label>
-            <div className="h-12 bg-[#fafafa] rounded-lg flex items-center px-4 gap-2">
-              <span className="flex-1 text-[14px] text-[#84888c] truncate" style={{ ...ss, ...pp }}>{referralLink}</span>
+            <label className="text-[14px]" style={{ color: theme.text, ...ss, ...pp }}>Referral Link Mo</label>
+            <div className="h-12 rounded-lg flex items-center px-4 gap-2" style={{ background: theme.inputBg }}>
+              <span className="flex-1 text-[14px] truncate" style={{ color: theme.textSec, ...ss, ...pp }}>{referralLink}</span>
               <button onClick={copyLink} className="shrink-0 cursor-pointer">
                 {copied ? (
                   <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="#00BF85" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                 ) : (
-                  <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="#84888c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+                  <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke={theme.textSec} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
                 )}
               </button>
             </div>
           </div>
-          <div className="rounded-xl border border-[#dfe0e2] p-3 flex flex-col gap-3">
+          <div className="rounded-xl p-3 flex flex-col gap-3" style={{ border: `1px solid ${theme.textFaint}` }}>
             {[
               { label: "Commission Rate Mo", value: "30%", emoji: "✅" },
               { label: "Cookie Duration", value: "30 araw", emoji: "✅" },
@@ -404,8 +400,8 @@ export default function AffiliatePage() {
             ].map((item, i) => (
               <div key={i} className="flex items-center gap-2">
                 <EmojiIcon emoji={item.emoji} size={16} />
-                <span className="text-[14px] text-[#84888c]" style={{ ...ss, ...pp }}>{item.label}</span>
-                <span className="text-[16px] text-[#070808]" style={{ fontWeight: 600, ...ss, ...pp }}>{item.value}</span>
+                <span className="text-[14px]" style={{ color: theme.textSec, ...ss, ...pp }}>{item.label}</span>
+                <span className="text-[16px]" style={{ fontWeight: 600, color: theme.text, ...ss, ...pp }}>{item.value}</span>
               </div>
             ))}
           </div>
@@ -414,13 +410,13 @@ export default function AffiliatePage() {
         {/* Actions */}
         <div className="px-6 py-5 flex gap-3">
           <button onClick={() => setStep("dashboard")}
-            className="flex-1 h-12 bg-[#070808] text-white rounded-lg text-[15px] cursor-pointer hover:bg-[#1a1a1a] transition-colors"
-            style={{ fontWeight: 500, ...ss, ...pp }}>
+            className="flex-1 h-12 rounded-lg text-[15px] cursor-pointer transition-colors"
+            style={{ fontWeight: 500, background: theme.isDark ? "#f0f0f2" : "#070808", color: theme.isDark ? "#070808" : "#fff", ...ss, ...pp }}>
             Dashboard
           </button>
           <button onClick={copyLink}
-            className="flex-1 h-12 bg-[#f5f6f7] text-[#070808] rounded-lg text-[15px] cursor-pointer hover:bg-[#eee] transition-colors"
-            style={{ fontWeight: 500, ...ss, ...pp }}>
+            className="flex-1 h-12 rounded-lg text-[15px] cursor-pointer transition-colors"
+            style={{ fontWeight: 500, background: theme.inputBg, color: theme.text, ...ss, ...pp }}>
             I-share ang Link
           </button>
         </div>
@@ -442,18 +438,18 @@ export default function AffiliatePage() {
   const renderLanding = () => (
     <div className="flex flex-col gap-0">
       {/* ===== HERO ===== */}
-      <div className="relative overflow-hidden bg-[#fafafa]">
+      <div className="relative overflow-hidden" style={{ background: theme.inputBg }}>
         <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
           <div className="flex flex-col gap-5 flex-1 z-10">
-            <h1 className="text-[28px] sm:text-[36px] lg:text-[42px] text-[#070808] leading-[1.15]" style={{ fontWeight: 700, ...ss, ...pp }}>
+            <h1 className="text-[28px] sm:text-[36px] lg:text-[42px] leading-[1.15]" style={{ fontWeight: 700, color: theme.text, ...ss, ...pp }}>
               Kumita sa Lucky Taya<br className="hidden sm:block" /> Affiliate Program
             </h1>
-            <p className="text-[14px] sm:text-[16px] text-[#84888c] max-w-[480px]" style={{ ...ss, ...pp }}>
+            <p className="text-[14px] sm:text-[16px] max-w-[480px]" style={{ color: theme.textSec, ...ss, ...pp }}>
               I-share ang Lucky Taya sa audience mo at kumita ng commission sa bawat referral. Libong affiliates na ang kumikita ng passive income mula sa nangungunang prediction market platform ng Pilipinas.
             </p>
             <button onClick={() => setStep("apply")}
-              className="bg-[#070808] text-white h-12 px-8 rounded-lg text-[16px] w-fit cursor-pointer hover:bg-[#1a1a1a] transition-colors"
-              style={{ fontWeight: 500, ...ss, ...pp }}>
+              className="h-12 px-8 rounded-lg text-[16px] w-fit cursor-pointer transition-colors"
+              style={{ fontWeight: 500, background: theme.isDark ? "#f0f0f2" : "#070808", color: theme.isDark ? "#070808" : "#fff", ...ss, ...pp }}>
               Mag-apply Ngayon
             </button>
           </div>
@@ -465,11 +461,11 @@ export default function AffiliatePage() {
 
       {/* ===== STATS ===== */}
       <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 rounded-2xl border border-[#f5f6f7] p-6 sm:p-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 rounded-2xl p-6 sm:p-8" style={{ border: `1px solid ${theme.cardBorder}` }}>
           {STATS.map((s, i) => (
             <div key={i} className="flex flex-col items-center gap-1 py-3">
-              <span className="text-[28px] sm:text-[36px] text-[#070808]" style={{ fontWeight: 700, ...ss, ...pp }}>{s.value}</span>
-              <span className="text-[13px] text-[#84888c]" style={{ ...ss, ...pp }}>{s.label}</span>
+              <span className="text-[28px] sm:text-[36px]" style={{ fontWeight: 700, color: theme.text, ...ss, ...pp }}>{s.value}</span>
+              <span className="text-[13px]" style={{ color: theme.textSec, ...ss, ...pp }}>{s.label}</span>
             </div>
           ))}
         </div>
@@ -477,18 +473,18 @@ export default function AffiliatePage() {
 
       {/* ===== WHY JOIN ===== */}
       <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <h2 className="text-[24px] sm:text-[30px] text-center text-[#070808] mb-8" style={{ fontWeight: 700, ...ss, ...pp }}>
+        <h2 className="text-[24px] sm:text-[30px] text-center mb-8" style={{ fontWeight: 700, color: theme.text, ...ss, ...pp }}>
           Bakit Sumali sa Affiliate Program?
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {WHY_JOIN.map((item, i) => (
-            <div key={i} className="rounded-xl border border-[#f5f6f7] p-5 sm:p-6 flex items-start gap-4 hover:border-[#ff5222]/20 hover:shadow-sm transition-all">
+            <div key={i} className="rounded-xl p-5 sm:p-6 flex items-start gap-4 hover:border-[#ff5222]/20 hover:shadow-sm transition-all" style={{ border: `1px solid ${theme.cardBorder}` }}>
               <div className="shrink-0">
                 <item.icon size={56} />
               </div>
               <div className="flex flex-col gap-1">
-                <span className="text-[16px] text-[#070808]" style={{ fontWeight: 600, ...ss, ...pp }}>{item.title}</span>
-                <span className="text-[13px] text-[#84888c] leading-[1.5]" style={{ ...ss, ...pp }}>{item.desc}</span>
+                <span className="text-[16px]" style={{ fontWeight: 600, color: theme.text, ...ss, ...pp }}>{item.title}</span>
+                <span className="text-[13px] leading-[1.5]" style={{ color: theme.textSec, ...ss, ...pp }}>{item.desc}</span>
               </div>
             </div>
           ))}
@@ -497,15 +493,15 @@ export default function AffiliatePage() {
 
       {/* ===== HOW TO GET STARTED ===== */}
       <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <h2 className="text-[24px] sm:text-[30px] text-center text-[#070808] mb-8" style={{ fontWeight: 700, ...ss, ...pp }}>
+        <h2 className="text-[24px] sm:text-[30px] text-center mb-8" style={{ fontWeight: 700, color: theme.text, ...ss, ...pp }}>
           Paano Magsimula
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {STEPS.map((s, i) => (
             <div key={i} className="flex flex-col gap-2">
-              <span className="text-[40px] sm:text-[48px] text-[#070808]" style={{ fontWeight: 700, ...ss, ...pp }}>{s.num}</span>
-              <span className="text-[16px] text-[#070808]" style={{ fontWeight: 600, ...ss, ...pp }}>{s.title}</span>
-              <span className="text-[13px] text-[#84888c] leading-[1.6]" style={{ ...ss, ...pp }}>{s.desc}</span>
+              <span className="text-[40px] sm:text-[48px]" style={{ fontWeight: 700, color: theme.text, ...ss, ...pp }}>{s.num}</span>
+              <span className="text-[16px]" style={{ fontWeight: 600, color: theme.text, ...ss, ...pp }}>{s.title}</span>
+              <span className="text-[13px] leading-[1.6]" style={{ color: theme.textSec, ...ss, ...pp }}>{s.desc}</span>
             </div>
           ))}
         </div>
@@ -513,19 +509,19 @@ export default function AffiliatePage() {
 
       {/* ===== COMMISSION STRUCTURE ===== */}
       <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <h2 className="text-[24px] sm:text-[30px] text-center text-[#070808] mb-8" style={{ fontWeight: 700, ...ss, ...pp }}>
+        <h2 className="text-[24px] sm:text-[30px] text-center mb-8" style={{ fontWeight: 700, color: theme.text, ...ss, ...pp }}>
           Commission Structure
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {TIERS.map((tier, i) => (
-            <div key={i} className="rounded-xl border border-[#f5f6f7] p-6 flex flex-col items-center gap-4 hover:border-[#ff5222]/30 hover:shadow-sm transition-all">
+            <div key={i} className="rounded-xl p-6 flex flex-col items-center gap-4 hover:border-[#ff5222]/30 hover:shadow-sm transition-all" style={{ border: `1px solid ${theme.cardBorder}` }}>
               <div className="h-6 w-24 rounded bg-[#ff5222]" />
-              <span className="text-[18px] text-[#070808]" style={{ fontWeight: 600, ...ss, ...pp }}>{tier.name}</span>
+              <span className="text-[18px]" style={{ fontWeight: 600, color: theme.text, ...ss, ...pp }}>{tier.name}</span>
               <div className="flex flex-col gap-2 w-full">
                 {tier.features.map((f, fi) => (
                   <div key={fi} className="flex items-center gap-2">
                     <svg className="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="#00BF85" strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
-                    <span className="text-[13px] text-[#84888c]" style={{ ...ss, ...pp }}>{f}</span>
+                    <span className="text-[13px]" style={{ color: theme.textSec, ...ss, ...pp }}>{f}</span>
                   </div>
                 ))}
               </div>
@@ -536,14 +532,14 @@ export default function AffiliatePage() {
 
       {/* ===== WHO CAN JOIN ===== */}
       <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <h2 className="text-[24px] sm:text-[30px] text-center text-[#070808] mb-8" style={{ fontWeight: 700, ...ss, ...pp }}>
+        <h2 className="text-[24px] sm:text-[30px] text-center mb-8" style={{ fontWeight: 700, color: theme.text, ...ss, ...pp }}>
           Sino ang Puwedeng Sumali?
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {WHO_CAN_JOIN.map((item, i) => (
             <div key={i} className="flex flex-col items-center gap-3 py-6">
               <item.icon size={48} />
-              <span className="text-[14px] text-[#070808] text-center whitespace-pre-line" style={{ fontWeight: 600, ...ss, ...pp }}>{item.title}</span>
+              <span className="text-[14px] text-center whitespace-pre-line" style={{ fontWeight: 600, color: theme.text, ...ss, ...pp }}>{item.title}</span>
             </div>
           ))}
         </div>
@@ -551,14 +547,14 @@ export default function AffiliatePage() {
 
       {/* ===== MARKETING RESOURCES ===== */}
       <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <h2 className="text-[24px] sm:text-[30px] text-center text-[#070808] mb-8" style={{ fontWeight: 700, ...ss, ...pp }}>
+        <h2 className="text-[24px] sm:text-[30px] text-center mb-8" style={{ fontWeight: 700, color: theme.text, ...ss, ...pp }}>
           Marketing Resources
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {RESOURCES.map((r, i) => (
-            <div key={i} className="flex flex-col items-center gap-3 py-6 rounded-xl border border-[#f5f6f7] hover:border-[#ff5222]/20 transition-all cursor-pointer">
+            <div key={i} className="flex flex-col items-center gap-3 py-6 rounded-xl hover:border-[#ff5222]/20 transition-all cursor-pointer" style={{ border: `1px solid ${theme.cardBorder}` }}>
               <r.icon size={40} />
-              <span className="text-[15px] text-[#070808]" style={{ fontWeight: 600, ...ss, ...pp }}>{r.title}</span>
+              <span className="text-[15px]" style={{ fontWeight: 600, color: theme.text, ...ss, ...pp }}>{r.title}</span>
             </div>
           ))}
         </div>
@@ -566,23 +562,23 @@ export default function AffiliatePage() {
 
       {/* ===== FAQ ===== */}
       <div className="max-w-[700px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <h2 className="text-[24px] sm:text-[30px] text-center text-[#070808] mb-8" style={{ fontWeight: 700, ...ss, ...pp }}>
+        <h2 className="text-[24px] sm:text-[30px] text-center mb-8" style={{ fontWeight: 700, color: theme.text, ...ss, ...pp }}>
           Mga Madalas Itanong (FAQ)
         </h2>
         <div className="flex flex-col">
           {FAQ_DATA.map((faq, i) => (
-            <div key={i} className="border-b border-[#f5f6f7]">
+            <div key={i} style={{ borderBottom: `1px solid ${theme.cardBorder}` }}>
               <button onClick={() => setFaqOpen(faqOpen === i ? null : i)}
                 className="w-full flex items-center justify-between py-4 cursor-pointer text-left">
-                <span className="text-[14px] text-[#070808]" style={{ fontWeight: 500, ...ss, ...pp }}>{faq.q}</span>
+                <span className="text-[14px]" style={{ fontWeight: 500, color: theme.text, ...ss, ...pp }}>{faq.q}</span>
                 <svg className={`size-4 shrink-0 ml-4 transition-transform ${faqOpen === i ? "rotate-45" : ""}`}
-                  viewBox="0 0 24 24" fill="none" stroke="#84888c" strokeWidth="2" strokeLinecap="round">
+                  viewBox="0 0 24 24" fill="none" stroke={theme.textSec} strokeWidth="2" strokeLinecap="round">
                   <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
               </button>
               {faqOpen === i && (
                 <div className="pb-4 pr-8">
-                  <p className="text-[13px] text-[#84888c] leading-[1.6]" style={{ ...ss, ...pp }}>{faq.a}</p>
+                  <p className="text-[13px] leading-[1.6]" style={{ color: theme.textSec, ...ss, ...pp }}>{faq.a}</p>
                 </div>
               )}
             </div>
@@ -592,13 +588,13 @@ export default function AffiliatePage() {
 
       {/* ===== CTA ===== */}
       <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="bg-[#fafafa] rounded-2xl py-12 px-6 flex flex-col items-center gap-5">
-          <h2 className="text-[24px] sm:text-[30px] text-[#070808] text-center" style={{ fontWeight: 700, ...ss, ...pp }}>
+        <div className="rounded-2xl py-12 px-6 flex flex-col items-center gap-5" style={{ background: theme.inputBg }}>
+          <h2 className="text-[24px] sm:text-[30px] text-center" style={{ fontWeight: 700, color: theme.text, ...ss, ...pp }}>
             Handa Ka Na Bang Kumita?
           </h2>
           <button onClick={() => setStep("apply")}
-            className="bg-[#070808] text-white h-12 px-10 rounded-lg text-[16px] cursor-pointer hover:bg-[#1a1a1a] transition-colors"
-            style={{ fontWeight: 500, ...ss, ...pp }}>
+            className="h-12 px-10 rounded-lg text-[16px] cursor-pointer transition-colors"
+            style={{ fontWeight: 500, background: theme.isDark ? "#f0f0f2" : "#070808", color: theme.isDark ? "#070808" : "#fff", ...ss, ...pp }}>
             Mag-apply Ngayon
           </button>
         </div>
@@ -611,14 +607,14 @@ export default function AffiliatePage() {
 
   /* ==================== PAGE RENDER ==================== */
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-white" style={pp}>
+    <div className="flex h-screen w-full overflow-hidden" style={{ ...pp, background: theme.bg }}>
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} onDeposit={openDeposit} />
 
       <div className="flex flex-col flex-1 min-w-0">
         <Header onDeposit={openDeposit} onMenuToggle={() => setSidebarOpen(true)} />
 
         <AuthGate pageName="Affiliate">
-        <div className="flex-1 overflow-y-auto bg-white">
+        <div className="flex-1 overflow-y-auto" style={{ background: theme.bg }}>
           {step === "landing" && renderLanding()}
           {step === "apply" && renderApplyForm()}
           {step === "verify" && renderVerify()}
@@ -629,7 +625,7 @@ export default function AffiliatePage() {
         </AuthGate>
       </div>
 
-      <DepositWithdrawModal isOpen={modalOpen} onClose={() => setModalOpen(false)} mode={modalMode} theme={LIGHT_THEME} balance={23450} />
+      <DepositWithdrawModal isOpen={modalOpen} onClose={() => setModalOpen(false)} mode={modalMode} theme={toModalTheme(theme)} balance={23450} />
     </div>
   );
 }

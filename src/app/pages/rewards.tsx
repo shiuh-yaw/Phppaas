@@ -14,6 +14,7 @@ import {
 import type { ComponentType } from "react";
 import { AuthGate } from "../components/auth-gate";
 import { Footer } from "../components/footer";
+import { usePageTheme, toModalTheme } from "../components/theme-utils";
 
 const pp = { fontFamily: "'Poppins', sans-serif" };
 const ss = { fontFeatureSettings: "'ss04'" };
@@ -254,13 +255,7 @@ export default function RewardsPage() {
 
   const openDeposit = () => { setModalMode("deposit"); setModalOpen(true); };
 
-  const modalTheme: ModalTheme = {
-    bg: "#ffffff", card: "#ffffff", cardBorder: "#f5f6f7",
-    text: "#070808", textSec: "#84888c", textMut: "#a0a3a7", textFaint: "#dfe0e2",
-    inputBg: "#fafafa", inputBorder: "#f5f6f7",
-    greenBg: "#e6fff3", greenText: "#00bf85", orangeBg: "#fff4ed", orangeText: "#ff5222",
-    isDark: false,
-  };
+  const modalTheme: ModalTheme = toModalTheme(usePageTheme());
 
   const currentTasks = activeTab === "newcomer" ? tasks : weeklyTasks;
   const totalClaimed = tasks.filter(t => t.status === "claimed").reduce((s, t) => s + t.amount, 0);
@@ -291,15 +286,15 @@ export default function RewardsPage() {
         return (
           <button onClick={() => task.route && navigate(task.route)}
             className="px-5 py-2.5 rounded-lg cursor-pointer transition-colors border"
-            style={{ background: "#fff", borderColor: "#e5e7ea", ...ss, ...pp }}>
-            <span className="text-[14px]" style={{ color: "#070808", fontWeight: 600 }}>
+            style={{ background: modalTheme.card, borderColor: modalTheme.cardBorder, ...ss, ...pp }}>
+            <span className="text-[14px]" style={{ color: modalTheme.text, fontWeight: 600 }}>
               {task.category === "Deposit" ? "Mag-deposit" : "Tumaya"}
             </span>
           </button>
         );
       case "locked":
         return (
-          <div className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg" style={{ background: "#f5f6f7" }}>
+          <div className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg" style={{ background: modalTheme.isDark ? modalTheme.inputBg : "#f5f6f7" }}>
             <svg className="size-4" viewBox="0 0 16 16" fill="none"><path d="M12 7H4a1 1 0 00-1 1v5a1 1 0 001 1h8a1 1 0 001-1V8a1 1 0 00-1-1zM6 7V5a2 2 0 114 0v2" stroke="#a0a3a7" strokeWidth="1.5" strokeLinecap="round" fill="none"/></svg>
             <span className="text-[14px]" style={{ color: "#a0a3a7", fontWeight: 500, ...ss, ...pp }}>Naka-lock</span>
           </div>
@@ -319,14 +314,14 @@ export default function RewardsPage() {
         <div className="flex items-center gap-2.5 py-3">
           <EmojiIcon emoji={emoji} size={24} />
           <div className="flex flex-col">
-            <span className="text-[18px]" style={{ color: "#070808", fontWeight: 600, ...ss, ...pp }}>{title}</span>
-            {subtitle && <span className="text-[12px]" style={{ color: "#84888c", ...ss, ...pp }}>{subtitle}</span>}
+            <span className="text-[18px]" style={{ color: modalTheme.text, fontWeight: 600, ...ss, ...pp }}>{title}</span>
+            {subtitle && <span className="text-[12px]" style={{ color: modalTheme.textSec, ...ss, ...pp }}>{subtitle}</span>}
           </div>
         </div>
         <div className="flex flex-col gap-3">
           {sectionTasks.map(task => (
             <div key={task.id} className="flex items-center gap-6 pl-4 pr-8 py-4 rounded-2xl border transition-colors hover:shadow-sm"
-              style={{ background: "#fff", borderColor: "#f0f1f3" }}>
+              style={{ background: modalTheme.card, borderColor: modalTheme.cardBorder }}>
               {/* Amount badge */}
               <div className="flex flex-col items-center justify-center px-5 py-3 rounded-lg shrink-0 w-[120px]"
                 style={{ background: task.status === "claimed" ? "#e6fff3" : "rgba(255,82,34,0.06)" }}>
@@ -343,7 +338,7 @@ export default function RewardsPage() {
               <div className="flex-1 flex flex-col gap-1.5 min-w-0">
                 <div className="flex items-center gap-2">
                   {task.Icon ? <task.Icon size={24} /> : <EmojiIcon emoji={task.emoji} size={24} />}
-                  <span className="text-[16px]" style={{ color: "#070808", fontWeight: 600, ...ss, ...pp }}>{task.title}</span>
+                  <span className="text-[16px]" style={{ color: modalTheme.text, fontWeight: 600, ...ss, ...pp }}>{task.title}</span>
                   {task.tier > 0 && (
                     <span className="text-[10px] px-2 py-0.5 rounded-full" style={{
                       background: task.tier === 1 ? "#fff4ed" : task.tier === 2 ? "#eef4ff" : "#f5f6f7",
@@ -354,7 +349,7 @@ export default function RewardsPage() {
                     </span>
                   )}
                 </div>
-                <span className="text-[13px]" style={{ color: "#84888c", ...ss, ...pp }}>{task.description}</span>
+                <span className="text-[13px]" style={{ color: modalTheme.textSec, ...ss, ...pp }}>{task.description}</span>
               </div>
 
               {/* Action */}
@@ -367,7 +362,7 @@ export default function RewardsPage() {
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#f7f8fa]" style={pp}>
+    <div className="flex h-screen w-full overflow-hidden" style={{ ...pp, background: modalTheme.isDark ? "#0d0e10" : "#f7f8fa" }}>
       <Sidebar onDeposit={openDeposit} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex flex-col flex-1 min-w-0">
@@ -462,7 +457,7 @@ export default function RewardsPage() {
                 <button key={key} onClick={() => setActiveTab(key)}
                   className="relative pb-2.5 cursor-pointer transition-colors">
                   <span className="text-[14px]" style={{
-                    color: activeTab === key ? "#070808" : "#84888c",
+                    color: activeTab === key ? modalTheme.text : modalTheme.textSec,
                     fontWeight: activeTab === key ? 600 : 400,
                     ...ss, ...pp,
                   }}>
@@ -503,14 +498,14 @@ export default function RewardsPage() {
             )}
 
             {/* Tier Progress Card */}
-            <div className="rounded-2xl border p-6 flex flex-col gap-4" style={{ background: "#fff", borderColor: "#f0f1f3" }}>
+            <div className="rounded-2xl border p-6 flex flex-col gap-4" style={{ background: modalTheme.card, borderColor: modalTheme.cardBorder }}>
               <div className="flex items-center justify-between">
-                <span className="text-[16px]" style={{ color: "#070808", fontWeight: 600, ...ss, ...pp }}>Tier Progress mo</span>
-                <span className="text-[13px]" style={{ color: "#84888c", ...ss, ...pp }}>
+                <span className="text-[16px]" style={{ color: modalTheme.text, fontWeight: 600, ...ss, ...pp }}>Tier Progress mo</span>
+                <span className="text-[13px]" style={{ color: modalTheme.textSec, ...ss, ...pp }}>
                   {tasks.filter(t => t.status === "claimed").length} / {tasks.length} tasks na-complete
                 </span>
               </div>
-              <div className="w-full h-3 rounded-full overflow-hidden" style={{ background: "#f0f1f3" }}>
+              <div className="w-full h-3 rounded-full overflow-hidden" style={{ background: modalTheme.isDark ? modalTheme.inputBg : "#f0f1f3" }}>
                 <div className="h-full rounded-full transition-all duration-500"
                   style={{
                     width: `${(tasks.filter(t => t.status === "claimed").length / tasks.length) * 100}%`,
@@ -533,10 +528,10 @@ export default function RewardsPage() {
 
             {/* ========== RULES AND TERMS ========== */}
             <div className="py-16 flex flex-col gap-6">
-              <h2 className="text-[32px] text-center" style={{ color: "#070808", fontWeight: 600, ...ss, ...pp }}>
+              <h2 className="text-[32px] text-center" style={{ color: modalTheme.text, fontWeight: 600, ...ss, ...pp }}>
                 Mga Patakaran at Tuntunin
               </h2>
-              <ul className="flex flex-col gap-2 text-[14px]" style={{ color: "#84888c", ...ss, ...pp, lineHeight: 1.6 }}>
+              <ul className="flex flex-col gap-2 text-[14px]" style={{ color: modalTheme.textSec, ...ss, ...pp, lineHeight: 1.6 }}>
                 <li className="flex gap-2">
                   <span className="shrink-0 mt-0.5">•</span>
                   <span>Kailangan i-complete ang newcomer tasks within 7 araw ng registration para maging eligible sa reward. Kung hindi, mawa-forfeit na ang bonus.</span>
@@ -570,15 +565,15 @@ export default function RewardsPage() {
 
             {/* ========== FAQ ========== */}
             <div className="py-10 flex flex-col gap-6">
-              <h2 className="text-[32px] text-center" style={{ color: "#070808", fontWeight: 600, ...ss, ...pp }}>
+              <h2 className="text-[32px] text-center" style={{ color: modalTheme.text, fontWeight: 600, ...ss, ...pp }}>
                 Mga Madalas Itanong (FAQ)
               </h2>
               <div className="flex flex-col">
                 {FAQ_ITEMS.map((item, i) => (
-                  <div key={i} className="border-b" style={{ borderColor: "#f0f1f3" }}>
+                  <div key={i} className="border-b" style={{ borderColor: modalTheme.cardBorder }}>
                     <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
                       className="w-full flex items-center justify-between py-4 cursor-pointer text-left">
-                      <span className="text-[15px]" style={{ color: "#070808", fontWeight: 500, ...ss, ...pp }}>{item.q}</span>
+                      <span className="text-[15px]" style={{ color: modalTheme.text, fontWeight: 500, ...ss, ...pp }}>{item.q}</span>
                       <svg className={`size-4 shrink-0 transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`}
                         viewBox="0 0 6 4.68" fill="none">
                         <path d="M6 0V1.5L3 4.68L0 1.5V0H6Z" fill={openFaq === i ? "#ff5222" : "#a0a3a7"} />
@@ -586,7 +581,7 @@ export default function RewardsPage() {
                     </button>
                     {openFaq === i && (
                       <div className="pb-4">
-                        <p className="text-[13px]" style={{ color: "#84888c", ...ss, ...pp, lineHeight: 1.7 }}>{item.a}</p>
+                        <p className="text-[13px]" style={{ color: modalTheme.textSec, ...ss, ...pp, lineHeight: 1.7 }}>{item.a}</p>
                       </div>
                     )}
                   </div>

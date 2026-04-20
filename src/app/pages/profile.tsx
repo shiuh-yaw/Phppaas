@@ -10,6 +10,7 @@ import { AuthGate } from "../components/auth-gate";
 import { Footer } from "../components/footer";
 import { ProfileSkeleton } from "../components/page-skeleton";
 import { MfaManagerPanel } from "../components/mfa-manager";
+import { usePageTheme, toModalTheme } from "../components/theme-utils";
 
 const pp = { fontFamily: "'Poppins', sans-serif" };
 const ss = { fontFeatureSettings: "'ss04'" };
@@ -145,13 +146,7 @@ export default function ProfilePage() {
   const openDeposit = () => { setModalMode("deposit"); setModalOpen(true); };
   const openWithdraw = () => { setModalMode("withdraw"); setModalOpen(true); };
 
-  const modalTheme: ModalTheme = {
-    bg: "#ffffff", card: "#ffffff", cardBorder: "#f5f6f7",
-    text: "#070808", textSec: "#84888c", textMut: "#a0a3a7", textFaint: "#dfe0e2",
-    inputBg: "#fafafa", inputBorder: "#f5f6f7",
-    greenBg: "#e6fff3", greenText: "#00bf85", orangeBg: "#fff4ed", orangeText: "#ff5222",
-    isDark: false,
-  };
+  const modalTheme: ModalTheme = toModalTheme(usePageTheme());
 
   const displayUser = user ?? {
     name: "Juan Cruz",
@@ -468,7 +463,7 @@ export default function ProfilePage() {
             {/* ===== SECURITY TAB ===== */}
             {activeTab === "security" && (
               <div className="flex flex-col gap-5">
-                <MfaManagerPanel userEmail={user?.email} />
+                <MfaManagerPanel userEmail={user?.email} phoneAuthPrimary={true} />
 
                 <SectionCard title="Password" emoji="🔑">
                   <div className="flex items-center justify-between">
