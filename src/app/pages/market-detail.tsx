@@ -480,8 +480,8 @@ function MainContent({ market }: { market: MarketData }) {
 
       {/* Chart Card */}
       <div className="rounded-xl sm:rounded-2xl border p-3 sm:p-5 flex flex-col gap-3 sm:gap-4" style={{ background: t.card, borderColor: t.cardBorder }}>
-        {/* Legend */}
-        <div className="flex items-center justify-between">
+        {/* Header: Legend + Actions (fav/share top-right) */}
+        <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             {market.outcomes.slice(0, 3).map((o) => (
               <div key={o.name} className="flex items-center gap-1">
@@ -490,7 +490,14 @@ function MainContent({ market }: { market: MarketData }) {
               </div>
             ))}
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-1.5">
+            <button className="size-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors" style={{ background: isDark ? "rgba(255,255,255,0.06)" : "#f5f6f7" }} title="Favorite">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={t.iconFill} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+            <button className="size-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors" style={{ background: isDark ? "rgba(255,255,255,0.06)" : "#f5f6f7" }} title="Share">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={t.iconFill} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </button>
+          </div>
         </div>
 
         {/* Chart */}
@@ -508,13 +515,14 @@ function MainContent({ market }: { market: MarketData }) {
           </ResponsiveContainer>
         </div>
 
-        {/* Time tabs */}
-        <div className="flex items-center justify-between pt-2 border-t" style={{ borderColor: t.cardBorder }}>
-          <div className="flex items-center gap-1 sm:gap-2">
+        {/* Time tabs (bottom right) */}
+        <div className="flex items-center justify-end">
+          <div className="flex items-center gap-1">
             {timeTabs.map((tab) => (
-              <button key={tab} onClick={() => setTimeTab(tab)} className="h-7 px-2 rounded text-[11px] sm:text-[12px] cursor-pointer transition-colors" style={{
+              <button key={tab} onClick={() => setTimeTab(tab)} className="h-7 px-2.5 rounded text-[11px] sm:text-[12px] cursor-pointer transition-colors" style={{
                 background: timeTab === tab ? (isDark ? "rgba(255,255,255,0.08)" : "#f2f3f4") : "transparent",
                 color: timeTab === tab ? t.text : t.textMut,
+                fontWeight: timeTab === tab ? 600 : 400,
                 ...ss, ...pp
               }}>
                 {tab}

@@ -28,7 +28,6 @@ export default function SignupPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [country, setCountry] = useState<Country>(DEFAULT_COUNTRY);
-  const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [agreeTerms, setAgreeTerms] = useState(false);
@@ -50,7 +49,6 @@ export default function SignupPage() {
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
-    if (!name.trim()) errs.name = t("signup.error.nameRequired");
     if (!phone.trim()) errs.phone = t("signup.error.phoneRequired");
     else if (phone.length < 5) errs.phone = `Enter a valid phone number for ${country.name}`;
     if (!agreeTerms) errs.terms = t("signup.error.agreeTerms");
@@ -66,8 +64,8 @@ export default function SignupPage() {
 
   const handleSocialLogin = (provider: string) => {
     const mockUser = {
-      name: name.trim() || `${provider} User`,
-      handle: `@${(name.trim() || provider).replace(/\s+/g, "").toLowerCase()}`,
+      name: `${provider} User`,
+      handle: `@${provider.replace(/\s+/g, "").toLowerCase()}${Math.floor(Math.random() * 10000)}`,
       avatar: "https://images.unsplash.com/photo-1642060603505-e716140d45d2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=100",
       balance: 5000,
       portfolio: 1234.56,
@@ -90,8 +88,8 @@ export default function SignupPage() {
     const code = (digits || otp).join("");
     if (code.length < 6) { triggerShake(); setErrors({ otp: "Enter the 6-digit code" }); return; }
     const mockUser = {
-      name,
-      handle: `@${name.replace(/\s+/g, "").toLowerCase()}`,
+      name: `User ${phone.slice(-4)}`,
+      handle: `@user${phone.slice(-4)}`,
       avatar: "https://images.unsplash.com/photo-1642060603505-e716140d45d2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=100",
       balance: 5000,
       portfolio: 1234.56,
@@ -178,18 +176,6 @@ export default function SignupPage() {
                 </div>
 
                 <div className="flex flex-col gap-4">
-                  {/* Name */}
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[12px] text-[#555]" style={{ fontWeight: 500, ...ss }}>{t("signup.fullName")}</label>
-                    <input value={name}
-                      onChange={e => { setName(e.target.value); setErrors(prev => { const n = { ...prev }; delete n.name; return n; }); }}
-                      placeholder={t("signup.fullNamePlaceholder")}
-                      className={`h-11 px-3.5 rounded-xl border ${errors.name ? "border-[#dc2626]/50 bg-[#fef2f2]" : "border-[#f0f1f3] bg-[#fafafa]"} text-[13px] text-[#070808] outline-none focus:border-[#ff5222]/40 focus:bg-white transition-all`}
-                      style={ss}
-                    />
-                    <FieldError field="name" />
-                  </div>
-
                   {/* Phone with country selector */}
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[12px] text-[#555]" style={{ fontWeight: 500, ...ss }}>{t("signup.phone")}</label>
@@ -225,7 +211,7 @@ export default function SignupPage() {
                     <EmojiIcon emoji="💡" size={14} />
                     <span className="text-[11px] text-[#1e40af]" style={{ fontWeight: 600, ...ss }}>Demo Mode — Quick Fill</span>
                   </div>
-                  <button onClick={() => { setName("Juan Dela Cruz"); setPhone("9171234567"); setAgreeTerms(true); setErrors({}); }}
+                  <button onClick={() => { setPhone("9171234567"); setAgreeTerms(true); setErrors({}); }}
                     className="text-[11px] text-[#2563eb] cursor-pointer hover:underline flex items-center gap-1"
                     style={{ fontWeight: 500, ...ss }}>
                     <EmojiIcon emoji="⚡" size={12} /> Click to auto-fill demo credentials

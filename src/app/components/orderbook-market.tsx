@@ -329,6 +329,7 @@ export function OBPriceChart({ market, isDark, t }: OBPriceChartProps) {
 
   const periodLabel = tab === "All" ? "All time" : tab === "1D" ? "24h" : tab === "1W" ? "7d" : tab === "1M" ? "30d" : "90d";
 
+  const iconFill = isDark ? "rgba(255,255,255,0.5)" : "#84888c";
   return (
     <div className="rounded-xl sm:rounded-2xl p-4 sm:p-5 flex flex-col gap-4" style={{ background: t.card, border: `1px solid ${t.cardBorder}` }}>
       <div className="flex items-center justify-between">
@@ -341,12 +342,13 @@ export function OBPriceChart({ market, isDark, t }: OBPriceChartProps) {
             </span>
           </div>
         </div>
-        <div className="flex items-center gap-1">
-          {tabs.map(t2 => (
-            <button key={t2} onClick={() => setTab(t2)} className="h-7 px-2.5 rounded text-[11px] cursor-pointer transition-colors" style={{ background: tab === t2 ? (isDark ? "rgba(255,255,255,0.1)" : "#f2f3f4") : "transparent", color: tab === t2 ? t.text : t.textMut, fontWeight: tab === t2 ? 600 : 400, ...ss, ...pp }}>
-              {t2}
-            </button>
-          ))}
+        <div className="flex items-center gap-1.5">
+          <button className="size-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors" style={{ background: isDark ? "rgba(255,255,255,0.06)" : "#f5f6f7" }} title="Favorite">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={iconFill} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+          <button className="size-8 rounded-lg flex items-center justify-center cursor-pointer transition-colors" style={{ background: isDark ? "rgba(255,255,255,0.06)" : "#f5f6f7" }} title="Share">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={iconFill} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </button>
         </div>
       </div>
 
@@ -363,6 +365,17 @@ export function OBPriceChart({ market, isDark, t }: OBPriceChartProps) {
             <Line key="line-yes" type="monotone" dataKey="yes" stroke={periodChange.pct >= 0 ? "#22c55e" : "#ef4444"} strokeWidth={2.5} dot={false} animationDuration={400} />
           </LineChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* Time tabs (bottom right) */}
+      <div className="flex items-center justify-end">
+        <div className="flex items-center gap-1">
+          {tabs.map(t2 => (
+            <button key={t2} onClick={() => setTab(t2)} className="h-7 px-2.5 rounded text-[11px] cursor-pointer transition-colors" style={{ background: tab === t2 ? (isDark ? "rgba(255,255,255,0.1)" : "#f2f3f4") : "transparent", color: tab === t2 ? t.text : t.textMut, fontWeight: tab === t2 ? 600 : 400, ...ss, ...pp }}>
+              {t2}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Stats row */}
@@ -645,6 +658,12 @@ export function OrderbookTradingPanel({ market, isDark, t, onDeposit }: Orderboo
 
   return (
     <div className="hidden lg:flex w-[300px] shrink-0 flex-col gap-4 p-4 border-l overflow-y-auto" style={{ background: t.card, borderColor: t.cardBorder }}>
+      {/* Title */}
+      <div className="flex flex-col gap-1">
+        <span className="text-[13px]" style={{ color: t.text, fontWeight: 600, ...ss, ...pp }}>Place Order</span>
+        <p className="text-[12px] leading-[1.4]" style={{ color: t.textSec, ...ss, ...pp }}>{market.title}</p>
+      </div>
+
       {/* YES/NO toggle */}
       <div className="flex rounded-xl overflow-hidden border" style={{ borderColor: t.cardBorder }}>
         {(["YES", "NO"] as const).map(s => (
