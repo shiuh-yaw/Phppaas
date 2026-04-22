@@ -75,7 +75,7 @@ export default function PrivacyPolicyPage() {
               </div>
               <h1 className="text-[28px] text-[#070808] mb-2" style={{ fontWeight: 700, ...ss }}>Privacy Policy</h1>
               <p className="text-[13px] text-[#84888c]" style={ss}>
-                Huling na-update: March 1, 2026 | Lucky Taya (Powered by ForeGate Inc.)
+                Huling na-update: March 1, 2026 | Lucky Taya (Powered by PrediEx Inc.)
               </p>
             </div>
 

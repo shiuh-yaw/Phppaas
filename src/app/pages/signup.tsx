@@ -5,7 +5,6 @@ import { useT } from "../i18n/useT";
 import { EmojiIcon } from "../components/two-tone-icons";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { CountryPhoneSelector, DEFAULT_COUNTRY, type Country } from "../components/country-phone-selector";
-import imgFrame2087325367 from "figma:asset/aa22ee141c47adc40b93dee89db917612452e751.png";
 
 const pp = { fontFamily: "'Poppins', sans-serif" };
 const ss = { fontFeatureSettings: "'ss04'" };
@@ -113,7 +112,7 @@ export default function SignupPage() {
 
         <div className="relative z-10">
           <button onClick={() => navigate("/")} className="cursor-pointer">
-            <div className="w-[120px] h-[30px] bg-white" style={{ maskImage: `url('${imgFrame2087325367}')`, maskSize: "120px 30px", maskRepeat: "no-repeat", WebkitMaskImage: `url('${imgFrame2087325367}')`, WebkitMaskSize: "120px 30px", WebkitMaskRepeat: "no-repeat" }} />
+            <div className="text-white leading-none" style={{ fontFamily: "Poppins, sans-serif", fontWeight: 800, fontSize: 26, letterSpacing: "-0.02em" }}>PrediEx</div>
           </button>
         </div>
 
@@ -159,7 +158,7 @@ export default function SignupPage() {
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center justify-center mb-8">
             <button onClick={() => navigate("/")} className="cursor-pointer">
-              <div className="w-[120px] h-[30px] bg-[#ff5222]" style={{ maskImage: `url('${imgFrame2087325367}')`, maskSize: "120px 30px", maskRepeat: "no-repeat", WebkitMaskImage: `url('${imgFrame2087325367}')`, WebkitMaskSize: "120px 30px", WebkitMaskRepeat: "no-repeat" }} />
+              <div className="text-[#ff5222] leading-none" style={{ fontFamily: "Poppins, sans-serif", fontWeight: 800, fontSize: 26, letterSpacing: "-0.02em" }}>PrediEx</div>
             </button>
           </div>
 

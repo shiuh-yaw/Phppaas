@@ -210,6 +210,7 @@ function TradingPanel({ market, onDeposit }: { market: MarketData; onDeposit: ()
   const { t, isDark } = useTheme();
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
+  const [action, setAction] = useState<"Buy" | "Sell">("Buy");
   const [selectedOutcome, setSelectedOutcome] = useState(0);
   const [amount, setAmount] = useState("");
   const sel = market.outcomes[selectedOutcome] || market.outcomes[0];
@@ -222,7 +223,31 @@ function TradingPanel({ market, onDeposit }: { market: MarketData; onDeposit: ()
     <div className="hidden lg:flex w-[300px] shrink-0 flex-col gap-4 p-4 border-l overflow-y-auto" style={{ background: t.card, borderColor: t.cardBorder }}>
       {/* Bet Section */}
       <div className="flex flex-col gap-4">
-        <p className="text-[12px] leading-[1.4]" style={{ color: t.textSec, ...ss, ...pp }}>{market.title}</p>
+        <div className="flex flex-col gap-1">
+          <span className="text-[13px]" style={{ color: t.text, fontWeight: 600, ...ss, ...pp }}>Place Bet</span>
+          <p className="text-[12px] leading-[1.4]" style={{ color: t.textSec, ...ss, ...pp }}>{market.title}</p>
+        </div>
+
+        {/* Buy/Sell toggle */}
+        <div className="relative flex p-1 rounded-lg" style={{ background: isDark ? "rgba(255,255,255,0.05)" : "#f5f6f7" }}>
+          <div
+            className="absolute top-1 bottom-1 rounded-md transition-all duration-200 ease-out"
+            style={{
+              left: action === "Buy" ? 4 : "50%",
+              width: "calc(50% - 4px)",
+              background: t.card,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)",
+            }}
+          />
+          {(["Buy", "Sell"] as const).map(a => (
+            <button key={a} onClick={() => setAction(a)} className="relative flex-1 h-9 text-[13px] cursor-pointer z-10" style={{
+              color: action === a ? (a === "Buy" ? "#00BF85" : "#ef4444") : t.textMut,
+              fontWeight: 600, ...ss, ...pp,
+            }}>
+              {a}
+            </button>
+          ))}
+        </div>
 
         {/* Outcome selection */}
         <div>
@@ -277,8 +302,8 @@ function TradingPanel({ market, onDeposit }: { market: MarketData; onDeposit: ()
 
         {/* CTA */}
         {isLoggedIn ? (
-          <button className="bg-[#00BF85] text-white h-12 rounded-lg text-[15px] cursor-pointer hover:bg-[#00a674] transition-colors" style={{ fontWeight: 600, ...ss, ...pp }}>
-            I-Finalize ang Taya
+          <button className="text-white h-12 rounded-lg text-[15px] cursor-pointer transition-colors" style={{ background: action === "Buy" ? "#00BF85" : "#ef4444", fontWeight: 600, ...ss, ...pp }}>
+            {action} {sel.name}
           </button>
         ) : (
           <div className="flex flex-col gap-2">
@@ -435,14 +460,42 @@ function MainContent({ market }: { market: MarketData }) {
   const timeTabs = ["1H", "6H", "1D", "1W", "1M", "All"];
   const commentTabs = ["Comments", "Top Holders", "Activity", "Related"];
 
+  const navigate = useNavigate();
   return (
     <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 flex flex-col gap-5 sm:gap-6 min-w-0 pb-24 lg:pb-6" style={{ background: t.bg }}>
-      {/* Market Title Row */}
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2">
+        <button onClick={() => navigate("/markets")} className="flex items-center gap-1.5 text-[12px] cursor-pointer hover:opacity-80 transition-opacity" style={{ color: t.textSec, ...ss, ...pp }}>
+          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7" /></svg>
+          Mga Market
+        </button>
+        <span style={{ color: t.textMut }}>›</span>
+        <span className="text-[11px]" style={{ color: t.textMut, ...ss }}>Parimutuel</span>
+        <span style={{ color: t.textMut }}>›</span>
+        <span className="text-[11px] truncate max-w-[200px]" style={{ color: t.text, ...ss }}>{market.title.slice(0, 40)}...</span>
+      </div>
+
+      {/* Badges Row */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="bg-[#ff5222] text-white text-[9px] px-2.5 py-1 rounded-full" style={{ fontWeight: 700, ...ss }}>🎯 PARIMUTUEL</span>
+        <span className="text-[9px] px-2.5 py-1 rounded-full" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "#f5f6f7", color: t.textSec, fontWeight: 600, ...ss }}>
+          {market.category}
+        </span>
+        <span className="flex items-center gap-1 text-[9px] px-2.5 py-1 rounded-full" style={{ background: "rgba(34,197,94,0.12)", color: "#22c55e", fontWeight: 700, ...ss }}>
+          <span style={{ width: 6, height: 6, background: "#22c55e", borderRadius: "50%" }} /> LIVE
+        </span>
+        <span className="text-[10px] ml-auto hidden sm:flex items-center gap-1" style={{ color: t.textMut, ...ss }}>
+          Creator: <span style={{ color: t.text, fontWeight: 600 }}>{market.creator}</span>
+          <svg className="size-3" fill="none" viewBox="0 0 14 14"><path d={svgPaths.p3e687800} fill="#FF5222" /></svg>{market.creatorFire}
+        </span>
+      </div>
+
+      {/* Title + Countdown */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+        <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
           <ImageWithFallback src={market.image} alt="" className="size-12 sm:size-[60px] rounded-lg object-cover shrink-0" />
           <div className="min-w-0">
-            <h1 className="text-[18px] sm:text-[22px] leading-[1.3]" style={{ color: t.text, fontWeight: 600, ...ss, ...pp }}>{market.title}</h1>
+            <h1 className="text-[18px] sm:text-[22px] leading-[1.3]" style={{ color: t.text, fontWeight: 700, ...ss, ...pp }}>{market.title}</h1>
             <div className="flex items-center gap-2 sm:gap-3 mt-1 flex-wrap">
               <div className="flex items-center gap-1">
                 <svg className="size-3.5" fill="none" viewBox="0 0 14 14"><path d={svgPaths.p27f24a00} fill={t.iconFill} /></svg>
@@ -452,29 +505,16 @@ function MainContent({ market }: { market: MarketData }) {
                 <svg className="size-3.5" fill="none" viewBox="0 0 14 14"><path d={svgPaths.p33c0c00} fill={t.iconFill} /></svg>
                 <span className="text-[11px] sm:text-[12px]" style={{ color: t.textSec, ...ss, ...pp }}>{market.endDate}</span>
               </div>
-              <span className="text-[10px] px-2 py-0.5 rounded inline-flex items-center gap-1" style={{ background: isDark ? "rgba(255,82,34,0.15)" : "#fff4ed", color: "#ff5222", fontWeight: 600, ...pp }}><EmojiIcon emoji={market.category.split(" ")[0]} size={12} />{market.category.split(" ").slice(1).join(" ")}</span>
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-start sm:items-end gap-1">
+        <div className="flex flex-col items-start sm:items-end gap-1 shrink-0">
           <span className="text-[11px] sm:text-[12px]" style={{ color: t.textSec, ...ss, ...pp }}>Matatapos sa</span>
           <div className="flex gap-1">
             {(market.endDate === "LIVE" ? ["LIVE"] : ["2D", "10H", "8M", "45S"]).map((u) => (
               <span key={u} className="text-[12px] sm:text-[14px] px-2 py-1 rounded" style={{ background: u === "LIVE" ? "#ff5222" : (isDark ? "rgba(255,255,255,0.06)" : "#fafafa"), color: u === "LIVE" ? "#fff" : t.text, fontWeight: 500, ...ss, ...pp }}>{u}</span>
             ))}
           </div>
-        </div>
-      </div>
-
-      {/* Creator */}
-      <div className="flex items-center gap-2">
-        <div className="size-7 sm:size-8 rounded-full overflow-hidden">
-          <img src={imgUnsplash4Yv84VgQkRm} alt="" className="size-full object-cover" />
-        </div>
-        <span className="text-[14px] sm:text-[16px]" style={{ color: t.text, fontWeight: 500, ...ss, ...pp }}>{market.creator}</span>
-        <div className="flex items-center gap-1">
-          <svg className="size-3.5" fill="none" viewBox="0 0 14 14"><path d={svgPaths.p3e687800} fill="#FF5222" /></svg>
-          <span className="text-[12px]" style={{ color: t.textSec, ...ss, ...pp }}>{market.creatorFire}</span>
         </div>
       </div>
 
@@ -641,9 +681,9 @@ function MainContent({ market }: { market: MarketData }) {
       )}
 
       {/* Rules */}
-      <div className="rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-col gap-3 sm:gap-4" style={{ background: isDark ? "rgba(255,255,255,0.03)" : "#fafafa" }}>
+      <div className="rounded-xl sm:rounded-2xl border p-4 sm:p-6 flex flex-col gap-3 sm:gap-4" style={{ background: t.card, borderColor: t.cardBorder }}>
         <div className="flex items-center justify-between cursor-pointer" onClick={() => setRulesOpen(!rulesOpen)}>
-          <span className="text-[16px] sm:text-[20px]" style={{ color: t.text, fontWeight: 500, ...ss, ...pp }}>Mga Patakaran / Rules</span>
+          <span className="text-[16px] sm:text-[20px]" style={{ color: t.text, fontWeight: 500, ...ss, ...pp }}>Resolution Rules</span>
           <svg className={`size-4 transition-transform ${rulesOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 12 7"><path d={svgPaths.p12bd8c80} fill={isDark ? "rgba(255,255,255,0.5)" : "#070808"} /></svg>
         </div>
         {rulesOpen && (
@@ -662,49 +702,152 @@ function MainContent({ market }: { market: MarketData }) {
           ))}
         </div>
 
-        {/* Input */}
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-          <div className="flex-1 h-11 sm:h-12 rounded-lg flex items-center px-3 sm:px-4" style={{ background: t.inputBg }}>
-            <span className="flex-1 text-[13px] sm:text-[14px]" style={{ color: t.textMut, ...ss, ...pp }}>Mag-komento...</span>
-            <span className="text-[13px] sm:text-[14px] cursor-pointer" style={{ color: "#ff5222", ...ss, ...pp }}>Post</span>
-          </div>
-          <div className="hidden sm:flex flex-1 h-12 rounded-lg items-center justify-center gap-2 px-4" style={{ background: isDark ? "rgba(0,191,133,0.1)" : "#e6fff3" }}>
-            <svg className="size-5" fill="none" viewBox="0 0 24 24"><path d={svgPaths.p9a17a00} fill={isDark ? "#fff" : "#000"} /></svg>
-            <span className="text-[13px]" style={{ color: t.text, ...ss, ...pp }}>Mag-ingat sa external links — baka phishing attacks</span>
-          </div>
-        </div>
-
-        {/* Sort */}
-        <div className="flex items-center gap-2 px-2 py-1 rounded-md w-fit" style={{ background: t.inputBg }}>
-          <span className="text-[13px] sm:text-[14px]" style={{ color: t.textSec, ...ss, ...pp }}>Pinakabago</span>
-          <svg className="size-3.5" fill="none" viewBox="0 0 10 6"><path d={svgPaths.p27f99a80} fill={isDark ? "#fff" : "#070808"} /></svg>
-        </div>
-
-        {/* Comment list */}
-        {market.comments.map((c, i) => (
-          <div key={i} className="flex gap-2 items-start">
-            <div className="size-7 sm:size-8 rounded-full overflow-hidden shrink-0">
-              <img src={imgUnsplash4Yv84VgQkRm} alt="" className="size-full object-cover" />
+        {/* Comments tab content */}
+        {commentTab === "Comments" && (<>
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <div className="flex-1 h-11 sm:h-12 rounded-lg flex items-center px-3 sm:px-4" style={{ background: t.inputBg }}>
+              <span className="flex-1 text-[13px] sm:text-[14px]" style={{ color: t.textMut, ...ss, ...pp }}>Mag-komento...</span>
+              <span className="text-[13px] sm:text-[14px] cursor-pointer" style={{ color: "#ff5222", ...ss, ...pp }}>Post</span>
             </div>
-            <div className="flex-1 flex flex-col gap-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-[13px] sm:text-[14px]" style={{ color: t.text, fontWeight: 500, ...ss, ...pp }}>{c.user}</span>
-                <span className="text-[12px] sm:text-[14px]" style={{ color: t.textMut, ...ss, ...pp }}>{c.time}</span>
-              </div>
-              <p className="text-[13px] sm:text-[14px] leading-[1.5]" style={{ color: t.text, ...ss, ...pp }}>{c.text}</p>
-              <div className="flex items-center gap-1 mt-0.5">
-                <svg className="size-4 sm:size-5 cursor-pointer" fill="none" viewBox="0 0 20 20"><path d={svgPaths.pebbdf00} fill={c.liked ? "#FF5222" : t.iconFill} /></svg>
-                <span className="text-[12px] sm:text-[14px]" style={{ color: c.liked ? "#FF5222" : t.textMut, ...ss, ...pp }}>{c.likes}</span>
-              </div>
+            <div className="hidden sm:flex flex-1 h-12 rounded-lg items-center justify-center gap-2 px-4" style={{ background: isDark ? "rgba(0,191,133,0.1)" : "#e6fff3" }}>
+              <svg className="size-5" fill="none" viewBox="0 0 24 24"><path d={svgPaths.p9a17a00} fill={isDark ? "#fff" : "#000"} /></svg>
+              <span className="text-[13px]" style={{ color: t.text, ...ss, ...pp }}>Mag-ingat sa external links — baka phishing attacks</span>
             </div>
-            <svg className="size-4 sm:size-5 cursor-pointer shrink-0 mt-1" fill="none" viewBox="0 0 20 20"><path d={svgPaths.p1ed70700} fill={t.iconFill} /></svg>
           </div>
-        ))}
+          <div className="flex items-center gap-2 px-2 py-1 rounded-md w-fit" style={{ background: t.inputBg }}>
+            <span className="text-[13px] sm:text-[14px]" style={{ color: t.textSec, ...ss, ...pp }}>Pinakabago</span>
+            <svg className="size-3.5" fill="none" viewBox="0 0 10 6"><path d={svgPaths.p27f99a80} fill={isDark ? "#fff" : "#070808"} /></svg>
+          </div>
+          {market.comments.map((c, i) => (
+            <div key={i} className="flex gap-2 items-start">
+              <div className="size-7 sm:size-8 rounded-full overflow-hidden shrink-0">
+                <img src={imgUnsplash4Yv84VgQkRm} alt="" className="size-full object-cover" />
+              </div>
+              <div className="flex-1 flex flex-col gap-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[13px] sm:text-[14px]" style={{ color: t.text, fontWeight: 500, ...ss, ...pp }}>{c.user}</span>
+                  <span className="text-[12px] sm:text-[14px]" style={{ color: t.textMut, ...ss, ...pp }}>{c.time}</span>
+                </div>
+                <p className="text-[13px] sm:text-[14px] leading-[1.5]" style={{ color: t.text, ...ss, ...pp }}>{c.text}</p>
+                <div className="flex items-center gap-1 mt-0.5">
+                  <svg className="size-4 sm:size-5 cursor-pointer" fill="none" viewBox="0 0 20 20"><path d={svgPaths.pebbdf00} fill={c.liked ? "#FF5222" : t.iconFill} /></svg>
+                  <span className="text-[12px] sm:text-[14px]" style={{ color: c.liked ? "#FF5222" : t.textMut, ...ss, ...pp }}>{c.likes}</span>
+                </div>
+              </div>
+              <svg className="size-4 sm:size-5 cursor-pointer shrink-0 mt-1" fill="none" viewBox="0 0 20 20"><path d={svgPaths.p1ed70700} fill={t.iconFill} /></svg>
+            </div>
+          ))}
+        </>)}
+
+        {/* Top Holders tab content */}
+        {commentTab === "Top Holders" && (
+          <div className="rounded-xl sm:rounded-2xl border overflow-hidden" style={{ background: t.card, borderColor: t.cardBorder }}>
+            <div className="hidden sm:flex items-center px-4 py-2.5 border-b" style={{ borderColor: t.cardBorder }}>
+              <span className="w-8 text-[10px]" style={{ color: t.textMut, ...ss }}>#</span>
+              <span className="flex-1 text-[10px]" style={{ color: t.textMut, ...ss }}>Trader</span>
+              <span className="w-28 text-[10px]" style={{ color: t.textMut, ...ss }}>Outcome</span>
+              <span className="w-24 text-right text-[10px]" style={{ color: t.textMut, ...ss }}>Stake</span>
+              <span className="w-24 text-right text-[10px]" style={{ color: t.textMut, ...ss }}>Payout</span>
+            </div>
+            {[
+              { rank: 1, name: "Coach_Miko", outcomeIdx: 0, stake: 125000, payout: 275000 },
+              { rank: 2, name: "JuanBasket", outcomeIdx: 0, stake: 80500, payout: 177100 },
+              { rank: 3, name: "PBAInsider", outcomeIdx: 1, stake: 62000, payout: 192200 },
+              { rank: 4, name: "BetMasterPH", outcomeIdx: 2, stake: 45300, payout: 303510 },
+              { rank: 5, name: "CoachTips", outcomeIdx: 1, stake: 38750, payout: 120125 },
+              { rank: 6, name: "HoopsFanPH", outcomeIdx: 0, stake: 32100, payout: 70620 },
+              { rank: 7, name: "RingMasterMNL", outcomeIdx: 3, stake: 21000, payout: 262500 },
+              { rank: 8, name: "ManilaBallers", outcomeIdx: 2, stake: 18200, payout: 121940 },
+            ].map(h => {
+              const o = market.outcomes[h.outcomeIdx] || market.outcomes[0];
+              return (
+                <div key={h.rank} className="flex items-center px-4 h-12 border-b last:border-b-0 hover:bg-black/[0.02] transition-colors" style={{ borderColor: t.cardBorder }}>
+                  <span className="w-8 text-[12px]" style={{ color: h.rank <= 3 ? "#ff5222" : t.textMut, fontWeight: h.rank <= 3 ? 700 : 400, ...ss }}>{h.rank}</span>
+                  <div className="flex-1 flex items-center gap-2 min-w-0">
+                    <div className="size-7 rounded-full flex items-center justify-center shrink-0" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "#f3f4f6", color: t.textSec, fontSize: 11, fontWeight: 600, ...pp }}>{h.name[0]}</div>
+                    <span className="text-[12px] sm:text-[13px] truncate" style={{ color: t.text, fontWeight: 500, ...ss, ...pp }}>{h.name}</span>
+                  </div>
+                  <span className="hidden sm:block w-28">
+                    <span className="text-[11px] px-2 py-0.5 rounded" style={{ background: `${o.color}15`, color: o.color, fontWeight: 600, ...ss }}>{o.name}</span>
+                  </span>
+                  <span className="hidden sm:block w-24 text-right text-[12px]" style={{ color: t.textSec, fontVariantNumeric: "tabular-nums", ...ss, ...pp }}>₱{h.stake.toLocaleString()}</span>
+                  <span className="w-24 text-right text-[12px]" style={{ color: "#00bf85", fontWeight: 600, fontVariantNumeric: "tabular-nums", ...ss, ...pp }}>₱{h.payout.toLocaleString()}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Activity tab content */}
+        {commentTab === "Activity" && (
+          <div className="rounded-xl sm:rounded-2xl border overflow-hidden" style={{ background: t.card, borderColor: t.cardBorder }}>
+            {[
+              { time: "2m ago", user: "Coach_Miko", action: "Placed", outcomeIdx: 0, amount: "₱5,000" },
+              { time: "7m ago", user: "JuanBasket", action: "Increased", outcomeIdx: 0, amount: "₱2,500" },
+              { time: "14m ago", user: "PBAInsider", action: "Placed", outcomeIdx: 1, amount: "₱3,200" },
+              { time: "22m ago", user: "BetMasterPH", action: "Placed", outcomeIdx: 2, amount: "₱1,800" },
+              { time: "35m ago", user: "CoachTips", action: "Cashed Out", outcomeIdx: 1, amount: "₱6,400" },
+              { time: "48m ago", user: "HoopsFanPH", action: "Placed", outcomeIdx: 0, amount: "₱900" },
+              { time: "1h ago", user: "RingMasterMNL", action: "Placed", outcomeIdx: 3, amount: "₱4,500" },
+              { time: "1.5h ago", user: "ManilaBallers", action: "Placed", outcomeIdx: 2, amount: "₱2,100" },
+            ].map((a, i) => {
+              const o = market.outcomes[a.outcomeIdx] || market.outcomes[0];
+              return (
+                <div key={i} className="flex items-center gap-3 px-4 py-3 border-b last:border-b-0" style={{ borderColor: t.cardBorder }}>
+                  <div className="size-8 rounded-full flex items-center justify-center shrink-0" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "#f3f4f6", color: t.textSec, fontSize: 12, fontWeight: 600, ...pp }}>{a.user[0]}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] truncate" style={{ color: t.text, ...pp }}>
+                      <span style={{ fontWeight: 600 }}>{a.user}</span>
+                      <span style={{ color: t.textSec }}> {a.action.toLowerCase()} </span>
+                      <span style={{ fontWeight: 600 }}>{a.amount}</span>
+                      <span style={{ color: t.textSec }}> on </span>
+                      <span style={{ color: o.color, fontWeight: 600 }}>{o.name}</span>
+                    </div>
+                    <span className="text-[11px]" style={{ color: t.textMut, ...ss }}>{a.time}</span>
+                  </div>
+                  <span className="text-[11px] px-2 py-0.5 rounded shrink-0" style={{ background: a.action === "Cashed Out" ? "rgba(239,68,68,0.12)" : "rgba(34,197,94,0.12)", color: a.action === "Cashed Out" ? "#ef4444" : "#22c55e", fontWeight: 700, ...ss }}>
+                    {a.action === "Cashed Out" ? "OUT" : "IN"}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Related tab content */}
+        {commentTab === "Related" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              { title: "PBA MVP 2026 — Sino ang kukuha?", cat: "🏀 Basketball", vol: "₱412,000", chance: 38, trend: "+2.4%" },
+              { title: "Gilas Pilipinas Asia Cup Finish", cat: "🏀 Basketball", vol: "₱221,500", chance: 62, trend: "-1.1%" },
+              { title: "PBA Rookie of the Year 2026", cat: "🏀 Basketball", vol: "₱180,900", chance: 24, trend: "+5.8%" },
+              { title: "Philippine Cup Finals MVP", cat: "🏀 Basketball", vol: "₱96,300", chance: 45, trend: "+0.3%" },
+            ].map((r, i) => (
+              <div key={i} className="rounded-xl border p-4 flex flex-col gap-3 cursor-pointer transition-colors hover:bg-black/[0.02]" style={{ background: t.card, borderColor: t.cardBorder }}>
+                <div className="flex items-start justify-between gap-2">
+                  <span className="text-[13px] sm:text-[14px] leading-[1.4]" style={{ color: t.text, fontWeight: 600, ...ss, ...pp }}>{r.title}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded shrink-0" style={{ background: isDark ? "rgba(255,82,34,0.15)" : "#fff4ed", color: "#ff5222", fontWeight: 600, ...ss }}>{r.cat}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-[10px]" style={{ color: t.textMut, ...ss }}>Chance</span>
+                    <span className="text-[18px]" style={{ color: t.text, fontWeight: 700, fontVariantNumeric: "tabular-nums", ...pp }}>{r.chance}%</span>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className="text-[10px]" style={{ color: t.textMut, ...ss }}>Volume</span>
+                    <span className="text-[12px]" style={{ color: t.textSec, fontWeight: 500, ...ss }}>{r.vol}</span>
+                  </div>
+                  <span className="text-[11px] px-2 py-1 rounded" style={{ background: r.trend.startsWith("+") ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)", color: r.trend.startsWith("+") ? "#22c55e" : "#ef4444", fontWeight: 700, ...ss }}>{r.trend}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Footer */}
       <div className="hidden sm:flex flex-col items-center gap-1 pt-8 pb-4">
-        <span className="text-[11px]" style={{ color: t.textFaint, ...ss, ...pp }}>ForeGate Inc. &copy; 2026</span>
+        <span className="text-[11px]" style={{ color: t.textFaint, ...ss, ...pp }}>PrediEx Inc. &copy; 2026</span>
         <div className="flex gap-2 text-[11px]" style={{ color: t.textFaint, ...ss, ...pp }}>
           <span className="cursor-pointer hover:underline">Privacy Policy</span>
           <span>&middot;</span>
@@ -725,7 +868,7 @@ function OrderbookMarketPage({ id, isDark, t, openDeposit }: { id: string; isDar
   const obMarket = getOBMarket(id);
   const [rulesOpen, setRulesOpen] = useState(false);
   const [commentTab, setCommentTab] = useState("Recent Trades");
-  const commentTabs = ["Recent Trades", "Comments", "Top Holders", "Activity"];
+  const commentTabs = ["Recent Trades", "Comments", "Top Holders", "Activity", "Related"];
 
   if (!obMarket) return null;
 
@@ -737,6 +880,12 @@ function OrderbookMarketPage({ id, isDark, t, openDeposit }: { id: string; isDar
 
   const tAsks = obMarket.asks.slice(0, 7).reverse();
   const tBids = obMarket.bids.slice(0, 7);
+
+  const [sellPos, setSellPos] = useState<{ side: "YES" | "NO"; shares: number; avgPrice: number } | null>(null);
+  const [sellDone, setSellDone] = useState(false);
+  const sellPrice = sellPos ? (sellPos.side === "YES" ? obMarket.yesPrice : obMarket.noPrice) : 0;
+  const sellProceeds = sellPos ? (sellPos.shares * sellPrice / 100) : 0;
+  const sellPnl = sellPos ? ((sellPrice - sellPos.avgPrice) * sellPos.shares / 100) : 0;
 
   return (
     <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
@@ -755,21 +904,50 @@ function OrderbookMarketPage({ id, isDark, t, openDeposit }: { id: string; isDar
           <span className="text-[11px] truncate max-w-[200px]" style={{ color: t.text, ...ss }}>{obMarket.title.slice(0, 40)}...</span>
         </div>
 
-        {/* Title + Badges */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="bg-[#ff5222] text-white text-[9px] px-2.5 py-1 rounded-full" style={{ fontWeight: 700, ...ss }}>📊 ORDERBOOK</span>
-            <span className="text-[9px] px-2.5 py-1 rounded-full" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "#f5f6f7", color: t.textSec, fontWeight: 600, ...ss }}>
-              {obMarket.categoryEmoji} {obMarket.category}
-            </span>
-            <span className="flex items-center gap-1 text-[9px] px-2.5 py-1 rounded-full" style={{ background: "rgba(34,197,94,0.12)", color: "#22c55e", fontWeight: 700, ...ss }}>
-              <span style={{ width: 6, height: 6, background: "#22c55e", borderRadius: "50%" }} /> LIVE TRADING
-            </span>
-            <span className="text-[10px] ml-auto hidden sm:block" style={{ color: t.textMut, ...ss }}>Creator: {obMarket.creator} 🔥{obMarket.creatorFire}</span>
+        {/* Badges Row */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="bg-[#ff5222] text-white text-[9px] px-2.5 py-1 rounded-full" style={{ fontWeight: 700, ...ss }}>📊 ORDERBOOK</span>
+          <span className="text-[9px] px-2.5 py-1 rounded-full" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "#f5f6f7", color: t.textSec, fontWeight: 600, ...ss }}>
+            {obMarket.categoryEmoji} {obMarket.category}
+          </span>
+          <span className="flex items-center gap-1 text-[9px] px-2.5 py-1 rounded-full" style={{ background: "rgba(34,197,94,0.12)", color: "#22c55e", fontWeight: 700, ...ss }}>
+            <span style={{ width: 6, height: 6, background: "#22c55e", borderRadius: "50%" }} /> LIVE TRADING
+          </span>
+          <span className="text-[10px] ml-auto hidden sm:flex items-center gap-1" style={{ color: t.textMut, ...ss }}>
+            Creator: <span style={{ color: t.text, fontWeight: 600 }}>{obMarket.creator}</span> 🔥{obMarket.creatorFire}
+          </span>
+        </div>
+
+        {/* Title + Countdown */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0">
+            <div className="size-12 sm:size-[60px] rounded-lg flex items-center justify-center shrink-0 text-[28px]" style={{ background: isDark ? "rgba(255,255,255,0.06)" : "#f5f6f7" }}>
+              {obMarket.categoryEmoji}
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-[18px] sm:text-[22px] leading-[1.3]" style={{ color: t.text, fontWeight: 700, ...ss, ...pp }}>
+                {obMarket.title}
+              </h1>
+              <div className="flex items-center gap-2 sm:gap-3 mt-1 flex-wrap">
+                <div className="flex items-center gap-1">
+                  <svg className="size-3.5" fill="none" viewBox="0 0 14 14" stroke={t.iconFill} strokeWidth="1.5"><circle cx="7" cy="7" r="5"/><path d="M7 3v4l2 2"/></svg>
+                  <span className="text-[11px] sm:text-[12px]" style={{ color: t.textSec, ...ss, ...pp }}>{obMarket.volume24h}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <svg className="size-3.5" fill="none" viewBox="0 0 14 14" stroke={t.iconFill} strokeWidth="1.5"><rect x="2" y="3" width="10" height="9" rx="1"/><path d="M5 1v4M9 1v4M2 6h10"/></svg>
+                  <span className="text-[11px] sm:text-[12px]" style={{ color: t.textSec, ...ss, ...pp }}>{obMarket.endDate}</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <h1 className="text-[18px] sm:text-[22px] leading-[1.3]" style={{ color: t.text, fontWeight: 700, ...ss, ...pp }}>
-            {obMarket.title}
-          </h1>
+          <div className="flex flex-col items-start sm:items-end gap-1 shrink-0">
+            <span className="text-[11px] sm:text-[12px]" style={{ color: t.textSec, ...ss, ...pp }}>Resolves in</span>
+            <div className="flex gap-1">
+              {["2D", "10H", "8M", "45S"].map(u => (
+                <span key={u} className="text-[12px] sm:text-[14px] px-2 py-1 rounded" style={{ background: isDark ? "rgba(255,255,255,0.06)" : "#fafafa", color: t.text, fontWeight: 500, ...ss, ...pp }}>{u}</span>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Price Chart */}
@@ -823,32 +1001,67 @@ function OrderbookMarketPage({ id, isDark, t, openDeposit }: { id: string; isDar
         {obMarket.myPositions && obMarket.myPositions.length > 0 && (
           <div className="rounded-xl sm:rounded-2xl border p-4 sm:p-5 flex flex-col gap-3" style={{ background: t.card, borderColor: t.cardBorder }}>
             <span className="text-[15px]" style={{ color: t.text, fontWeight: 600, ...ss, ...pp }}>My Positions</span>
-            {obMarket.myPositions.map((pos, i) => (
-              <div key={i} className="flex items-center justify-between p-3 rounded-xl" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "#f9fafb", border: `1px solid ${t.cardBorder}` }}>
-                <div className="flex items-center gap-3">
-                  <span className="text-[12px] px-2.5 py-1 rounded-lg" style={{ background: pos.side === "YES" ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)", color: pos.side === "YES" ? "#22c55e" : "#ef4444", fontWeight: 700, ...ss }}>
-                    {pos.side}
-                  </span>
-                  <div>
-                    <span className="text-[13px] block" style={{ color: t.text, fontWeight: 600, ...ss, ...pp }}>{pos.shares.toLocaleString()} shares</span>
-                    <span className="text-[11px]" style={{ color: t.textMut, ...ss }}>Avg price: {pos.avgPrice}¢</span>
+            {obMarket.myPositions.map((pos, i) => {
+              const currentPrice = pos.side === "YES" ? obMarket.yesPrice : obMarket.noPrice;
+              return (
+                <div key={i} className="flex items-center justify-between gap-3 p-3 rounded-xl" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "#f9fafb", border: `1px solid ${t.cardBorder}` }}>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="text-[12px] px-2.5 py-1 rounded-lg shrink-0" style={{ background: pos.side === "YES" ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)", color: pos.side === "YES" ? "#22c55e" : "#ef4444", fontWeight: 700, ...ss }}>
+                      {pos.side}
+                    </span>
+                    <div className="min-w-0">
+                      <span className="text-[13px] block" style={{ color: t.text, fontWeight: 600, ...ss, ...pp }}>{pos.shares.toLocaleString()} shares</span>
+                      <span className="text-[11px]" style={{ color: t.textMut, ...ss }}>Avg {pos.avgPrice}¢ · Now {currentPrice}¢</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="text-right hidden sm:block">
+                      <span className="text-[14px] block" style={{ color: t.text, fontWeight: 600, ...ss, ...pp }}>₱{pos.currentValue.toLocaleString()}</span>
+                      <span className="text-[12px]" style={{ color: pos.pnl >= 0 ? "#22c55e" : "#ef4444", fontWeight: 600, ...ss }}>
+                        {pos.pnl >= 0 ? "+" : ""}₱{pos.pnl.toLocaleString()} P&L
+                      </span>
+                    </div>
+                    <button onClick={() => setSellPos({ side: pos.side, shares: pos.shares, avgPrice: pos.avgPrice })} className="h-9 px-4 rounded-lg text-[12px] cursor-pointer transition-opacity hover:opacity-90" style={{ background: "#ef4444", color: "#fff", fontWeight: 700, ...ss, ...pp }} title={`Sell ${pos.shares.toLocaleString()} shares at ${currentPrice}¢`}>
+                      Sell
+                    </button>
                   </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-[14px] block" style={{ color: t.text, fontWeight: 600, ...ss, ...pp }}>₱{pos.currentValue.toLocaleString()}</span>
-                  <span className="text-[12px]" style={{ color: pos.pnl >= 0 ? "#22c55e" : "#ef4444", fontWeight: 600, ...ss }}>
-                    {pos.pnl >= 0 ? "+" : ""}₱{pos.pnl.toLocaleString()} P&L
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
+        {/* Market Process */}
+        <div className="rounded-xl sm:rounded-2xl border p-4 sm:p-6 flex flex-col gap-4 sm:gap-6" style={{ background: t.card, borderColor: t.cardBorder }}>
+          <span className="text-[16px] sm:text-[20px]" style={{ color: t.text, fontWeight: 500, ...ss, ...pp }}>Market Process</span>
+          <div className="flex items-start sm:items-center justify-between relative overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+            {["Market Open", "Live Trading", "Awaiting Result", "Settled"].map((label, i) => {
+              const step = 1;
+              return (
+                <div key={i} className="flex flex-col items-center gap-2 w-[80px] sm:w-[127px] shrink-0 z-10">
+                  <div className="size-8 sm:size-9 rounded-full flex items-center justify-center text-[14px] sm:text-[16px]" style={{
+                    background: i < step + 1 ? "#ff5222" : (isDark ? "rgba(255,255,255,0.06)" : "#f2f3f4"),
+                    color: i < step + 1 ? "#fff" : t.textMut,
+                    fontWeight: 600, ...pp,
+                  }}>
+                    {i + 1}
+                  </div>
+                  <span className="text-[11px] sm:text-[14px] text-center leading-tight" style={{ color: t.text, ...ss, ...pp }}>{label}</span>
+                </div>
+              );
+            })}
+            <div className="absolute top-[16px] sm:top-[18px] left-[50px] sm:left-[90px] right-[50px] sm:right-[90px] flex gap-0">
+              {[0, 1, 2].map(i => (
+                <div key={i} className="flex-1 h-0 border-t-2 border-dashed" style={{ borderColor: i < 1 ? "#ff5222" : t.textFaint }} />
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* Rules */}
-        <div className="rounded-xl sm:rounded-2xl p-4 sm:p-5 flex flex-col gap-3" style={{ background: isDark ? "rgba(255,255,255,0.03)" : "#fafafa" }}>
+        <div className="rounded-xl sm:rounded-2xl border p-4 sm:p-6 flex flex-col gap-3 sm:gap-4" style={{ background: t.card, borderColor: t.cardBorder }}>
           <div className="flex items-center justify-between cursor-pointer" onClick={() => setRulesOpen(!rulesOpen)}>
-            <span className="text-[15px]" style={{ color: t.text, fontWeight: 600, ...ss, ...pp }}>Resolution Rules</span>
+            <span className="text-[16px] sm:text-[20px]" style={{ color: t.text, fontWeight: 500, ...ss, ...pp }}>Resolution Rules</span>
             <svg className={`size-4 transition-transform ${rulesOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 12 7"><path d={svgPaths.p12bd8c80} fill={isDark ? "rgba(255,255,255,0.5)" : "#070808"} /></svg>
           </div>
           {rulesOpen && (
@@ -980,17 +1193,152 @@ function OrderbookMarketPage({ id, isDark, t, openDeposit }: { id: string; isDar
               ))}
             </div>
           )}
+
+          {/* Related tab content */}
+          {commentTab === "Related" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {[
+                { title: "BTC above $120K by end of Q2 2026?", cat: "💰 Crypto", vol: "₱1.2M", yes: 58, trend: "+3.2%" },
+                { title: "ETH to flip BTC market cap in 2026?", cat: "💰 Crypto", vol: "₱680K", yes: 12, trend: "-0.8%" },
+                { title: "SEC approves Solana spot ETF this year?", cat: "💰 Crypto", vol: "₱435K", yes: 41, trend: "+6.5%" },
+                { title: "Fed rate cut before June 2026?", cat: "📈 Macro", vol: "₱890K", yes: 73, trend: "+1.1%" },
+              ].map((r, i) => (
+                <div key={`rel${i}`} className="rounded-xl border p-4 flex flex-col gap-3 cursor-pointer transition-colors hover:bg-black/[0.02]" style={{ background: t.card, borderColor: t.cardBorder }}>
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="text-[13px] sm:text-[14px] leading-[1.4]" style={{ color: t.text, fontWeight: 600, ...ss, ...pp }}>{r.title}</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded shrink-0" style={{ background: isDark ? "rgba(255,82,34,0.15)" : "#fff4ed", color: "#ff5222", fontWeight: 600, ...ss }}>{r.cat}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="flex flex-col">
+                        <span className="text-[10px]" style={{ color: t.textMut, ...ss }}>YES</span>
+                        <span className="text-[16px]" style={{ color: "#22c55e", fontWeight: 700, fontVariantNumeric: "tabular-nums", ...pp }}>{r.yes}¢</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[10px]" style={{ color: t.textMut, ...ss }}>NO</span>
+                        <span className="text-[16px]" style={{ color: "#ef4444", fontWeight: 700, fontVariantNumeric: "tabular-nums", ...pp }}>{100 - r.yes}¢</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      <span className="text-[11px]" style={{ color: t.textMut, ...ss }}>{r.vol}</span>
+                      <span className="text-[11px] px-2 py-0.5 rounded" style={{ background: r.trend.startsWith("+") ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)", color: r.trend.startsWith("+") ? "#22c55e" : "#ef4444", fontWeight: 700, ...ss }}>{r.trend}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Footer */}
         <div className="hidden sm:flex flex-col items-center gap-1 pt-8 pb-4">
-          <span className="text-[11px]" style={{ color: t.textFaint, ...ss, ...pp }}>ForeGate Inc. © 2026</span>
+          <span className="text-[11px]" style={{ color: t.textFaint, ...ss, ...pp }}>PrediEx Inc. © 2026</span>
         </div>
         </div>{/* close inner flex-col gap wrapper */}
       </div>
 
       {/* Right sidebar: Orderbook Trading Panel */}
       <OrderbookTradingPanel market={obMarket} isDark={isDark} t={obT} onDeposit={openDeposit} />
+
+      {/* Sell Confirmation Modal */}
+      {sellPos && !sellDone && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={() => setSellPos(null)}>
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div className="relative w-full max-w-[400px] rounded-2xl overflow-hidden" style={{ background: t.card, border: `1px solid ${t.cardBorder}`, boxShadow: "0 24px 48px rgba(0,0,0,0.25)" }} onClick={e => e.stopPropagation()}>
+            <div className="px-6 pt-6 pb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(239,68,68,0.08)" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                </div>
+                <div>
+                  <span className="text-[15px] block" style={{ color: t.text, fontWeight: 700, ...ss, ...pp }}>Sell Position</span>
+                  <span className="text-[11px]" style={{ color: t.textMut, ...ss }}>Market Order · Sell {sellPos.side}</span>
+                </div>
+              </div>
+              <button onClick={() => setSellPos(null)} className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer" style={{ background: isDark ? "rgba(255,255,255,0.06)" : "#f5f6f7" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={t.textMut} strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <div className="h-px mx-6" style={{ background: t.cardBorder }} />
+            <div className="px-6 py-3">
+              <p className="text-[12px] leading-[1.5]" style={{ color: t.textSec, ...ss, ...pp }}>{obMarket.title}</p>
+            </div>
+            <div className="mx-6 rounded-xl p-4 flex flex-col gap-3" style={{ background: isDark ? "rgba(255,255,255,0.03)" : "#f9fafb", border: `1px solid ${t.cardBorder}` }}>
+              <div className="flex items-center justify-between">
+                <span className="text-[12px]" style={{ color: t.textMut, ...ss }}>Side</span>
+                <span className="text-[12px] px-2.5 py-0.5 rounded-md" style={{ background: sellPos.side === "YES" ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)", color: sellPos.side === "YES" ? "#22c55e" : "#ef4444", fontWeight: 700, ...ss }}>{sellPos.side}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[12px]" style={{ color: t.textMut, ...ss }}>Shares to Sell</span>
+                <span className="text-[12px]" style={{ color: t.text, fontWeight: 600, fontVariantNumeric: "tabular-nums", ...ss }}>{sellPos.shares.toLocaleString()}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[12px]" style={{ color: t.textMut, ...ss }}>Avg Entry</span>
+                <span className="text-[12px]" style={{ color: t.text, fontWeight: 600, fontVariantNumeric: "tabular-nums", ...ss }}>{sellPos.avgPrice}¢</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[12px]" style={{ color: t.textMut, ...ss }}>Market Sell Price</span>
+                <span className="text-[12px]" style={{ color: t.text, fontWeight: 600, fontVariantNumeric: "tabular-nums", ...ss }}>{sellPrice}¢</span>
+              </div>
+              <div className="h-px" style={{ background: t.cardBorder }} />
+              <div className="flex items-center justify-between">
+                <span className="text-[13px]" style={{ color: t.text, fontWeight: 600, ...ss }}>Proceeds</span>
+                <span className="text-[16px]" style={{ color: t.text, fontWeight: 700, fontVariantNumeric: "tabular-nums", ...ss, ...pp }}>₱{sellProceeds.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[12px]" style={{ color: t.textMut, ...ss }}>Realized P&L</span>
+                <span className="text-[12px]" style={{ color: sellPnl >= 0 ? "#22c55e" : "#ef4444", fontWeight: 600, fontVariantNumeric: "tabular-nums", ...ss }}>
+                  {sellPnl >= 0 ? "+" : ""}₱{sellPnl.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                </span>
+              </div>
+            </div>
+            <div className="px-6 pt-4 pb-6 flex gap-3">
+              <button onClick={() => setSellPos(null)} className="flex-1 h-12 rounded-xl text-[13px] cursor-pointer" style={{ background: isDark ? "rgba(255,255,255,0.06)" : "#f5f6f7", color: t.text, fontWeight: 600, border: `1px solid ${t.cardBorder}`, ...ss, ...pp }}>
+                Cancel
+              </button>
+              <button onClick={() => setSellDone(true)} className="flex-1 h-12 rounded-xl text-[13px] cursor-pointer transition-opacity hover:opacity-90" style={{ background: "#ef4444", color: "#fff", fontWeight: 700, ...ss, ...pp }}>
+                Confirm Sell
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sell Success Modal */}
+      {sellPos && sellDone && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div className="relative w-full max-w-[400px] rounded-2xl overflow-hidden" style={{ background: t.card, border: `1px solid ${t.cardBorder}`, boxShadow: "0 24px 48px rgba(0,0,0,0.25)" }}>
+            <div className="flex flex-col items-center pt-8 pb-4 px-6">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: "rgba(34,197,94,0.12)" }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+              <span className="text-[18px] mb-1" style={{ color: t.text, fontWeight: 700, ...ss, ...pp }}>Sold!</span>
+              <span className="text-[12px]" style={{ color: t.textMut, ...ss }}>Your position has been closed</span>
+            </div>
+            <div className="mx-6 mb-4 rounded-xl p-4 flex flex-col gap-2.5" style={{ background: isDark ? "rgba(255,255,255,0.03)" : "#f9fafb", border: `1px solid ${t.cardBorder}` }}>
+              <div className="flex items-center justify-between">
+                <span className="text-[11px]" style={{ color: t.textMut, ...ss }}>Shares sold</span>
+                <span className="text-[12px]" style={{ color: t.text, fontWeight: 600, ...ss }}>{sellPos.shares.toLocaleString()} {sellPos.side}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[11px]" style={{ color: t.textMut, ...ss }}>Fill price</span>
+                <span className="text-[12px]" style={{ color: t.text, fontWeight: 600, ...ss }}>{sellPrice}¢</span>
+              </div>
+              <div className="h-px" style={{ background: t.cardBorder }} />
+              <div className="flex items-center justify-between">
+                <span className="text-[13px]" style={{ color: t.text, fontWeight: 600, ...ss }}>Proceeds</span>
+                <span className="text-[18px]" style={{ color: "#22c55e", fontWeight: 700, fontVariantNumeric: "tabular-nums", ...ss, ...pp }}>₱{sellProceeds.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+              </div>
+            </div>
+            <div className="px-6 pb-6">
+              <button onClick={() => { setSellPos(null); setSellDone(false); }} className="w-full h-12 rounded-xl text-[14px] cursor-pointer" style={{ background: "#22c55e", color: "#fff", fontWeight: 700, ...ss, ...pp }}>
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

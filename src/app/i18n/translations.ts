@@ -302,7 +302,7 @@ const en = {
   "signup.success.accountCreated": "Your account has been created successfully.",
   "signup.success.bonus": "bonus has been added to your account!",
   "signup.success.explore": "Explore Markets",
-  "signup.success.setupMfa": "Set Up MFA",
+  "signup.success.setupMfa": "Configure Your MFA Methods",
   "signup.success.mfaDesc": "Secure your account with Multi-Factor Authentication",
   "signup.error.nameRequired": "Full name is required",
   "signup.error.phoneRequired": "Phone number is required",

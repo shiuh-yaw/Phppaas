@@ -378,19 +378,6 @@ export function OBPriceChart({ market, isDark, t }: OBPriceChartProps) {
         </div>
       </div>
 
-      {/* Stats row */}
-      <div className="flex items-center gap-4 pt-3 border-t" style={{ borderColor: t.cardBorder }}>
-        {[
-          { label: "24h Vol", value: market.volume24h },
-          { label: "Open Interest", value: market.openInterest },
-          { label: "Resolution", value: market.endDate },
-        ].map(s => (
-          <div key={s.label} className="flex flex-col">
-            <span className="text-[10px]" style={{ color: t.textMut, ...ss }}>{s.label}</span>
-            <span className="text-[13px]" style={{ color: t.text, fontWeight: 600, ...ss, ...pp }}>{s.value}</span>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
@@ -623,6 +610,7 @@ interface OrderbookTradingPanelProps {
 export function OrderbookTradingPanel({ market, isDark, t, onDeposit }: OrderbookTradingPanelProps) {
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
+  const [action, setAction] = useState<"Buy" | "Sell">("Buy");
   const [side, setSide] = useState<"YES" | "NO">("YES");
   const [orderType, setOrderType] = useState<"Market" | "Limit">("Market");
   const [shares, setShares] = useState("");
@@ -664,11 +652,32 @@ export function OrderbookTradingPanel({ market, isDark, t, onDeposit }: Orderboo
         <p className="text-[12px] leading-[1.4]" style={{ color: t.textSec, ...ss, ...pp }}>{market.title}</p>
       </div>
 
+      {/* Buy/Sell toggle */}
+      <div className="relative flex p-1 rounded-lg" style={{ background: isDark ? "rgba(255,255,255,0.05)" : "#f5f6f7" }}>
+        <div
+          className="absolute top-1 bottom-1 rounded-md transition-all duration-200 ease-out"
+          style={{
+            left: action === "Buy" ? 4 : "50%",
+            width: "calc(50% - 4px)",
+            background: t.card,
+            boxShadow: "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)",
+          }}
+        />
+        {(["Buy", "Sell"] as const).map(a => (
+          <button key={a} onClick={() => setAction(a)} className="relative flex-1 h-9 text-[13px] cursor-pointer z-10" style={{
+            color: action === a ? (a === "Buy" ? "#22c55e" : "#ef4444") : t.textMut,
+            fontWeight: 600, ...ss, ...pp,
+          }}>
+            {a}
+          </button>
+        ))}
+      </div>
+
       {/* YES/NO toggle */}
       <div className="flex rounded-xl overflow-hidden border" style={{ borderColor: t.cardBorder }}>
         {(["YES", "NO"] as const).map(s => (
           <button key={s} onClick={() => setSide(s)} className="flex-1 h-10 text-[13px] cursor-pointer transition-all" style={{ background: side === s ? (s === "YES" ? "#22c55e" : "#ef4444") : "transparent", color: side === s ? "#fff" : (s === "YES" ? "#22c55e" : "#ef4444"), fontWeight: 700, ...ss, ...pp }}>
-            Buy {s} · {s === "YES" ? market.yesPrice : market.noPrice}¢
+            {s} · {s === "YES" ? market.yesPrice : market.noPrice}¢
           </button>
         ))}
       </div>
@@ -744,9 +753,9 @@ export function OrderbookTradingPanel({ market, isDark, t, onDeposit }: Orderboo
         <button
           onClick={handlePlaceOrder}
           className="h-12 rounded-lg text-[14px] cursor-pointer transition-colors"
-          style={{ background: side === "YES" ? "#22c55e" : "#ef4444", color: "#fff", fontWeight: 700, ...ss, ...pp, opacity: numShares > 0 ? 1 : 0.5 }}
+          style={{ background: action === "Buy" ? "#22c55e" : "#ef4444", color: "#fff", fontWeight: 700, ...ss, ...pp, opacity: numShares > 0 ? 1 : 0.5 }}
         >
-          Place {orderType} Order — Buy {side}
+          {action} {side} · {orderType}
         </button>
       ) : (
         <div className="flex flex-col gap-2">
@@ -782,20 +791,30 @@ export function OrderbookTradingPanel({ market, isDark, t, onDeposit }: Orderboo
       {isLoggedIn && market.myPositions && market.myPositions.length > 0 && (
         <div>
           <span className="text-[12px] block mb-2" style={{ color: t.textSec, fontWeight: 600, ...ss, ...pp }}>My Positions</span>
-          {market.myPositions.map((pos, i) => (
-            <div key={i} className="rounded-lg p-3" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "#f9fafb", border: `1px solid ${t.cardBorder}` }}>
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] px-2 py-0.5 rounded" style={{ background: pos.side === "YES" ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)", color: pos.side === "YES" ? "#22c55e" : "#ef4444", fontWeight: 700, ...ss }}>{pos.side}</span>
-                <span className="text-[12px]" style={{ color: pos.pnl >= 0 ? "#22c55e" : "#ef4444", fontWeight: 600, ...ss }}>
-                  {pos.pnl >= 0 ? "+" : ""}₱{pos.pnl.toLocaleString()}
-                </span>
+          {market.myPositions.map((pos, i) => {
+            const currentPrice = pos.side === "YES" ? market.yesPrice : market.noPrice;
+            return (
+              <div key={i} className="rounded-lg p-3 flex flex-col gap-2" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "#f9fafb", border: `1px solid ${t.cardBorder}` }}>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] px-2 py-0.5 rounded" style={{ background: pos.side === "YES" ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)", color: pos.side === "YES" ? "#22c55e" : "#ef4444", fontWeight: 700, ...ss }}>{pos.side}</span>
+                  <span className="text-[12px]" style={{ color: pos.pnl >= 0 ? "#22c55e" : "#ef4444", fontWeight: 600, ...ss }}>
+                    {pos.pnl >= 0 ? "+" : ""}₱{pos.pnl.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-[10px]" style={{ color: t.textMut, ...ss }}>
+                  <span>Avg {pos.avgPrice}¢ · {pos.shares.toLocaleString()} shares</span>
+                  <span>₱{pos.currentValue.toLocaleString()}</span>
+                </div>
+                <button
+                  onClick={() => { setAction("Sell"); setSide(pos.side); setShares(String(pos.shares)); setLimitPrice(String(currentPrice)); }}
+                  className="h-8 rounded-md text-[11px] cursor-pointer transition-opacity hover:opacity-90"
+                  style={{ background: "#ef4444", color: "#fff", fontWeight: 700, ...ss, ...pp }}
+                >
+                  Sell @ {currentPrice}¢
+                </button>
               </div>
-              <div className="flex items-center justify-between text-[10px]" style={{ color: t.textMut, ...ss }}>
-                <span>Avg {pos.avgPrice}¢ · {pos.shares.toLocaleString()} shares</span>
-                <span>Value: ₱{pos.currentValue.toLocaleString()}</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

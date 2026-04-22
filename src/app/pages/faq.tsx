@@ -17,7 +17,7 @@ const FAQ_CATEGORIES = [
 ];
 
 const FAQS: { category: string; q: string; a: string }[] = [
-  { category: "general", q: "Ano ang Lucky Taya?", a: "Ang Lucky Taya ay isang prediction market platform kung saan maaari kang tumaya sa mga resulta ng sports, showbiz, economy, weather, at iba pang kategorya. Powered by ForeGate at lisensyado ng PAGCOR." },
+  { category: "general", q: "Ano ang Lucky Taya?", a: "Ang Lucky Taya ay isang prediction market platform kung saan maaari kang tumaya sa mga resulta ng sports, showbiz, economy, weather, at iba pang kategorya. Powered by PrediEx at lisensyado ng PAGCOR." },
   { category: "general", q: "Legal ba ang Lucky Taya sa Pilipinas?", a: "Oo! Ang Lucky Taya ay lisensyado at kinokontrol ng PAGCOR (Philippine Amusement and Gaming Corporation). Sumusunod kami sa lahat ng applicable na batas at regulasyon." },
   { category: "general", q: "Ilang taon dapat ako para gumamit?", a: "Dapat ay 21 taong gulang ka pataas. Kinakailangan ang KYC verification para ma-verify ang iyong edad." },
   { category: "account", q: "Paano mag-sign up?", a: "I-click ang 'Signup' button, i-enter ang phone number mo, gumawa ng password, at i-verify ang number mo gamit ang OTP code na ipapadala namin." },

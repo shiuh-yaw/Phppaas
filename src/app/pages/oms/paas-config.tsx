@@ -736,7 +736,7 @@ export default function PaasConfig() {
                       <div>
                         <p className="text-[#070808] text-[13px]" style={{ fontWeight: 600, ...ss04 }}>{ch.label}</p>
                         <p className="text-[#b0b3b8] text-[10px]" style={ss04}>
-                          {ch.key === "FG" ? "Users signing up directly via ForeGate platform" :
+                          {ch.key === "FG" ? "Users signing up directly via PrediEx platform" :
                            ch.key === "organic" ? "Users from organic traffic, SEO, or direct links" :
                            "Users referred by registered agents (tracked via Dub)"}
                         </p>

@@ -10,7 +10,6 @@ import { useAuth } from "../components/auth-context";
 import { EmojiIcon } from "../components/two-tone-icons";
 import { MfaManagerPanel } from "../components/mfa-manager";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
-import imgFrame2087325367 from "figma:asset/aa22ee141c47adc40b93dee89db917612452e751.png";
 
 const pp = { fontFamily: "'Poppins', sans-serif" };
 const ss = { fontFeatureSettings: "'ss04'" };
@@ -61,7 +60,7 @@ export default function MfaSetupPage() {
 
         <div className="relative z-10">
           <button onClick={() => navigate("/")} className="cursor-pointer">
-            <div className="w-[120px] h-[30px] bg-white" style={{ maskImage: `url('${imgFrame2087325367}')`, maskSize: "120px 30px", maskRepeat: "no-repeat", WebkitMaskImage: `url('${imgFrame2087325367}')`, WebkitMaskSize: "120px 30px", WebkitMaskRepeat: "no-repeat" }} />
+            <div className="text-white leading-none" style={{ fontFamily: "Poppins, sans-serif", fontWeight: 800, fontSize: 26, letterSpacing: "-0.02em" }}>PrediEx</div>
           </button>
         </div>
 
@@ -107,28 +106,12 @@ export default function MfaSetupPage() {
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center justify-center mb-6">
             <button onClick={() => navigate("/")} className="cursor-pointer">
-              <div className="w-[120px] h-[30px] bg-[#ff5222]" style={{ maskImage: `url('${imgFrame2087325367}')`, maskSize: "120px 30px", maskRepeat: "no-repeat", WebkitMaskImage: `url('${imgFrame2087325367}')`, WebkitMaskSize: "120px 30px", WebkitMaskRepeat: "no-repeat" }} />
+              <div className="text-[#ff5222] leading-none" style={{ fontFamily: "Poppins, sans-serif", fontWeight: 800, fontSize: 26, letterSpacing: "-0.02em" }}>PrediEx</div>
             </button>
           </div>
 
           {!mfaCompleted && !showPanel && (
             <div style={{ animation: "fade-in 0.4s ease-out" }}>
-              {/* Header */}
-              <div className="text-center mb-6">
-                <div className="size-20 rounded-2xl bg-[#fff4ed] flex items-center justify-center mx-auto mb-4" style={{ animation: "pulse-glow 2s ease-in-out infinite" }}>
-                  <EmojiIcon emoji="🛡️" size={40} />
-                </div>
-                <h2 className="text-[24px] text-[#070808] mb-1.5" style={{ fontWeight: 700, ...ss }}>
-                  Set Up MFA
-                </h2>
-                <p className="text-[13px] text-[#84888c] leading-[1.5]" style={ss}>
-                  {isNewUser
-                    ? "Welcome! Before you start, please secure your account with Multi-Factor Authentication."
-                    : "Your account requires MFA setup to continue. This is mandatory for all users."
-                  }
-                </p>
-              </div>
-
               {/* Mandatory notice */}
               <div className="bg-[#fef2f2] border border-[#fecaca] rounded-2xl p-4 mb-5">
                 <div className="flex items-start gap-3">

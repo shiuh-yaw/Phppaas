@@ -370,7 +370,7 @@ export class MockCVPayClient extends CVPayClient {
       sign: "mock_signature",
       data: {
         merchantId: this.config.merchantId,
-        merchantName: "ForeGate / Lucky Taya",
+        merchantName: "PrediEx / Lucky Taya",
         status: "ACTIVE",
         supportedMethods: ["GCASH", "PAYMAYA", "BDO", "BPI", "7ELEVEN"],
         supportedCurrencies: ["PHP"],

@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
 import svgPaths from "../../imports/svg-nlqz6xnxi5";
 import { useAuth } from "../components/auth-context";
-import imgFrame2087325367 from "figma:asset/aa22ee141c47adc40b93dee89db917612452e751.png";
 import imgImageRemovebgPreview2 from "figma:asset/fb86db7f372adc95f0fa8dc7e325d0f9df0f0aae.png";
 import imgImage83 from "figma:asset/dee6f729e475d64d963a4837560306f0452751ae.png";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
@@ -81,9 +80,7 @@ function HomeHeader({ onDeposit }: { onDeposit?: () => void }) {
       <div className="max-w-[1280px] mx-auto h-full flex items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-4 md:gap-8">
           <button onClick={() => navigate("/")} className="flex items-center gap-1.5 cursor-pointer">
-            <div className="w-[93px] h-6 relative">
-              <div className="absolute bg-[#ff5222] h-6 left-0 top-0 w-[93px]" style={{ maskImage: `url('${imgFrame2087325367}')`, maskSize: '93px 24px', maskRepeat: 'no-repeat' }} />
-            </div>
+            <div className="text-[#ff5222] leading-none" style={{ fontFamily: "Poppins, sans-serif", fontWeight: 800, fontSize: 20, letterSpacing: "-0.02em" }}>PrediEx</div>
           </button>
           <nav className="hidden md:flex items-center gap-5" style={pp}>
             {[

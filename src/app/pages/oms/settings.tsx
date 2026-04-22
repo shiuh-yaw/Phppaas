@@ -125,11 +125,11 @@ export default function OmsSettings() {
   const [suspiciousBetFlag, setSuspiciousBetFlag] = useState("25000");
 
   const ADMIN_USERS = [
-    { id: "A001", name: "Carlos Reyes", email: "admin@foregate.ph", role: "Super Admin", lastLogin: "2026-03-13 08:45 PHT", status: "active" },
-    { id: "A002", name: "Ana Dela Cruz", email: "mod@foregate.ph", role: "Moderator", lastLogin: "2026-03-13 07:20 PHT", status: "active" },
-    { id: "A003", name: "Miguel Torres", email: "finance@foregate.ph", role: "Finance", lastLogin: "2026-03-12 18:00 PHT", status: "active" },
-    { id: "A004", name: "Jenny Lim", email: "support@foregate.ph", role: "Support", lastLogin: "2026-03-13 06:30 PHT", status: "active" },
-    { id: "A005", name: "Rico Santos", email: "admin2@foregate.ph", role: "Admin", lastLogin: "2026-03-11 15:00 PHT", status: "inactive" },
+    { id: "A001", name: "Carlos Reyes", email: "admin@prediex.ph", role: "Super Admin", lastLogin: "2026-03-13 08:45 PHT", status: "active" },
+    { id: "A002", name: "Ana Dela Cruz", email: "mod@prediex.ph", role: "Moderator", lastLogin: "2026-03-13 07:20 PHT", status: "active" },
+    { id: "A003", name: "Miguel Torres", email: "finance@prediex.ph", role: "Finance", lastLogin: "2026-03-12 18:00 PHT", status: "active" },
+    { id: "A004", name: "Jenny Lim", email: "support@prediex.ph", role: "Support", lastLogin: "2026-03-13 06:30 PHT", status: "active" },
+    { id: "A005", name: "Rico Santos", email: "admin2@prediex.ph", role: "Admin", lastLogin: "2026-03-11 15:00 PHT", status: "inactive" },
   ];
 
   const tabs = isPlat && !activeMerchant
@@ -175,7 +175,7 @@ export default function OmsSettings() {
               <svg className="size-4 text-purple-500" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.6"><circle cx="10" cy="10" r="8" /><path d="M2 10h16" /><path d="M10 2c2.5 2.5 4 5.2 4 8s-1.5 5.5-4 8c-2.5-2.5-4-5.2-4-8s1.5-5.5 4-8z" /></svg>
               <h3 className="text-purple-700 text-[14px]" style={{ fontWeight: 600 }}>Platform-Level Configuration</h3>
             </div>
-            <p className="text-[#84888c] text-[11px] mb-1">These settings apply across the entire ForeGate SaaS platform and affect all merchants.</p>
+            <p className="text-[#84888c] text-[11px] mb-1">These settings apply across the entire PrediEx SaaS platform and affect all merchants.</p>
           </div>
 
           <SectionCard title="Default Merchant Limits">
@@ -199,7 +199,7 @@ export default function OmsSettings() {
           </SectionCard>
 
           <SectionCard title="KYC Provider Config">
-            <InfoRow label="Primary Provider" value="ForeGate KYC API" />
+            <InfoRow label="Primary Provider" value="PrediEx KYC API" />
             <InfoRow label="Fallback Provider" value="Jumio" />
             <InfoRow label="Auto-Approve Threshold" value="Score > 85" />
             <InfoRow label="Document Types" value="National ID, Passport, Driver's License" />
@@ -223,7 +223,7 @@ export default function OmsSettings() {
             <InfoRow label="DAI (ERC-20)" value="Testing" />
             <InfoRow label="PYUSD" value="Planned — H2 2026" />
             <InfoRow label="Crypto Settlement" value="Auto-convert to PHP via PDAX" />
-            <InfoRow label="Stablecoin Custody" value="ForeGate Crypto Gateway (MPC)" />
+            <InfoRow label="Stablecoin Custody" value="PrediEx Crypto Gateway (MPC)" />
           </SectionCard>
         </div>
       )}
@@ -256,7 +256,7 @@ export default function OmsSettings() {
           <div className="flex items-center gap-2.5 p-3 bg-purple-50/60 border border-purple-200/50 rounded-xl">
             <svg className="size-4 text-purple-500 flex-shrink-0" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.6"><circle cx="10" cy="10" r="8" /><path d="M10 7v3m0 3v.01" strokeLinecap="round" /></svg>
             <p className="text-[#84888c] text-[11px]" style={ss04}>
-              Payment methods are managed at the <span className="text-purple-600" style={{ fontWeight: 600 }}>Platform level</span> by ForeGate PaaS Admins. Methods marked <span className="text-red-500" style={{ fontWeight: 600 }}>DISABLED BY PLATFORM</span> cannot be activated here.
+              Payment methods are managed at the <span className="text-purple-600" style={{ fontWeight: 600 }}>Platform level</span> by PrediEx PaaS Admins. Methods marked <span className="text-red-500" style={{ fontWeight: 600 }}>DISABLED BY PLATFORM</span> cannot be activated here.
             </p>
           </div>
 

@@ -1,5 +1,4 @@
 import { useNavigate, useLocation } from "react-router";
-import imgFrame2087325367 from "figma:asset/aa22ee141c47adc40b93dee89db917612452e751.png";
 import { ChartBarIcon, LightbulbIcon, UserIcon, RankingIcon, GiftIcon, BoltIcon, AffiliateIcon, NotificationBellIcon } from "./icons";
 import { EmojiIcon } from "./two-tone-icons";
 import { useT } from "../i18n/useT";
@@ -55,18 +54,12 @@ export function Sidebar({ onDeposit, isOpen, onClose }: SidebarProps) {
       <div className="px-5 pt-5 pb-5 flex items-center justify-between">
         <div className="flex flex-col gap-1">
           <div
-            className="h-6 w-[93px] cursor-pointer"
+            className="h-6 cursor-pointer text-[#ff5222] leading-none"
             onClick={() => handleNav("/")}
-            style={{
-              backgroundColor: "#ff5222",
-              maskImage: `url('${imgFrame2087325367}')`,
-              maskSize: "93px 24px",
-              maskRepeat: "no-repeat",
-              WebkitMaskImage: `url('${imgFrame2087325367}')`,
-              WebkitMaskSize: "93px 24px",
-              WebkitMaskRepeat: "no-repeat",
-            }}
-          />
+            style={{ fontFamily: "Poppins, sans-serif", fontWeight: 800, fontSize: 20, letterSpacing: "-0.02em" }}
+          >
+            PrediEx
+          </div>
           <span className="text-[10px] text-[#84888c] leading-[1.5] tracking-wide" style={ss04}>
             PredictEx Edition
           </span>

@@ -4,7 +4,6 @@
  */
 import { useNavigate } from "react-router";
 import svgPaths from "../../imports/svg-lr9wlumazi";
-import imgFrame2087325367 from "figma:asset/aa22ee141c47adc40b93dee89db917612452e751.png";
 import imgImage83 from "figma:asset/dee6f729e475d64d963a4837560306f0452751ae.png";
 import imgImageRemovebgPreview2 from "figma:asset/fb86db7f372adc95f0fa8dc7e325d0f9df0f0aae.png";
 import img6635Af32177436Be411551D99993A5891 from "figma:asset/6ad41ebbce75f652e9e5a43449f306219197fb9b.png";

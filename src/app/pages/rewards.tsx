@@ -204,7 +204,7 @@ const WEEKLY_TASKS: RewardTask[] = [
   {
     id: "weekly-referral",
     title: "Mag-imbita ng Kaibigan",
-    description: "I-share ang ForeGate sa kaibigan mo. Kapag nag-sign up sila, parehong may bonus!",
+    description: "I-share ang PrediEx sa kaibigan mo. Kapag nag-sign up sila, parehong may bonus!",
     amount: 100,
     currency: "PHP",
     status: "go",
@@ -217,8 +217,8 @@ const WEEKLY_TASKS: RewardTask[] = [
 
 const FAQ_ITEMS = [
   {
-    q: "Ano ang ForeGate / Lucky Taya?",
-    a: "Ang ForeGate ay isang prediction market platform na ginawa para sa mga Pilipino. Mula sa PBA, Color Game, boxing, esports, hanggang sa weather at economy — lahat pwede tayaan dito nang ligal at transparent, lisensyado ng PAGCOR.",
+    q: "Ano ang PrediEx / Lucky Taya?",
+    a: "Ang PrediEx ay isang prediction market platform na ginawa para sa mga Pilipino. Mula sa PBA, Color Game, boxing, esports, hanggang sa weather at economy — lahat pwede tayaan dito nang ligal at transparent, lisensyado ng PAGCOR.",
   },
   {
     q: "Ano ang Prediction Market?",
@@ -478,7 +478,7 @@ export default function RewardsPage() {
               activeTab === "newcomer" ? "WELCOME GIFT" : "LINGGUHANG HAMON",
               activeTab === "newcomer" ? "🎁" : "🏆",
               welcomeTasks,
-              activeTab === "newcomer" ? "Simulan ang iyong ForeGate journey!" : "Mga general na weekly challenge"
+              activeTab === "newcomer" ? "Simulan ang iyong PrediEx journey!" : "Mga general na weekly challenge"
             )}
 
             {/* Tier 1 - Must Have */}
@@ -546,19 +546,19 @@ export default function RewardsPage() {
                 </li>
                 <li className="flex gap-2">
                   <span className="shrink-0 mt-0.5">•</span>
-                  <span>May karapatan ang ForeGate na baguhin ang mga terms na ito nang walang paunang abiso.</span>
+                  <span>May karapatan ang PrediEx na baguhin ang mga terms na ito nang walang paunang abiso.</span>
                 </li>
                 <li className="flex gap-2">
                   <span className="shrink-0 mt-0.5">•</span>
-                  <span>Ang final interpretation ng event na ito ay pag-aari ng ForeGate. Kung may mga tanong, i-contact ang Customer Support.</span>
+                  <span>Ang final interpretation ng event na ito ay pag-aari ng PrediEx. Kung may mga tanong, i-contact ang Customer Support.</span>
                 </li>
                 <li className="flex gap-2">
                   <span className="shrink-0 mt-0.5">•</span>
-                  <span>May karapatan ang ForeGate na i-disqualify ang sinumang participant na nahuling gumagawa ng dishonest o abusive na behavior, kasama ang bulk account registrations o illegal na aktibidad.</span>
+                  <span>May karapatan ang PrediEx na i-disqualify ang sinumang participant na nahuling gumagawa ng dishonest o abusive na behavior, kasama ang bulk account registrations o illegal na aktibidad.</span>
                 </li>
                 <li className="flex gap-2">
                   <span className="shrink-0 mt-0.5">•</span>
-                  <span>Ang ForeGate / Lucky Taya ay naka-comply sa PAGCOR regulations. Lahat ng operations ay ligal at transparent.</span>
+                  <span>Ang PrediEx / Lucky Taya ay naka-comply sa PAGCOR regulations. Lahat ng operations ay ligal at transparent.</span>
                 </li>
               </ul>
             </div>

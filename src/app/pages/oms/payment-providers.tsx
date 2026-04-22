@@ -80,7 +80,7 @@ const MOCK_PROVIDERS: PaymentProvider[] = [
     apiEndpoint: "https://api.paymongo.com/v1",
     apiVersion: "v1.0",
     environment: "production",
-    webhookUrl: "https://api.foregate.ph/webhooks/paymongo",
+    webhookUrl: "https://api.prediex.ph/webhooks/paymongo",
     apiKeyMasked: "pk_live_****************************3xQm",
     secretKeyMasked: "sk_live_****************************8nPr",
     supportedMethods: [
@@ -118,7 +118,7 @@ const MOCK_PROVIDERS: PaymentProvider[] = [
     apiEndpoint: "https://mch.cvpay.org",
     apiVersion: "v1.0",
     environment: "production",
-    webhookUrl: "https://api.foregate.ph/webhooks/cvpay",
+    webhookUrl: "https://api.prediex.ph/webhooks/cvpay",
     apiKeyMasked: "cv_live_****************************Xm2p",
     secretKeyMasked: "cv_secret_****************************Yw9k",
     supportedMethods: [
@@ -170,7 +170,7 @@ const MOCK_PROVIDERS: PaymentProvider[] = [
     apiEndpoint: "https://api.xendit.co/v2",
     apiVersion: "v2.0",
     environment: "production",
-    webhookUrl: "https://api.foregate.ph/webhooks/xendit",
+    webhookUrl: "https://api.prediex.ph/webhooks/xendit",
     apiKeyMasked: "xnd_production_****************************kL9w",
     secretKeyMasked: "xnd_secret_****************************pQ3r",
     supportedMethods: [
@@ -209,7 +209,7 @@ const MOCK_PROVIDERS: PaymentProvider[] = [
     apiEndpoint: "https://gw.dragonpay.ph/api/collect/v1",
     apiVersion: "v1.4",
     environment: "production",
-    webhookUrl: "https://api.foregate.ph/webhooks/dragonpay",
+    webhookUrl: "https://api.prediex.ph/webhooks/dragonpay",
     apiKeyMasked: "dp_merchant_****************************7mTx",
     secretKeyMasked: "dp_secret_****************************2kLn",
     supportedMethods: [
@@ -248,7 +248,7 @@ const MOCK_PROVIDERS: PaymentProvider[] = [
     apiEndpoint: "https://api.coins.ph/v3",
     apiVersion: "v3.1",
     environment: "production",
-    webhookUrl: "https://api.foregate.ph/webhooks/coinsph",
+    webhookUrl: "https://api.prediex.ph/webhooks/coinsph",
     apiKeyMasked: "coins_api_****************************nR4t",
     secretKeyMasked: "coins_sec_****************************jW8q",
     supportedMethods: [
@@ -287,7 +287,7 @@ const MOCK_PROVIDERS: PaymentProvider[] = [
     apiEndpoint: "https://api.pdax.ph/v2",
     apiVersion: "v2.0",
     environment: "production",
-    webhookUrl: "https://api.foregate.ph/webhooks/pdax",
+    webhookUrl: "https://api.prediex.ph/webhooks/pdax",
     apiKeyMasked: "pdax_key_****************************mN6p",
     secretKeyMasked: "pdax_sec_****************************xT2k",
     supportedMethods: [
@@ -326,7 +326,7 @@ const MOCK_PROVIDERS: PaymentProvider[] = [
     apiEndpoint: "https://api.circle.com/v2",
     apiVersion: "v2.1",
     environment: "production",
-    webhookUrl: "https://api.foregate.ph/webhooks/circle",
+    webhookUrl: "https://api.prediex.ph/webhooks/circle",
     apiKeyMasked: "circle_api_****************************wJ5m",
     secretKeyMasked: "circle_sec_****************************rK9n",
     supportedMethods: [
@@ -363,7 +363,7 @@ const MOCK_PROVIDERS: PaymentProvider[] = [
     apiEndpoint: "https://api.fireblocks.io/v1",
     apiVersion: "v1.6",
     environment: "production",
-    webhookUrl: "https://api.foregate.ph/webhooks/fireblocks",
+    webhookUrl: "https://api.prediex.ph/webhooks/fireblocks",
     apiKeyMasked: "fb_api_****************************tH3v",
     secretKeyMasked: "fb_cosigner_****************************zQ7w",
     supportedMethods: [
@@ -404,7 +404,7 @@ const MOCK_PROVIDERS: PaymentProvider[] = [
     apiEndpoint: "https://partner-gw.grab.com/grabpay/partner/v2",
     apiVersion: "v2.0",
     environment: "sandbox",
-    webhookUrl: "https://api-staging.foregate.ph/webhooks/grabpay",
+    webhookUrl: "https://api-staging.prediex.ph/webhooks/grabpay",
     apiKeyMasked: "grab_partner_****************************bN4r",
     secretKeyMasked: "grab_secret_****************************hY6t",
     supportedMethods: [
@@ -440,7 +440,7 @@ const MOCK_PROVIDERS: PaymentProvider[] = [
     apiEndpoint: "https://api.seamoney.com/v1",
     apiVersion: "v1.0",
     environment: "sandbox",
-    webhookUrl: "https://api-staging.foregate.ph/webhooks/seamoney",
+    webhookUrl: "https://api-staging.prediex.ph/webhooks/seamoney",
     apiKeyMasked: "sea_partner_****************************gK2m",
     secretKeyMasked: "sea_secret_****************************fP8n",
     supportedMethods: [
@@ -476,7 +476,7 @@ const MOCK_PROVIDERS: PaymentProvider[] = [
     apiEndpoint: "https://checkout-live.adyen.com/v70",
     apiVersion: "v70",
     environment: "sandbox",
-    webhookUrl: "https://api.foregate.ph/webhooks/adyen",
+    webhookUrl: "https://api.prediex.ph/webhooks/adyen",
     apiKeyMasked: "AQE****************************+Xjv",
     secretKeyMasked: "adyen_hmac_****************************wR3q",
     supportedMethods: [
@@ -856,7 +856,7 @@ export default function PaymentProvidersMgmt() {
       apiEndpoint: wizardForm.apiEndpoint.trim(),
       apiVersion: wizardForm.apiVersion.trim(),
       environment: wizardForm.environment,
-      webhookUrl: wizardForm.webhookUrl.trim() || `https://api-staging.foregate.ph/webhooks/${wizardForm.shortName.trim().toLowerCase().replace(/[^a-z0-9]/g, "")}`,
+      webhookUrl: wizardForm.webhookUrl.trim() || `https://api-staging.prediex.ph/webhooks/${wizardForm.shortName.trim().toLowerCase().replace(/[^a-z0-9]/g, "")}`,
       apiKeyMasked: maskKey(wizardForm.apiKey),
       secretKeyMasked: maskKey(wizardForm.secretKey),
       supportedMethods: wizardForm.methods.filter(m => m.enabled).map(m => {
@@ -916,7 +916,7 @@ export default function PaymentProvidersMgmt() {
             <svg className="size-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M12 15v.01M12 12V8m0 12a9 9 0 110-18 9 9 0 010 18z" strokeLinecap="round" /></svg>
           </div>
           <h3 className="text-[#070808] text-[16px] mb-1" style={{ fontWeight: 600, ...ss04 }}>Access Restricted</h3>
-          <p className="text-[#b0b3b8] text-[12px]" style={ss04}>Payment Providers Management is only available to ForeGate Platform Admins & Ops.</p>
+          <p className="text-[#b0b3b8] text-[12px]" style={ss04}>Payment Providers Management is only available to PrediEx Platform Admins & Ops.</p>
         </div>
       </div>
     );
@@ -1740,7 +1740,7 @@ export default function PaymentProvidersMgmt() {
 
               <WizardInput
                 label="Webhook URL"
-                value={wizardForm.webhookUrl || `https://api-staging.foregate.ph/webhooks/${wizardForm.shortName.toLowerCase().replace(/[^a-z0-9]/g, "") || "provider"}`}
+                value={wizardForm.webhookUrl || `https://api-staging.prediex.ph/webhooks/${wizardForm.shortName.toLowerCase().replace(/[^a-z0-9]/g, "") || "provider"}`}
                 onChange={v => updateForm("webhookUrl", v)}
                 placeholder="Auto-generated"
                 mono

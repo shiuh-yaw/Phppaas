@@ -259,7 +259,7 @@ export default function PaasMerchant() {
           </div>
           <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-xl">
             <p className="text-blue-600 text-[11px]" style={{ fontWeight: 500, ...ss04 }}>
-              Account policies marked "FG ONLY" can only be modified by ForeGate Platform Admins. Contact your account manager for changes.
+              Account policies marked "FG ONLY" can only be modified by PrediEx Platform Admins. Contact your account manager for changes.
             </p>
           </div>
         </SectionCard>
@@ -300,7 +300,7 @@ export default function PaasMerchant() {
             <div>
               <p className="text-[#070808] text-[12px]" style={{ fontWeight: 600, ...ss04 }}>Read-Only View</p>
               <p className="text-[#84888c] text-[11px] mt-0.5" style={ss04}>
-                This page shows the configuration set by the ForeGate Platform Admin. To request changes to your tenant's permissions, field visibility, or account policies, please contact your account manager or submit a support ticket.
+                This page shows the configuration set by the PrediEx Platform Admin. To request changes to your tenant's permissions, field visibility, or account policies, please contact your account manager or submit a support ticket.
               </p>
             </div>
           </div>

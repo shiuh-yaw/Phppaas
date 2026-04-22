@@ -1,7 +1,6 @@
 import { useState, createContext, useContext, useRef } from "react";
 import { useNavigate } from "react-router";
 import svgPaths from "../../imports/svg-8l13iyv1z4";
-import imgFrame2087325367 from "figma:asset/aa22ee141c47adc40b93dee89db917612452e751.png";
 import imgUnsplash4Yv84VgQkRm from "figma:asset/8b39eb823efcb26429cdca7453d4b008e7eedd6e.png";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { DepositWithdrawModal, type ModalTheme } from "../components/deposit-withdraw-modal";

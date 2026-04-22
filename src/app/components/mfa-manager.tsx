@@ -708,44 +708,6 @@ export function MfaManagerPanel({ userEmail, phoneAuthPrimary = false }: { userE
           </div>
         </div>
 
-        {/* Login Preferences Card */}
-        <div className="bg-white border border-[#f0f1f3] rounded-2xl overflow-hidden shadow-sm">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#f5f6f7]">
-            <div className="flex items-center gap-2">
-              <EmojiIcon emoji="⚙️" size={18} />
-              <span className="text-[14px] text-[#070808]" style={{ fontWeight: 600, ...ss, ...pp }}>Login Preferences</span>
-            </div>
-          </div>
-          <div className="px-5 py-4 flex flex-col gap-3">
-            <div className="flex items-center justify-between py-2.5 border-b border-[#f9fafb]">
-              <div>
-                <span className="text-[12px] text-[#070808] block" style={{ fontWeight: 500, ...ss, ...pp }}>Default MFA Method</span>
-                <span className="text-[10px] text-[#a0a3a7]" style={{ ...ss, ...pp }}>Preferred verification method during login</span>
-              </div>
-              <span className="text-[12px] px-3 py-1 rounded-lg bg-[#fff4ed] text-[#ff5222]" style={{ fontWeight: 600, ...ss, ...pp }}>
-                {mfa.phone.enabled ? "Phone SMS" : mfa.authenticator.enabled ? "Authenticator" : mfa.email.enabled ? "Email" : "None"}
-              </span>
-            </div>
-            <div className="flex items-center justify-between py-2.5 border-b border-[#f9fafb]">
-              <div>
-                <span className="text-[12px] text-[#070808] block" style={{ fontWeight: 500, ...ss, ...pp }}>Remember Device</span>
-                <span className="text-[10px] text-[#a0a3a7]" style={{ ...ss, ...pp }}>Skip MFA on trusted devices for 30 days</span>
-              </div>
-              <button className="relative w-10 h-[22px] rounded-full cursor-pointer transition-colors" style={{ background: "#ff5222" }}>
-                <div className="absolute top-[2px] size-[18px] rounded-full bg-white shadow-sm transition-all" style={{ left: "20px" }} />
-              </button>
-            </div>
-            <div className="flex items-center justify-between py-2.5">
-              <div>
-                <span className="text-[12px] text-[#070808] block" style={{ fontWeight: 500, ...ss, ...pp }}>High-Value Transaction MFA</span>
-                <span className="text-[10px] text-[#a0a3a7]" style={{ ...ss, ...pp }}>Require MFA for withdrawals over ₱5,000</span>
-              </div>
-              <button className="relative w-10 h-[22px] rounded-full cursor-pointer transition-colors" style={{ background: "#ff5222" }}>
-                <div className="absolute top-[2px] size-[18px] rounded-full bg-white shadow-sm transition-all" style={{ left: "20px" }} />
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Setup Modals */}

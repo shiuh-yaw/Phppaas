@@ -47,7 +47,7 @@ export default function AboutPage() {
               </div>
               <h1 className="text-[28px] mb-3" style={{ fontWeight: 700, ...ss, color: theme.text }}>Tungkol Sa Lucky Taya</h1>
               <p className="text-[14px] max-w-[550px] mx-auto leading-[1.7]" style={{ ...ss, color: theme.textSec }}>
-                Ang Lucky Taya, powered by ForeGate Inc., ay ang kauna-unahang "Social Predict Lab" sa Pilipinas — isang prediction market platform kung saan maaari kang tumaya sa mga resulta ng sports, showbiz, economy, at iba pa.
+                Ang Lucky Taya, powered by PrediEx Inc., ay ang kauna-unahang "Social Predict Lab" sa Pilipinas — isang prediction market platform kung saan maaari kang tumaya sa mga resulta ng sports, showbiz, economy, at iba pa.
               </p>
             </div>
 
@@ -105,7 +105,7 @@ export default function AboutPage() {
               <EmojiIcon emoji="🏛️" size={28} />
               <h3 className="text-[16px] mt-3 mb-2" style={{ fontWeight: 700, ...ss, color: theme.isDark ? '#60a5fa' : '#1e40af' }}>PAGCOR Licensed</h3>
               <p className="text-[13px] leading-[1.6]" style={{ ...ss, color: theme.isDark ? '#93bbfd' : '#2563eb' }}>
-                Lucky Taya (ForeGate Inc.) ay lisensyado at kinokontrol ng Philippine Amusement and Gaming Corporation (PAGCOR). License No: OGL-26-0042.
+                Lucky Taya (PrediEx Inc.) ay lisensyado at kinokontrol ng Philippine Amusement and Gaming Corporation (PAGCOR). License No: OGL-26-0042.
               </p>
             </div>
           </div>
