@@ -865,6 +865,7 @@ function MainContent({ market }: { market: MarketData }) {
 /* ==================== ORDERBOOK MARKET PAGE ==================== */
 function OrderbookMarketPage({ id, isDark, t, openDeposit }: { id: string; isDark: boolean; t: T; openDeposit: () => void }) {
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
   const obMarket = getOBMarket(id);
   const [rulesOpen, setRulesOpen] = useState(false);
   const [commentTab, setCommentTab] = useState("Recent Trades");
@@ -1026,6 +1027,42 @@ function OrderbookMarketPage({ id, isDark, t, openDeposit }: { id: string; isDar
                       Sell
                     </button>
                   </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Open Orders (visible on mobile — trading panel is hidden below lg) */}
+        {isLoggedIn && obMarket.openOrders && obMarket.openOrders.length > 0 && (
+          <div className="lg:hidden rounded-xl sm:rounded-2xl border p-4 sm:p-5 flex flex-col gap-3" style={{ background: t.card, borderColor: t.cardBorder }}>
+            <span className="text-[15px]" style={{ color: t.text, fontWeight: 600, ...ss, ...pp }}>Open Orders</span>
+            {obMarket.openOrders.map(o => {
+              const remaining = o.shares - o.filled;
+              const fillPct = Math.round((o.filled / o.shares) * 100);
+              return (
+                <div key={o.id} className="rounded-xl p-3 flex flex-col gap-2" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "#f9fafb", border: `1px solid ${t.cardBorder}` }}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] px-2 py-0.5 rounded" style={{ background: o.action === "Buy" ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)", color: o.action === "Buy" ? "#22c55e" : "#ef4444", fontWeight: 700, ...ss }}>{o.action}</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded" style={{ background: o.side === "YES" ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)", color: o.side === "YES" ? "#22c55e" : "#ef4444", fontWeight: 700, ...ss }}>{o.side}</span>
+                    </div>
+                    <span className="text-[10px]" style={{ color: t.textMut, ...ss }}>{o.placedAt}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[12px]" style={{ color: t.text, ...ss }}>
+                    <span style={{ fontWeight: 600 }}>@ {o.price}¢</span>
+                    <span>{o.filled.toLocaleString()} / {o.shares.toLocaleString()}</span>
+                  </div>
+                  <div className="h-1 rounded-full overflow-hidden" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "#e5e7eb" }}>
+                    <div className="h-full rounded-full" style={{ width: `${fillPct}%`, background: "#ff5222" }} />
+                  </div>
+                  <div className="flex items-center justify-between text-[10px]" style={{ color: t.textMut, ...ss }}>
+                    <span>{remaining.toLocaleString()} remaining</span>
+                    <span>{fillPct}% filled</span>
+                  </div>
+                  <button className="h-8 rounded-lg text-[11px] cursor-pointer transition-opacity hover:opacity-90" style={{ background: "transparent", color: t.text, border: `1px solid ${t.cardBorder}`, fontWeight: 600, ...ss, ...pp }}>
+                    Cancel order
+                  </button>
                 </div>
               );
             })}
