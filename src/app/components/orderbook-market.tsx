@@ -48,6 +48,7 @@ export interface OBMarket {
   recentTrades: OBTrade[];
   priceHistory: OBPricePoint[];
   myPositions?: { side: "YES" | "NO"; avgPrice: number; shares: number; currentValue: number; pnl: number }[];
+  openOrders?: { id: string; action: "Buy" | "Sell"; side: "YES" | "NO"; price: number; shares: number; filled: number; placedAt: string }[];
   comments: { user: string; time: string; text: string; likes: number; liked: boolean }[];
 }
 
@@ -112,6 +113,10 @@ export const OB_MARKETS: Record<string, OBMarket> = {
     myPositions: [
       { side: "YES", avgPrice: 55, shares: 2000, currentValue: 1240, pnl: 140 },
       { side: "NO", avgPrice: 38, shares: 800, currentValue: 304, pnl: -52 },
+    ],
+    openOrders: [
+      { id: "ord-1", action: "Buy", side: "YES", price: 58, shares: 1000, filled: 250, placedAt: "12 min ago" },
+      { id: "ord-2", action: "Sell", side: "NO", price: 42, shares: 500, filled: 0, placedAt: "1h ago" },
     ],
     comments: [
       { user: "CryptoWhale_PH",   time: "1h ago",  text: "Bitcoin halving effect delayed but building. $200K by Q4 is very achievable if institutional flow continues. Long YES at 55¢ average.", likes: 45, liked: true },
@@ -787,36 +792,47 @@ export function OrderbookTradingPanel({ market, isDark, t, onDeposit }: Orderboo
         />
       )}
 
-      {/* My Positions */}
-      {isLoggedIn && market.myPositions && market.myPositions.length > 0 && (
+      {/* Open Orders */}
+      {isLoggedIn && market.openOrders && market.openOrders.length > 0 && (
         <div>
-          <span className="text-[12px] block mb-2" style={{ color: t.textSec, fontWeight: 600, ...ss, ...pp }}>My Positions</span>
-          {market.myPositions.map((pos, i) => {
-            const currentPrice = pos.side === "YES" ? market.yesPrice : market.noPrice;
-            return (
-              <div key={i} className="rounded-lg p-3 flex flex-col gap-2" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "#f9fafb", border: `1px solid ${t.cardBorder}` }}>
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] px-2 py-0.5 rounded" style={{ background: pos.side === "YES" ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)", color: pos.side === "YES" ? "#22c55e" : "#ef4444", fontWeight: 700, ...ss }}>{pos.side}</span>
-                  <span className="text-[12px]" style={{ color: pos.pnl >= 0 ? "#22c55e" : "#ef4444", fontWeight: 600, ...ss }}>
-                    {pos.pnl >= 0 ? "+" : ""}₱{pos.pnl.toLocaleString()}
-                  </span>
+          <span className="text-[12px] block mb-2" style={{ color: t.textSec, fontWeight: 600, ...ss, ...pp }}>Open Orders</span>
+          <div className="flex flex-col gap-2">
+            {market.openOrders.map(o => {
+              const remaining = o.shares - o.filled;
+              const fillPct = Math.round((o.filled / o.shares) * 100);
+              return (
+                <div key={o.id} className="rounded-lg p-3 flex flex-col gap-2" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "#f9fafb", border: `1px solid ${t.cardBorder}` }}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] px-2 py-0.5 rounded" style={{ background: o.action === "Buy" ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)", color: o.action === "Buy" ? "#22c55e" : "#ef4444", fontWeight: 700, ...ss }}>{o.action}</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded" style={{ background: o.side === "YES" ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)", color: o.side === "YES" ? "#22c55e" : "#ef4444", fontWeight: 700, ...ss }}>{o.side}</span>
+                    </div>
+                    <span className="text-[10px]" style={{ color: t.textMut, ...ss }}>{o.placedAt}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px]" style={{ color: t.text, ...ss }}>
+                    <span>@ {o.price}¢</span>
+                    <span>{o.filled.toLocaleString()} / {o.shares.toLocaleString()}</span>
+                  </div>
+                  <div className="h-1 rounded-full overflow-hidden" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "#e5e7eb" }}>
+                    <div className="h-full rounded-full" style={{ width: `${fillPct}%`, background: "#ff5222" }} />
+                  </div>
+                  <div className="flex items-center justify-between text-[10px]" style={{ color: t.textMut, ...ss }}>
+                    <span>{remaining.toLocaleString()} remaining</span>
+                    <span>{fillPct}% filled</span>
+                  </div>
+                  <button
+                    className="h-7 rounded-md text-[10px] cursor-pointer transition-opacity hover:opacity-90"
+                    style={{ background: "transparent", color: t.text, border: `1px solid ${t.cardBorder}`, fontWeight: 600, ...ss, ...pp }}
+                  >
+                    Cancel order
+                  </button>
                 </div>
-                <div className="flex items-center justify-between text-[10px]" style={{ color: t.textMut, ...ss }}>
-                  <span>Avg {pos.avgPrice}¢ · {pos.shares.toLocaleString()} shares</span>
-                  <span>₱{pos.currentValue.toLocaleString()}</span>
-                </div>
-                <button
-                  onClick={() => { setAction("Sell"); setSide(pos.side); setShares(String(pos.shares)); setLimitPrice(String(currentPrice)); }}
-                  className="h-8 rounded-md text-[11px] cursor-pointer transition-opacity hover:opacity-90"
-                  style={{ background: "#ef4444", color: "#fff", fontWeight: 700, ...ss, ...pp }}
-                >
-                  Sell @ {currentPrice}¢
-                </button>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       )}
+
     </div>
   );
 }

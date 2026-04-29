@@ -10,7 +10,7 @@ import { useRBAC } from "../../components/oms/oms-rbac";
 
 const inter = { fontFamily: "'Inter', sans-serif" };
 
-type Tab = "overview" | "urls" | "webhooks" | "api-keys" | "users" | "settings" | "compliance";
+type Tab = "overview" | "urls" | "webhooks" | "api-keys" | "users" | "settings" | "compliance" | "orderbook" | "betting" | "fast-bet";
 
 interface WebhookEndpoint {
   id: string;
@@ -129,7 +129,93 @@ export default function OmsMerchantDetail() {
     { key: "users", label: `Users (${merchantUsers.length})` },
     { key: "settings", label: "Settings" },
     { key: "compliance", label: "Compliance" },
+    { key: "orderbook", label: "Orderbook" },
+    { key: "betting", label: "Betting" },
+    { key: "fast-bet", label: "Fast Bet" },
   ];
+
+  // Per-merchant orderbook module state (mocked — driven by merchant id)
+  const obSeed = (merchant.id.charCodeAt(merchant.id.length - 1) || 0) % 3;
+  const [obEnabled, setObEnabled] = useState(obSeed !== 2);
+  const [obConfig, setObConfig] = useState({
+    minSpread: 1,
+    maxSpread: 10,
+    minSize: 100,
+    maxSize: 50000,
+    exposureLimit: obSeed === 0 ? 500000 : 250000,
+    quoteRateLimit: 60,
+    autoCancelTimeoutMin: 30,
+    feeBps: 25,
+    rebateBps: 5,
+    killSwitchEnabled: true,
+    requireKyc: true,
+    allowedSides: "both" as "both" | "yes" | "no",
+  });
+  const obStats = obEnabled ? {
+    activeMarkets: 8 + obSeed * 4,
+    activeQuotes: 24 + obSeed * 12,
+    totalDepth: 142000 + obSeed * 80000,
+    exposure: 84200 + obSeed * 50000,
+    fills24h: 480 + obSeed * 220,
+    pnl24h: obSeed === 1 ? -1240 : 2840 + obSeed * 1400,
+    spreadAvg: 2.4 + obSeed * 0.5,
+    uptimeQuoting: 98.6 - obSeed * 2.1,
+  } : null;
+
+  // Per-merchant betting (BC parimutuel) module state
+  const btSeed = (merchant.id.charCodeAt(0) || 0) % 3;
+  const [btEnabled, setBtEnabled] = useState(btSeed !== 1);
+  const [btConfig, setBtConfig] = useState({
+    minStake: 20,
+    maxStake: 100000,
+    maxPayout: 1000000,
+    houseFeeBps: 500,
+    creatorFeeBps: 100,
+    settlementWindowHr: 24,
+    cooldownAfterSettleMin: 15,
+    maxOpenMarketsPerUser: 50,
+    autoVoidIfNoLiquidity: true,
+    requireKyc: true,
+    category: "all" as "all" | "sports" | "politics" | "crypto" | "entertainment",
+  });
+  const btStats = btEnabled ? {
+    activeMarkets: 32 + btSeed * 18,
+    bets24h: 4820 + btSeed * 1500,
+    handle24h: 642000 + btSeed * 280000,
+    ggr24h: btSeed === 2 ? -3200 : 18400 + btSeed * 6200,
+    avgStake: 158 + btSeed * 22,
+    settlementRate: 99.4 - btSeed * 1.3,
+    pendingSettlements: 6 + btSeed * 4,
+    activeBettors: 2840 + btSeed * 720,
+  } : null;
+
+  // Per-merchant Fast Bet module state (binary up/down rapid-tick markets)
+  const fbSeed = (merchant.id.charCodeAt(1) || 0) % 3;
+  const [fbEnabled, setFbEnabled] = useState(fbSeed === 0);
+  const [fbConfig, setFbConfig] = useState({
+    minStake: 10,
+    maxStake: 5000,
+    tickDurationSec: 30,
+    payoutMultiplier: 1.85,
+    houseEdgeBps: 750,
+    cooldownBetweenBetsSec: 2,
+    maxBetsPerMinute: 30,
+    maxDailyLossPerUser: 20000,
+    asset: "btc" as "btc" | "eth" | "sol" | "mixed",
+    requireKyc: false,
+    enableLossCap: true,
+    enableStreakBonus: false,
+  });
+  const fbStats = fbEnabled ? {
+    activeTicks: 4 + fbSeed,
+    bets24h: 18420 + fbSeed * 6200,
+    handle24h: 284000 + fbSeed * 90000,
+    ggr24h: 21300 + fbSeed * 5400,
+    avgBet: 42 + fbSeed * 8,
+    winRate: 47.2 + fbSeed * 0.6,
+    activeUsers: 1240 + fbSeed * 280,
+    avgSessionMin: 12 + fbSeed * 3,
+  } : null;
 
   return (
     <div className="space-y-4" style={inter}>
@@ -507,6 +593,419 @@ export default function OmsMerchantDetail() {
               ))}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ==================== ORDERBOOK TAB ==================== */}
+      {tab === "orderbook" && (
+        <div className="space-y-4">
+          {/* Module status */}
+          <div className="bg-[#111827] border border-[#1f2937] rounded-xl p-4 flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${obEnabled ? "bg-emerald-500/15" : "bg-[#1f2937]"}`}>
+                <svg className={`size-5 ${obEnabled ? "text-emerald-400" : "text-[#6b7280]"}`} fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.6"><path d="M3 4h14v3H3zM3 9h14v3H3zM3 14h8v3H3z" strokeLinejoin="round" /></svg>
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-white text-[14px]" style={{ fontWeight: 700 }}>Orderbook Module</h3>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${obEnabled ? "bg-emerald-500/15 text-emerald-400" : "bg-gray-500/15 text-gray-400"}`} style={{ fontWeight: 600 }}>{obEnabled ? "ENABLED" : "DISABLED"}</span>
+                </div>
+                <p className="text-[#9ca3af] text-[11px]" style={{ fontWeight: 500 }}>Limit-order trading with bid/ask matching for this merchant's markets</p>
+              </div>
+            </div>
+            <button onClick={() => setObEnabled(!obEnabled)} className={`h-8 px-4 text-[11px] rounded-lg cursor-pointer transition-colors ${obEnabled ? "bg-red-500/15 text-red-400 hover:bg-red-500/25" : "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25"}`} style={{ fontWeight: 600 }}>
+              {obEnabled ? "Disable Module" : "Enable Module"}
+            </button>
+          </div>
+
+          {!obEnabled && (
+            <div className="bg-[#111827] border border-[#1f2937] rounded-xl p-6 text-center">
+              <p className="text-[#6b7280] text-[12px]" style={{ fontWeight: 500 }}>Orderbook module is disabled. Enable it to configure limits, post quotes, and view activity.</p>
+            </div>
+          )}
+
+          {obEnabled && obStats && (
+            <>
+              {/* Stats */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {[
+                  { label: "Active Markets", value: obStats.activeMarkets.toString(), color: "text-white" },
+                  { label: "Active Quotes", value: obStats.activeQuotes.toString(), color: "text-emerald-400" },
+                  { label: "Depth", value: `₱${(obStats.totalDepth / 1000).toFixed(0)}K`, color: "text-white" },
+                  { label: "Exposure", value: `₱${(obStats.exposure / 1000).toFixed(0)}K`, color: "text-amber-400" },
+                  { label: "Fills (24h)", value: obStats.fills24h.toLocaleString(), color: "text-blue-400" },
+                  { label: "P&L (24h)", value: `${obStats.pnl24h >= 0 ? "+" : ""}₱${obStats.pnl24h.toLocaleString()}`, color: obStats.pnl24h >= 0 ? "text-emerald-400" : "text-red-400" },
+                  { label: "Avg Spread", value: `${obStats.spreadAvg.toFixed(1)}¢`, color: "text-white" },
+                  { label: "Quoting Uptime", value: `${obStats.uptimeQuoting.toFixed(1)}%`, color: obStats.uptimeQuoting < 95 ? "text-amber-400" : "text-emerald-400" },
+                ].map(s => (
+                  <div key={s.label} className="bg-[#111827] border border-[#1f2937] rounded-xl p-3">
+                    <p className="text-[#6b7280] text-[10px]" style={{ fontWeight: 500 }}>{s.label}</p>
+                    <p className={`text-[18px] ${s.color}`} style={{ fontWeight: 700 }}>{s.value}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Config */}
+              <div className="bg-[#111827] border border-[#1f2937] rounded-xl p-4">
+                <h3 className="text-white text-[14px] mb-3" style={{ fontWeight: 700 }}>Orderbook Config</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Min Spread (¢)</label>
+                    <input type="number" value={obConfig.minSpread} onChange={e => setObConfig({ ...obConfig, minSpread: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Max Spread (¢)</label>
+                    <input type="number" value={obConfig.maxSpread} onChange={e => setObConfig({ ...obConfig, maxSpread: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Min Order Size (shares)</label>
+                    <input type="number" value={obConfig.minSize} onChange={e => setObConfig({ ...obConfig, minSize: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Max Order Size (shares)</label>
+                    <input type="number" value={obConfig.maxSize} onChange={e => setObConfig({ ...obConfig, maxSize: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Exposure Limit (₱)</label>
+                    <input type="number" value={obConfig.exposureLimit} onChange={e => setObConfig({ ...obConfig, exposureLimit: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Quote Rate Limit (per min)</label>
+                    <input type="number" value={obConfig.quoteRateLimit} onChange={e => setObConfig({ ...obConfig, quoteRateLimit: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Auto-cancel Timeout (min)</label>
+                    <input type="number" value={obConfig.autoCancelTimeoutMin} onChange={e => setObConfig({ ...obConfig, autoCancelTimeoutMin: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Allowed Sides</label>
+                    <select value={obConfig.allowedSides} onChange={e => setObConfig({ ...obConfig, allowedSides: e.target.value as any })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none cursor-pointer">
+                      <option value="both">Both YES &amp; NO</option>
+                      <option value="yes">YES only</option>
+                      <option value="no">NO only</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Taker Fee (bps)</label>
+                    <input type="number" value={obConfig.feeBps} onChange={e => setObConfig({ ...obConfig, feeBps: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Maker Rebate (bps)</label>
+                    <input type="number" value={obConfig.rebateBps} onChange={e => setObConfig({ ...obConfig, rebateBps: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4 pt-4 border-t border-[#1f2937]">
+                  <label className="flex items-center justify-between bg-[#0a0e1a] border border-[#1f2937] rounded-lg px-3 py-2.5 cursor-pointer">
+                    <div>
+                      <span className="text-white text-[12px] block" style={{ fontWeight: 600 }}>Kill-switch enabled</span>
+                      <span className="text-[#6b7280] text-[10px]">Allow platform to halt all quotes instantly</span>
+                    </div>
+                    <input type="checkbox" checked={obConfig.killSwitchEnabled} onChange={e => setObConfig({ ...obConfig, killSwitchEnabled: e.target.checked })} className="accent-[#ff5222]" />
+                  </label>
+                  <label className="flex items-center justify-between bg-[#0a0e1a] border border-[#1f2937] rounded-lg px-3 py-2.5 cursor-pointer">
+                    <div>
+                      <span className="text-white text-[12px] block" style={{ fontWeight: 600 }}>Require KYC for trading</span>
+                      <span className="text-[#6b7280] text-[10px]">Block unverified users from posting orders</span>
+                    </div>
+                    <input type="checkbox" checked={obConfig.requireKyc} onChange={e => setObConfig({ ...obConfig, requireKyc: e.target.checked })} className="accent-[#ff5222]" />
+                  </label>
+                </div>
+                <div className="flex justify-end gap-2 mt-4">
+                  <button className="h-8 px-4 bg-[#0a0e1a] border border-[#1f2937] text-[#9ca3af] text-[11px] rounded-lg cursor-pointer hover:bg-[#1f2937]" style={{ fontWeight: 600 }}>Reset</button>
+                  <button onClick={() => showOmsToast("Orderbook config saved")} className="h-8 px-4 bg-[#ff5222] text-white text-[11px] rounded-lg cursor-pointer hover:bg-[#e8491f]" style={{ fontWeight: 600 }}>Save Config</button>
+                </div>
+              </div>
+
+              {/* Risk controls */}
+              <div className="bg-[#111827] border border-[#1f2937] rounded-xl p-4 flex items-center justify-between gap-3 flex-wrap">
+                <div>
+                  <h3 className="text-white text-[14px]" style={{ fontWeight: 700 }}>Platform Risk Controls</h3>
+                  <p className="text-[#9ca3af] text-[11px]" style={{ fontWeight: 500 }}>Override merchant orderbook in case of misconduct or abnormal exposure</p>
+                </div>
+                <div className="flex gap-2">
+                  <button className="h-8 px-3 bg-amber-500/15 text-amber-400 text-[11px] rounded-lg cursor-pointer hover:bg-amber-500/25" style={{ fontWeight: 600 }}>Throttle</button>
+                  <button className="h-8 px-3 bg-orange-500/15 text-orange-400 text-[11px] rounded-lg cursor-pointer hover:bg-orange-500/25" style={{ fontWeight: 600 }}>Kill All Quotes</button>
+                  <button className="h-8 px-3 bg-red-500/15 text-red-400 text-[11px] rounded-lg cursor-pointer hover:bg-red-500/25" style={{ fontWeight: 600 }}>Suspend</button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ==================== BETTING TAB ==================== */}
+      {tab === "betting" && (
+        <div className="space-y-4">
+          {/* Module status */}
+          <div className="bg-[#111827] border border-[#1f2937] rounded-xl p-4 flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${btEnabled ? "bg-purple-500/15" : "bg-[#1f2937]"}`}>
+                <svg className={`size-5 ${btEnabled ? "text-purple-400" : "text-[#6b7280]"}`} fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.6"><path d="M10 3v14M3 10h14M5.5 5.5l9 9M14.5 5.5l-9 9" strokeLinecap="round" /></svg>
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-white text-[14px]" style={{ fontWeight: 700 }}>Betting Module (BC Parimutuel)</h3>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${btEnabled ? "bg-purple-500/15 text-purple-400" : "bg-gray-500/15 text-gray-400"}`} style={{ fontWeight: 600 }}>{btEnabled ? "ENABLED" : "DISABLED"}</span>
+                </div>
+                <p className="text-[#9ca3af] text-[11px]" style={{ fontWeight: 500 }}>Pool-based parimutuel betting with house-managed payouts for this merchant's markets</p>
+              </div>
+            </div>
+            <button onClick={() => setBtEnabled(!btEnabled)} className={`h-8 px-4 text-[11px] rounded-lg cursor-pointer transition-colors ${btEnabled ? "bg-red-500/15 text-red-400 hover:bg-red-500/25" : "bg-purple-500/15 text-purple-400 hover:bg-purple-500/25"}`} style={{ fontWeight: 600 }}>
+              {btEnabled ? "Disable Module" : "Enable Module"}
+            </button>
+          </div>
+
+          {!btEnabled && (
+            <div className="bg-[#111827] border border-[#1f2937] rounded-xl p-6 text-center">
+              <p className="text-[#6b7280] text-[12px]" style={{ fontWeight: 500 }}>Betting module is disabled. Enable it to configure stake limits, fees, and settlement rules.</p>
+            </div>
+          )}
+
+          {btEnabled && btStats && (
+            <>
+              {/* Stats */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {[
+                  { label: "Active Markets", value: btStats.activeMarkets.toString(), color: "text-white" },
+                  { label: "Bets (24h)", value: btStats.bets24h.toLocaleString(), color: "text-blue-400" },
+                  { label: "Handle (24h)", value: `₱${(btStats.handle24h / 1000).toFixed(0)}K`, color: "text-white" },
+                  { label: "GGR (24h)", value: `${btStats.ggr24h >= 0 ? "+" : ""}₱${btStats.ggr24h.toLocaleString()}`, color: btStats.ggr24h >= 0 ? "text-emerald-400" : "text-red-400" },
+                  { label: "Avg Stake", value: `₱${btStats.avgStake}`, color: "text-white" },
+                  { label: "Settlement Rate", value: `${btStats.settlementRate.toFixed(1)}%`, color: btStats.settlementRate < 98 ? "text-amber-400" : "text-emerald-400" },
+                  { label: "Pending Settlements", value: btStats.pendingSettlements.toString(), color: btStats.pendingSettlements > 8 ? "text-amber-400" : "text-white" },
+                  { label: "Active Bettors", value: btStats.activeBettors.toLocaleString(), color: "text-purple-400" },
+                ].map(s => (
+                  <div key={s.label} className="bg-[#111827] border border-[#1f2937] rounded-xl p-3">
+                    <p className="text-[#6b7280] text-[10px]" style={{ fontWeight: 500 }}>{s.label}</p>
+                    <p className={`text-[18px] ${s.color}`} style={{ fontWeight: 700 }}>{s.value}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Config */}
+              <div className="bg-[#111827] border border-[#1f2937] rounded-xl p-4">
+                <h3 className="text-white text-[14px] mb-3" style={{ fontWeight: 700 }}>Betting Config</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Min Stake (₱)</label>
+                    <input type="number" value={btConfig.minStake} onChange={e => setBtConfig({ ...btConfig, minStake: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Max Stake (₱)</label>
+                    <input type="number" value={btConfig.maxStake} onChange={e => setBtConfig({ ...btConfig, maxStake: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Max Payout per Bet (₱)</label>
+                    <input type="number" value={btConfig.maxPayout} onChange={e => setBtConfig({ ...btConfig, maxPayout: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>House Fee (bps)</label>
+                    <input type="number" value={btConfig.houseFeeBps} onChange={e => setBtConfig({ ...btConfig, houseFeeBps: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Creator Fee Share (bps)</label>
+                    <input type="number" value={btConfig.creatorFeeBps} onChange={e => setBtConfig({ ...btConfig, creatorFeeBps: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Settlement Window (hr)</label>
+                    <input type="number" value={btConfig.settlementWindowHr} onChange={e => setBtConfig({ ...btConfig, settlementWindowHr: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Cooldown After Settle (min)</label>
+                    <input type="number" value={btConfig.cooldownAfterSettleMin} onChange={e => setBtConfig({ ...btConfig, cooldownAfterSettleMin: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Max Open Markets / User</label>
+                    <input type="number" value={btConfig.maxOpenMarketsPerUser} onChange={e => setBtConfig({ ...btConfig, maxOpenMarketsPerUser: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Allowed Categories</label>
+                    <select value={btConfig.category} onChange={e => setBtConfig({ ...btConfig, category: e.target.value as any })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none cursor-pointer">
+                      <option value="all">All Categories</option>
+                      <option value="sports">Sports only</option>
+                      <option value="politics">Politics only</option>
+                      <option value="crypto">Crypto only</option>
+                      <option value="entertainment">Entertainment only</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4 pt-4 border-t border-[#1f2937]">
+                  <label className="flex items-center justify-between bg-[#0a0e1a] border border-[#1f2937] rounded-lg px-3 py-2.5 cursor-pointer">
+                    <div>
+                      <span className="text-white text-[12px] block" style={{ fontWeight: 600 }}>Auto-void no liquidity</span>
+                      <span className="text-[#6b7280] text-[10px]">Refund bets if pool stays empty on opposite side</span>
+                    </div>
+                    <input type="checkbox" checked={btConfig.autoVoidIfNoLiquidity} onChange={e => setBtConfig({ ...btConfig, autoVoidIfNoLiquidity: e.target.checked })} className="accent-[#ff5222]" />
+                  </label>
+                  <label className="flex items-center justify-between bg-[#0a0e1a] border border-[#1f2937] rounded-lg px-3 py-2.5 cursor-pointer">
+                    <div>
+                      <span className="text-white text-[12px] block" style={{ fontWeight: 600 }}>Require KYC</span>
+                      <span className="text-[#6b7280] text-[10px]">Block unverified users from betting</span>
+                    </div>
+                    <input type="checkbox" checked={btConfig.requireKyc} onChange={e => setBtConfig({ ...btConfig, requireKyc: e.target.checked })} className="accent-[#ff5222]" />
+                  </label>
+                </div>
+                <div className="flex justify-end gap-2 mt-4">
+                  <button className="h-8 px-4 bg-[#0a0e1a] border border-[#1f2937] text-[#9ca3af] text-[11px] rounded-lg cursor-pointer hover:bg-[#1f2937]" style={{ fontWeight: 600 }}>Reset</button>
+                  <button onClick={() => showOmsToast("Betting config saved")} className="h-8 px-4 bg-[#ff5222] text-white text-[11px] rounded-lg cursor-pointer hover:bg-[#e8491f]" style={{ fontWeight: 600 }}>Save Config</button>
+                </div>
+              </div>
+
+              {/* Risk controls */}
+              <div className="bg-[#111827] border border-[#1f2937] rounded-xl p-4 flex items-center justify-between gap-3 flex-wrap">
+                <div>
+                  <h3 className="text-white text-[14px]" style={{ fontWeight: 700 }}>Platform Risk Controls</h3>
+                  <p className="text-[#9ca3af] text-[11px]" style={{ fontWeight: 500 }}>Override merchant betting in case of suspicious activity or settlement issues</p>
+                </div>
+                <div className="flex gap-2">
+                  <button className="h-8 px-3 bg-amber-500/15 text-amber-400 text-[11px] rounded-lg cursor-pointer hover:bg-amber-500/25" style={{ fontWeight: 600 }}>Pause New Bets</button>
+                  <button className="h-8 px-3 bg-orange-500/15 text-orange-400 text-[11px] rounded-lg cursor-pointer hover:bg-orange-500/25" style={{ fontWeight: 600 }}>Force Settlement</button>
+                  <button className="h-8 px-3 bg-red-500/15 text-red-400 text-[11px] rounded-lg cursor-pointer hover:bg-red-500/25" style={{ fontWeight: 600 }}>Suspend Module</button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ==================== FAST BET TAB ==================== */}
+      {tab === "fast-bet" && (
+        <div className="space-y-4">
+          {/* Module status */}
+          <div className="bg-[#111827] border border-[#1f2937] rounded-xl p-4 flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${fbEnabled ? "bg-orange-500/15" : "bg-[#1f2937]"}`}>
+                <svg className={`size-5 ${fbEnabled ? "text-orange-400" : "text-[#6b7280]"}`} fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.6"><path d="M11 2L4 11h5l-1 7 7-9h-5l1-7z" strokeLinejoin="round" /></svg>
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-white text-[14px]" style={{ fontWeight: 700 }}>Fast Bet Module</h3>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${fbEnabled ? "bg-orange-500/15 text-orange-400" : "bg-gray-500/15 text-gray-400"}`} style={{ fontWeight: 600 }}>{fbEnabled ? "ENABLED" : "DISABLED"}</span>
+                </div>
+                <p className="text-[#9ca3af] text-[11px]" style={{ fontWeight: 500 }}>Rapid up/down tick markets with fixed payout multiplier — short-cycle binary betting</p>
+              </div>
+            </div>
+            <button onClick={() => setFbEnabled(!fbEnabled)} className={`h-8 px-4 text-[11px] rounded-lg cursor-pointer transition-colors ${fbEnabled ? "bg-red-500/15 text-red-400 hover:bg-red-500/25" : "bg-orange-500/15 text-orange-400 hover:bg-orange-500/25"}`} style={{ fontWeight: 600 }}>
+              {fbEnabled ? "Disable Module" : "Enable Module"}
+            </button>
+          </div>
+
+          {!fbEnabled && (
+            <div className="bg-[#111827] border border-[#1f2937] rounded-xl p-6 text-center">
+              <p className="text-[#6b7280] text-[12px]" style={{ fontWeight: 500 }}>Fast Bet module is disabled. Enable it to configure tick duration, payout multiplier, and rate limits.</p>
+            </div>
+          )}
+
+          {fbEnabled && fbStats && (
+            <>
+              {/* Stats */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {[
+                  { label: "Active Ticks", value: fbStats.activeTicks.toString(), color: "text-white" },
+                  { label: "Bets (24h)", value: fbStats.bets24h.toLocaleString(), color: "text-blue-400" },
+                  { label: "Handle (24h)", value: `₱${(fbStats.handle24h / 1000).toFixed(0)}K`, color: "text-white" },
+                  { label: "GGR (24h)", value: `+₱${fbStats.ggr24h.toLocaleString()}`, color: "text-emerald-400" },
+                  { label: "Avg Bet", value: `₱${fbStats.avgBet}`, color: "text-white" },
+                  { label: "User Win Rate", value: `${fbStats.winRate.toFixed(1)}%`, color: "text-amber-400" },
+                  { label: "Active Users", value: fbStats.activeUsers.toLocaleString(), color: "text-orange-400" },
+                  { label: "Avg Session", value: `${fbStats.avgSessionMin}m`, color: "text-white" },
+                ].map(s => (
+                  <div key={s.label} className="bg-[#111827] border border-[#1f2937] rounded-xl p-3">
+                    <p className="text-[#6b7280] text-[10px]" style={{ fontWeight: 500 }}>{s.label}</p>
+                    <p className={`text-[18px] ${s.color}`} style={{ fontWeight: 700 }}>{s.value}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Config */}
+              <div className="bg-[#111827] border border-[#1f2937] rounded-xl p-4">
+                <h3 className="text-white text-[14px] mb-3" style={{ fontWeight: 700 }}>Fast Bet Config</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Min Stake (₱)</label>
+                    <input type="number" value={fbConfig.minStake} onChange={e => setFbConfig({ ...fbConfig, minStake: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Max Stake (₱)</label>
+                    <input type="number" value={fbConfig.maxStake} onChange={e => setFbConfig({ ...fbConfig, maxStake: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Tick Duration (sec)</label>
+                    <input type="number" value={fbConfig.tickDurationSec} onChange={e => setFbConfig({ ...fbConfig, tickDurationSec: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Payout Multiplier (×)</label>
+                    <input type="number" step="0.01" value={fbConfig.payoutMultiplier} onChange={e => setFbConfig({ ...fbConfig, payoutMultiplier: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>House Edge (bps)</label>
+                    <input type="number" value={fbConfig.houseEdgeBps} onChange={e => setFbConfig({ ...fbConfig, houseEdgeBps: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Cooldown Between Bets (sec)</label>
+                    <input type="number" value={fbConfig.cooldownBetweenBetsSec} onChange={e => setFbConfig({ ...fbConfig, cooldownBetweenBetsSec: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Max Bets / Minute</label>
+                    <input type="number" value={fbConfig.maxBetsPerMinute} onChange={e => setFbConfig({ ...fbConfig, maxBetsPerMinute: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div>
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Max Daily Loss / User (₱)</label>
+                    <input type="number" value={fbConfig.maxDailyLossPerUser} onChange={e => setFbConfig({ ...fbConfig, maxDailyLossPerUser: Number(e.target.value) })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-[#9ca3af] text-[11px] block mb-1.5" style={{ fontWeight: 500 }}>Underlying Asset</label>
+                    <select value={fbConfig.asset} onChange={e => setFbConfig({ ...fbConfig, asset: e.target.value as any })} className="w-full h-9 px-3 bg-[#0a0e1a] border border-[#1f2937] rounded-lg text-white text-[12px] outline-none cursor-pointer">
+                      <option value="btc">BTC/USD</option>
+                      <option value="eth">ETH/USD</option>
+                      <option value="sol">SOL/USD</option>
+                      <option value="mixed">All Assets</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 pt-4 border-t border-[#1f2937]">
+                  <label className="flex items-center justify-between bg-[#0a0e1a] border border-[#1f2937] rounded-lg px-3 py-2.5 cursor-pointer">
+                    <div>
+                      <span className="text-white text-[12px] block" style={{ fontWeight: 600 }}>Require KYC</span>
+                      <span className="text-[#6b7280] text-[10px]">Block unverified users from fast betting</span>
+                    </div>
+                    <input type="checkbox" checked={fbConfig.requireKyc} onChange={e => setFbConfig({ ...fbConfig, requireKyc: e.target.checked })} className="accent-[#ff5222]" />
+                  </label>
+                  <label className="flex items-center justify-between bg-[#0a0e1a] border border-[#1f2937] rounded-lg px-3 py-2.5 cursor-pointer">
+                    <div>
+                      <span className="text-white text-[12px] block" style={{ fontWeight: 600 }}>Daily Loss Cap</span>
+                      <span className="text-[#6b7280] text-[10px]">Auto-block users who hit the daily loss limit</span>
+                    </div>
+                    <input type="checkbox" checked={fbConfig.enableLossCap} onChange={e => setFbConfig({ ...fbConfig, enableLossCap: e.target.checked })} className="accent-[#ff5222]" />
+                  </label>
+                  <label className="flex items-center justify-between bg-[#0a0e1a] border border-[#1f2937] rounded-lg px-3 py-2.5 cursor-pointer">
+                    <div>
+                      <span className="text-white text-[12px] block" style={{ fontWeight: 600 }}>Streak Bonus</span>
+                      <span className="text-[#6b7280] text-[10px]">Reward users for consecutive correct picks</span>
+                    </div>
+                    <input type="checkbox" checked={fbConfig.enableStreakBonus} onChange={e => setFbConfig({ ...fbConfig, enableStreakBonus: e.target.checked })} className="accent-[#ff5222]" />
+                  </label>
+                </div>
+                <div className="flex justify-end gap-2 mt-4">
+                  <button className="h-8 px-4 bg-[#0a0e1a] border border-[#1f2937] text-[#9ca3af] text-[11px] rounded-lg cursor-pointer hover:bg-[#1f2937]" style={{ fontWeight: 600 }}>Reset</button>
+                  <button onClick={() => showOmsToast("Fast Bet config saved")} className="h-8 px-4 bg-[#ff5222] text-white text-[11px] rounded-lg cursor-pointer hover:bg-[#e8491f]" style={{ fontWeight: 600 }}>Save Config</button>
+                </div>
+              </div>
+
+              {/* Risk controls */}
+              <div className="bg-[#111827] border border-[#1f2937] rounded-xl p-4 flex items-center justify-between gap-3 flex-wrap">
+                <div>
+                  <h3 className="text-white text-[14px]" style={{ fontWeight: 700 }}>Platform Risk Controls</h3>
+                  <p className="text-[#9ca3af] text-[11px]" style={{ fontWeight: 500 }}>Halt fast-bet ticks instantly if oracle feed is compromised or abnormal volatility detected</p>
+                </div>
+                <div className="flex gap-2">
+                  <button className="h-8 px-3 bg-amber-500/15 text-amber-400 text-[11px] rounded-lg cursor-pointer hover:bg-amber-500/25" style={{ fontWeight: 600 }}>Pause Ticks</button>
+                  <button className="h-8 px-3 bg-orange-500/15 text-orange-400 text-[11px] rounded-lg cursor-pointer hover:bg-orange-500/25" style={{ fontWeight: 600 }}>Void Current Tick</button>
+                  <button className="h-8 px-3 bg-red-500/15 text-red-400 text-[11px] rounded-lg cursor-pointer hover:bg-red-500/25" style={{ fontWeight: 600 }}>Suspend Module</button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
 

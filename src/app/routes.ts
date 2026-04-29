@@ -75,6 +75,7 @@ export const router = createBrowserRouter([
           { path: "dashboard", lazy: lazy(() => import("./pages/oms/dashboard")) },
           { path: "users", lazy: lazy(() => import("./pages/oms/users")) },
           { path: "markets", lazy: lazy(() => import("./pages/oms/markets-mgmt")) },
+          { path: "orderbook", lazy: lazy(() => import("./pages/oms/merchant-orderbook")) },
           { path: "bets", lazy: lazy(() => import("./pages/oms/bets")) },
           { path: "finance", lazy: lazy(() => import("./pages/oms/finance")) },
           { path: "risk", lazy: lazy(() => import("./pages/oms/risk")) },
